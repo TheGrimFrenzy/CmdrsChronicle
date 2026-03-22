@@ -133,12 +133,14 @@ The tasks.md should be immediately executable - each task must be specific enoug
 
 **Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature specification or if user requests TDD approach.
 
+
 ### Checklist Format (REQUIRED)
 
 Every task MUST strictly follow this format:
 
 ```text
 - [ ] [TaskID] [P?] [Story?] Description with file path
+  - Steps: Bullet list of concrete steps or guidance for implementing this task (for learning and clarity)
 ```
 
 **Format Components**:
@@ -153,17 +155,21 @@ Every task MUST strictly follow this format:
    - User Story phases: MUST have story label
    - Polish phase: NO story label
 5. **Description**: Clear action with exact file path
+6. **Steps**: (NEW, REQUIRED) Immediately after the description, include a bullet list of concrete steps, sub-tasks, or implementation guidance. These should be detailed enough that a developer (or LLM) can understand what to do and why, supporting learning and clarity.
 
 **Examples**:
 
 - ✅ CORRECT: `- [ ] T001 Create project structure per implementation plan`
-- ✅ CORRECT: `- [ ] T005 [P] Implement authentication middleware in src/middleware/auth.py`
+  - Steps:
+    - Create solution and main project folders as described in plan.md
+    - Add .gitignore, README, and initial csproj files
 - ✅ CORRECT: `- [ ] T012 [P] [US1] Create User model in src/models/user.py`
-- ✅ CORRECT: `- [ ] T014 [US1] Implement UserService in src/services/user_service.py`
-- ❌ WRONG: `- [ ] Create User model` (missing ID and Story label)
-- ❌ WRONG: `T001 [US1] Create model` (missing checkbox)
-- ❌ WRONG: `- [ ] [US1] Create User model` (missing Task ID)
-- ❌ WRONG: `- [ ] T001 [US1] Create model` (missing file path)
+  - Steps:
+    - Define User class with required properties
+    - Add data annotations for validation
+    - Write docstring explaining each property
+- ❌ WRONG: `- [ ] Create User model` (missing ID, Story label, and steps)
+- ❌ WRONG: `- [ ] T001 [US1] Create model` (missing file path and steps)
 
 ### Task Organization
 

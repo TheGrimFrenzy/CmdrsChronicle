@@ -1,0 +1,32 @@
+[
+  {
+    "id": "galnet-quiet-1",
+    "title": "Universe Continues Uninterrupted as {cmdrname} Does Nothing of Note",
+    "galnetDate": "3309-03-21",
+    "text": "GALNET COSMOLOGY UPDATE — 3309-03-21\nAstrophysicists confirm that no cosmic events—Thargoid incursions, Guardian awakenings, rogue megaship movements, or mysterious hyperspace disturbances—interacted with {cmdrname}.\nSome theorize that {cmdrname} spent the entire time inside a station hangar, admiring their ship’s paint job from multiple angles, possibly using the external camera suite for ‘artistic evaluation.’\nOne researcher concluded: \"Sometimes the galaxy is quiet. Sometimes a Commander is quiet. When both happen at once, the result is… this.\"\nCmdr {cmdrname} was last reported in the {lastSystemName} system on {lastSystemDate}, where the galaxy politely ignored them."
+  },
+  {
+    "id": "galnet-quiet-2",
+    "title": "Calm Skies Above — No Notable Activity for Cmdr {cmdrname}",
+    "galnetDate": "3309-03-21",
+    "text": "GALNET REPORT — 3309-03-21\nIn an unexpected twist of tranquility, nothing of interstellar consequence occurred to Cmdr {cmdrname} during the selected interval. No combat logs, no missions, and no anomalous sensor readings were recorded.\nLocal gossip suspects Cmdr {cmdrname} might have been engaged in intensive ship-maintenance or a marathon of galactic documentaries.\nLast known position: {lastSystemName} on {lastSystemDate}."
+  },
+  {
+    "id": "galnet-quiet-3",
+    "title": "A Week of Uneventful Exploration for {cmdrname}",
+    "galnetDate": "3309-03-21",
+    "text": "GALNET DAILY — 3309-03-21\nOur scanners report a serene week for Cmdr {cmdrname}. No unusual signatures were detected.\nField analysts recommend celebrating such peaceful stretches — the galaxy recovers, pilots rest, and fuel tanks remain pleasantly full.\nRecorded last system: {lastSystemName} ({lastSystemDate})."
+  },
+  {
+    "id": "galnet-quiet-4",
+    "title": "Silence in the Stars: Cmdr {cmdrname} Observed Idly",
+    "galnetDate": "3309-03-21",
+    "text": "COSMOLOGICAL DIGEST — 3309-03-21\nProviders of newsworthy disturbances report zero incidents concerning Cmdr {cmdrname}. The week was notable only for its absence of notoriety.\nExperts note that quiet weeks are essential to long-term exploration success.\nMost recent log places Cmdr {cmdrname} in {lastSystemName} on {lastSystemDate}."
+  },
+  {
+    "id": "galnet-quiet-5",
+    "title": "Tranquility Notice: No Significant Logs for {cmdrname}",
+    "galnetDate": "3309-03-21",
+    "text": "GALNET HEADLINE — 3309-03-21\nNo significant events involving Cmdr {cmdrname} have been logged for the requested period. The galaxy remained in its usual, indifferent state.\nOccasional reports suggest the Commander may have been perfecting their docking approach or cataloging starport coffee blends.\nLast observed system: {lastSystemName} at {lastSystemDate}."
+  }
+]
