@@ -31,7 +31,8 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Constitution gates are defined in `.specify/memory/constitution.md` (Version: 1.0.0).
+Use that file as the authoritative source for mandatory gates and compliance rules.
 
 ## Project Structure
 
