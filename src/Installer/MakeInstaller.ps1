@@ -22,7 +22,7 @@ New-Item -ItemType Directory -Path $publishDir | Out-Null
 Write-Host "Publishing CLI project..."
 
 # Build publish arguments
-$publishArgs = @("-c", $Configuration, "-r", $Runtime, "-o", $publishDir, "-p:AssemblyName=$AssemblyName")
+$publishArgs = @("-c", $Configuration, "-r", $Runtime, "-o", $publishDir)
 if ($SingleFile) { $publishArgs += "-p:PublishSingleFile=true" } else { $publishArgs += "-p:PublishSingleFile=false" }
 if ($SelfContained) { $publishArgs += "-p:SelfContained=true" } else { $publishArgs += "-p:SelfContained=false" }
 
@@ -46,11 +46,18 @@ Write-Host "Creating zip installer: $zipPath"
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 # If single-file publish produced an exe with a different name, ensure expected name
+
 if ($SingleFile) {
-  # The published exe will be $AssemblyName.exe in $publishDir
-  $exePath = Join-Path $publishDir "$AssemblyName.exe"
-  if (-not (Test-Path $exePath)) {
-    Write-Warning "Expected single-file executable $exePath not found. Listing publish directory:" 
+  # Attempt to rename the produced exe to the requested AssemblyName for a cleaner UX
+  $exe = Get-ChildItem -Path $publishDir -Filter *.exe | Select-Object -First 1
+  if ($exe) {
+    $targetExe = Join-Path $publishDir ("$AssemblyName.exe")
+    if ($exe.FullName -ne $targetExe) {
+      Copy-Item -Path $exe.FullName -Destination $targetExe -Force
+      Write-Host "Renamed/created single-file exe: $targetExe"
+    }
+  } else {
+    Write-Warning "No executable found in publish directory. Listing contents:"
     Get-ChildItem -Path $publishDir
   }
 }
