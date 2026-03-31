@@ -1,0 +1,38 @@
+name: Build Installer
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+      - master
+      - feature/**
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore and build
+        run: |
+          dotnet restore ./CmdrsChronicleDotNet.sln
+          dotnet build ./CmdrsChronicleDotNet.sln -c Release
+
+      - name: Run installer packaging script
+        shell: pwsh
+        run: |
+          Set-Location ${{ github.workspace }}
+          .\src\Installer\MakeInstaller.ps1 -Configuration Release -Runtime win-x64
+
+      - name: Upload installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmdrschronicle-installer
+          path: src/Installer/artifacts/installer/**
