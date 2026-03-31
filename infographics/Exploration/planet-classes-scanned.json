@@ -1,0 +1,7 @@
+{
+  "category": "Exploration",
+  "title": "Planet Classes Scanned",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM Scan WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND PlanetClass IS NOT NULL",
+  "detailQuery": "SELECT COALESCE(PlanetClass, 'Unknown') AS label, COUNT(*) AS value FROM Scan WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND PlanetClass IS NOT NULL GROUP BY PlanetClass ORDER BY value DESC"
+}

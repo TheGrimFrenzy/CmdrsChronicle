@@ -1,0 +1,10 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Total Jumps & Distance",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, CAST(COALESCE(SUM(JumpDist), 0) AS INTEGER) AS total FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} jump(s) · {total} ly total",
+    "help": "Total FSD jumps and cumulative distance from FSDJump events"
+  }
+}

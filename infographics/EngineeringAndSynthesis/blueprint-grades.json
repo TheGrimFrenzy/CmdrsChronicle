@@ -1,0 +1,7 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Blueprint Grades",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Level IS NOT NULL",
+  "detailQuery": "SELECT 'G' || Level AS label, COUNT(*) AS value FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Level IS NOT NULL GROUP BY Level ORDER BY Level"
+}

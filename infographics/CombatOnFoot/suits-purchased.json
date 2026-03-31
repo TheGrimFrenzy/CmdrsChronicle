@@ -1,0 +1,11 @@
+{
+  "category": "CombatOnFoot",
+  "title": "Suits Purchased",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Price), 0) AS totalReward FROM BuySuit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} suit(s) purchased · {totalReward} Cr spent",
+    "help": "Combat, Dominator, Maverick, or Artemis suits bought from outfitting"
+  }
+}
+

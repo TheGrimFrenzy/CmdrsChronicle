@@ -1,0 +1,10 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Module Sales Revenue",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(SellPrice), 0) AS totalReward FROM ModuleSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} module(s) sold · {totalReward} Cr recovered",
+    "help": "Credits recovered from selling old outfitting modules"
+  }
+}

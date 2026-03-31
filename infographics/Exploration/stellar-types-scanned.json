@@ -1,0 +1,7 @@
+{
+  "category": "Exploration",
+  "title": "Stellar Types Scanned",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM Scan WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND StarType IS NOT NULL",
+  "detailQuery": "SELECT StarType AS label, COUNT(*) AS value FROM Scan WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND StarType IS NOT NULL GROUP BY StarType ORDER BY value DESC"
+}

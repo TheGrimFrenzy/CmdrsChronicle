@@ -1,0 +1,11 @@
+{
+  "category": "SettlementActivities",
+  "title": "Settlements Approached",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(DISTINCT Name) AS count FROM ApproachSettlement WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} unique settlement(s) approached",
+    "help": "ApproachSettlement events — player flying within proximity of a planetary installation"
+  }
+}
+

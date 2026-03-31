@@ -1,0 +1,10 @@
+{
+  "category": "ThargoidAX",
+  "title": "Thargoid Interdictions",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM Interdicted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND IsThargoid = 1",
+  "details": {
+    "text": "{count} interdiction(s) by Thargoid vessels",
+    "help": "Interdicted events with IsThargoid=1 — pulled from supercruise by a Thargoid"
+  }
+}

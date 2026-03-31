@@ -60,12 +60,18 @@ When generating a report with no valid events, load the appropriate message from
 
 ## 2.1 Parallel File Parsing
 
-Journal files are discovered and parsed in parallel using Task Parallel Library (TPL) with a concurrency cap. Directory scan and filename validation follow the pattern in research-naming.md. Parallelism uses TPL with MaxDegreeOfParallelism set to Environment.ProcessorCount or a configurable value.
+
+Journal files are discovered and parsed in parallel using the Task Parallel Library (TPL) with a concurrency cap, as defined in spec.md §2.1. The concurrency cap defaults to Environment.ProcessorCount but can be configured via CLI argument (--max-parallelism), environment variable (CMDRSCHRONICLE_MAX_PARALLELISM), or config file. Directory scan and filename validation strictly follow the canonical pattern in research-naming.md. Only files matching the pattern `Journal.<YYYY-MM-DDThhmmss>.<nn>.log` are processed; all others are ignored and logged as skipped. Invalid or unreadable files are logged as errors in a standardized format.
+
+All parallel/concurrent logic for file reading/parsing MUST be developed test-first, with unit and integration tests written before implementation. CI MUST enforce green tests for all parallel code paths. All new logic MUST include code comments and documentation explaining the concurrency cap, error handling, and file validation logic, in accordance with the project constitution.
 
 **Acceptance Criteria:**
-- File discovery, parallel parsing, and concurrency cap logic tested
-- Directory scan and filename validation as per research-naming.md
-- Parallelism uses TPL with concurrency cap
+- File discovery, parallel parsing, and concurrency cap logic are covered by unit and integration tests (test-first, enforced by CI)
+- Directory scan and filename validation strictly follow research-naming.md; only canonical files are processed
+- Invalid, unreadable, or non-canonical files are skipped and logged as errors in a standardized format
+- Concurrency cap is configurable via CLI, environment variable, or config file; default is Environment.ProcessorCount
+- All new logic is documented with code comments and referenced in the README (rationale for parallelism, concurrency cap, and error handling)
+- All requirements above are cross-referenced in spec.md and tasks.md to avoid duplication
 
 ## 2.2 Parallel Infographic Rendering
 
@@ -80,12 +86,15 @@ CmdrsChronicle is a Windows console application that processes Elite Dangerous j
 
 ## 2.3 SQLite Event Storage
 
-All event schemas are mapped to tables in an in-memory SQLite database. Reserved word handling is enforced as per plan.md and data-model.md. Integration tests verify schema mapping and data insertion.
+
+All event schemas are mapped to tables in an in-memory SQLite database. **Table schemas are generated once from the canonical event schemas as a static SQL file (or C# migration), which is committed to the repository and used to initialize the in-memory DB at runtime.** Reserved word handling is enforced as per plan.md and data-model.md. Integration and unit tests are written before implementation (test-first) and verify schema mapping and data insertion. If upstream schemas change, the static SQL file is regenerated and recommitted.
 
 **Acceptance Criteria:**
-- All event schemas mapped to tables as per data-model.md
+- Static SQL schema file is generated from all canonical event schemas and committed to the repo
+- In-memory SQLite DB is initialized from the committed static SQL schema for each run
 - Reserved word handling logic matches plan.md and spec.md
-- Integration tests verify schema mapping and data insertion
+- Integration and unit tests verify schema mapping and data insertion (test-first)
+- Process for updating static SQL when upstream schemas change is documented
 
 ## 2.4 CLI Contract
 

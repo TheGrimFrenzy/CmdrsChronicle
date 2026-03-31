@@ -1,0 +1,7 @@
+{
+  "category": "Trade",
+  "title": "Top Bought Commodities",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Type_Localised, 'Unknown') AS label, CAST(SUM(TotalCost) AS INTEGER) AS value FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Type_Localised ORDER BY value DESC"
+}

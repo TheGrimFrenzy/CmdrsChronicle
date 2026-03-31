@@ -1,0 +1,10 @@
+{
+  "category": "SocialMulticrew",
+  "title": "Crew Hired",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM CrewMemberJoins WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} crew member(s) joined the ship",
+    "help": "CrewMemberJoins events — NPC or player crew boarding the multicrew ship"
+  }
+}

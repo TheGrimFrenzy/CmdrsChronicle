@@ -1,0 +1,10 @@
+{
+  "category": "CombatShip",
+  "title": "Vouchers Redeemed",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Amount), 0) AS totalReward FROM RedeemVoucher WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Type IN ('CombatBond', 'Bounty')",
+  "details": {
+    "text": "{count} voucher(s) redeemed · {totalReward} Cr total",
+    "help": "CombatBond and Bounty vouchers redeemed at a station"
+  }
+}

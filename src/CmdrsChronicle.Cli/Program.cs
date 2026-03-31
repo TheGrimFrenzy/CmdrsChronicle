@@ -1,0 +1,566 @@
+﻿using System.CommandLine;
+using CmdrsChronicle.Core;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+
+namespace CmdrsChronicle.Cli
+{
+		internal class Program
+		{
+			// Helper: Try parse environment variable
+			static int? TryParseEnvVar(string varName)
+			{
+				var val = Environment.GetEnvironmentVariable(varName);
+				return int.TryParse(val, out var result) ? result : null;
+			}
+
+			// Helper: Try parse config file (optional, looks for config.json in current dir)
+			static int? TryParseConfig(string key)
+			{
+				var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+				if (!File.Exists(configPath)) return null;
+				try
+				{
+					var json = System.Text.Json.JsonDocument.Parse(File.ReadAllText(configPath));
+					if (json.RootElement.TryGetProperty(key, out var prop) && prop.ValueKind == System.Text.Json.JsonValueKind.Number)
+						return prop.GetInt32();
+				}
+				catch { }
+				return null;
+			}
+
+			// Date formatting now handled by Core helpers
+
+			static RootCommand BuildRootCommand()
+			{
+				var inputOpt = new Option<string>("--input", "Path to the directory containing journal log files.");
+				var outputOpt = new Option<string>("--output", "Path to write the generated HTML report.");
+				var startOpt = new Option<string>("--start", "Start date (yyyy-MM-dd) for report filtering.");
+				var endOpt = new Option<string>("--end", "End date (yyyy-MM-dd) for report filtering.");
+				var typeOpt = new Option<string>("--type", "Report type: summary (default) or by-system.");
+				var categoryOpt = new Option<string>("--category", "Infographic category filter (comma-separated).");
+				var styleOpt = new Option<string>("--style", "Report style: elegant (default), colorful, or galnet.");
+				var maxParallelismOpt = new Option<int?>("--max-parallelism", "Maximum number of files to parse in parallel (overrides environment/config).");
+
+				var rootCommand = new RootCommand("CmdrsChronicle CLI - Generate self-contained Elite Dangerous HTML reports.");
+				rootCommand.Add(inputOpt);
+				rootCommand.Add(outputOpt);
+				rootCommand.Add(startOpt);
+				rootCommand.Add(endOpt);
+				rootCommand.Add(typeOpt);
+				rootCommand.Add(categoryOpt);
+				rootCommand.Add(styleOpt);
+				rootCommand.Add(maxParallelismOpt);
+
+				rootCommand.SetHandler((string input, string output, string start, string end, string type, string category, string style, int? maxParallelism) =>
+				{
+					// T301: Select a random tagline for the report masthead
+					var taglinesPath = Path.Combine(AppContext.BaseDirectory, "templates", "taglines.txt");
+					if (!File.Exists(taglinesPath))
+					{
+						// Try repo root fallback
+						taglinesPath = Path.Combine(Directory.GetCurrentDirectory(), "templates", "taglines.txt");
+					}
+					var tagline = Report.SelectRandomTagline(taglinesPath);
+					if (!string.IsNullOrEmpty(tagline))
+						Console.WriteLine($"[Tagline] {tagline}");
+					else
+						Console.WriteLine("[Tagline] (No tagline found)");
+
+					// If input is not specified, use Elite Dangerous default journal directory
+					if (string.IsNullOrWhiteSpace(input))
+					{
+						var userProfile = Environment.GetEnvironmentVariable("USERPROFILE") ?? "";
+						input = Path.Combine(userProfile, "Saved Games", "Frontier Developments", "Elite Dangerous");
+						Console.WriteLine($"No --input specified. Using default journal directory: {input}");
+					}
+
+					Console.WriteLine($"Input: {input}");
+					Console.WriteLine($"Output: {output}");
+					Console.WriteLine($"Start: {start}");
+					Console.WriteLine($"End: {end}");
+					Console.WriteLine($"Type: {type}");
+					Console.WriteLine($"Category: {category}");
+					Console.WriteLine($"Style: {style}");
+					Console.WriteLine($"MaxParallelism (CLI): {maxParallelism}");
+
+					int effectiveParallelism = maxParallelism
+						?? TryParseEnvVar("CMDRSCHRONICLE_MAX_PARALLELISM")
+						?? TryParseConfig("maxParallelism")
+						?? Environment.ProcessorCount;
+					Console.WriteLine($"Effective MaxParallelism: {effectiveParallelism}");
+
+					if (!Directory.Exists(input))
+					{
+						Console.Error.WriteLine($"ERROR: Input directory does not exist: {input}");
+						Environment.Exit(1);
+					}
+
+					// T501: Parse --start / --end BEFORE file discovery so we can pre-filter by filename
+					DateTime? startDate = null, endDate = null;
+					if (!string.IsNullOrWhiteSpace(start))
+					{
+						if (DateTime.TryParse(start, out var dt)) startDate = dt.Date;
+						else Console.Error.WriteLine($"[WARN] Could not parse --start date: {start}");
+					}
+					if (!string.IsNullOrWhiteSpace(end))
+					{
+						if (DateTime.TryParse(end, out var dt)) endDate = dt.Date.AddDays(1).AddTicks(-1);
+						else Console.Error.WriteLine($"[WARN] Could not parse --end date: {end}");
+					}
+
+					var (events, errors) = JournalFileDiscovery.ParseJournalFilesParallel(input, effectiveParallelism, startDate, endDate);
+					Console.WriteLine($"Parsed {events.Count} events from journal files.");
+					Console.WriteLine(ReportDiagnostics.HasErrors(errors)
+						? $"{errors.Count} parse error(s) encountered — will be embedded in report output."
+						: "No errors encountered during parsing.");
+					var filteredEvents = new List<System.Text.Json.JsonElement>();
+					foreach (var evt in events)
+					{
+						if (!evt.TryGetProperty("timestamp", out var timestampElem)) continue;
+						if (!DateTime.TryParse(timestampElem.GetString(), out var ts)) continue;
+						if (startDate.HasValue && ts < startDate.Value) continue;
+						if (endDate.HasValue && ts > endDate.Value) continue;
+						filteredEvents.Add(evt);
+					}
+					Console.WriteLine($"Filtered to {filteredEvents.Count} events by date range.");
+					var swPhase = Stopwatch.StartNew(); // measure from end of filtering until report written
+
+					// T303: Insert filtered events into in-memory SQLite DB
+					var schemaPath = Path.Combine(AppContext.BaseDirectory, "cmdrschronicle_schema.sql");
+					if (!File.Exists(schemaPath))
+					{
+						// Try repo root fallback
+						schemaPath = Path.Combine(Directory.GetCurrentDirectory(), "cmdrschronicle_schema.sql");
+					}
+					if (!File.Exists(schemaPath))
+					{
+						Console.Error.WriteLine($"ERROR: Schema file not found: {schemaPath}");
+						Environment.Exit(1);
+					}
+					var dbName = $"reportdb_{Guid.NewGuid():N}";
+					using var conn = SqliteSchemaInitializer.CreateSharedInMemoryDb(schemaPath, dbName);
+
+					// Build PRAGMA cache once per unique event type (avoid repeating per-event)
+					var pragmaCache = new Dictionary<string, Dictionary<string, (string Type, bool NotNull)>>(StringComparer.OrdinalIgnoreCase);
+					foreach (var evt0 in filteredEvents)
+					{
+						if (!evt0.TryGetProperty("event", out var evtElem0)) continue;
+						var evtName = evtElem0.GetString();
+						if (string.IsNullOrWhiteSpace(evtName) || pragmaCache.ContainsKey(evtName)) continue;
+						var info = new Dictionary<string, (string Type, bool NotNull)>();
+						using (var pragmaCmd = conn.CreateCommand())
+						{
+							pragmaCmd.CommandText = $"PRAGMA table_info([{evtName}]);";
+							using var r = pragmaCmd.ExecuteReader();
+							while (r.Read())
+							{
+								var colName = r.GetString(1);
+								var colType = r.IsDBNull(2) ? "" : r.GetString(2);
+								var notNull = !r.IsDBNull(3) && r.GetInt32(3) == 1;
+								info[colName] = (colType ?? "", notNull);
+							}
+						}
+						pragmaCache[evtName] = info;
+					}
+
+					int inserted = 0;
+					using (var tx = conn.BeginTransaction())
+					{
+					foreach (var evt in filteredEvents)
+					{
+						// Use 'event' property to select table, do not store it
+						if (!evt.TryGetProperty("event", out var eventTypeElem) || !evt.TryGetProperty("timestamp", out var timestampElem))
+							continue;
+						var eventType = eventTypeElem.GetString();
+						if (string.IsNullOrWhiteSpace(eventType)) continue;
+						var table = eventType;
+						// Retrieve cached column info for this table
+						if (!pragmaCache.TryGetValue(table, out var tableColumnsInfo))
+							continue; // table not in schema
+						// Build column/value lists, mapping reserved words, skip 'event' property
+						var columns = new List<string>();
+						var columnSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+						var values = new List<object>();
+						foreach (var prop in evt.EnumerateObject())
+						{
+							if (prop.Name == "event") continue; // do not store event property
+							var col = ReservedWords.PrefixIfReserved(prop.Name);
+							if (!tableColumnsInfo.ContainsKey(col)) continue; // only insert valid columns
+							if (!columnSet.Add(col)) continue; // skip duplicate column names
+							columns.Add(col);
+							values.Add(prop.Value.ValueKind == System.Text.Json.JsonValueKind.String ? (object)prop.Value.GetString()! : prop.Value.ToString());
+						}
+
+						// Auto-fill any missing NOT NULL columns with a sensible default
+						foreach (var kv in tableColumnsInfo)
+						{
+							var colName = kv.Key;
+							var colType = kv.Value.Type ?? "";
+							var notNull = kv.Value.NotNull;
+							if (!notNull) continue;
+							if (columnSet.Contains(colName)) continue;
+							// Skip primary key autoincrement column
+							if (string.Equals(colName, "event_id", StringComparison.OrdinalIgnoreCase)) continue;
+							// Provide defaults: integers -> 0, real -> 0.0, otherwise empty string
+							object defaultVal;
+							if (colType.IndexOf("INT", StringComparison.OrdinalIgnoreCase) >= 0)
+								defaultVal = 0;
+							else if (colType.IndexOf("REAL", StringComparison.OrdinalIgnoreCase) >= 0 || colType.IndexOf("FLOA", StringComparison.OrdinalIgnoreCase) >= 0 || colType.IndexOf("DOUB", StringComparison.OrdinalIgnoreCase) >= 0)
+								defaultVal = 0.0;
+							else
+								defaultVal = "";
+							columnSet.Add(colName);
+							columns.Add(colName);
+							values.Add(defaultVal);
+						}
+						// Compose SQL
+						if (columns.Count == 0) continue; // nothing to insert
+						var colList = string.Join(", ", columns);
+						var paramList = string.Join(", ", columns.ConvertAll(c => "@" + c));
+						var sql = $"INSERT INTO [{table}] ({colList}) VALUES ({paramList});";
+						using var cmd = conn.CreateCommand();
+						cmd.CommandText = sql;
+						for (int i = 0; i < columns.Count; i++)
+							cmd.Parameters.AddWithValue("@" + columns[i], values[i] ?? DBNull.Value);
+						try
+						{
+							cmd.ExecuteNonQuery();
+							inserted++;
+						}
+						catch (Exception ex)
+						{
+							Console.Error.WriteLine($"[DB ERROR] {ex.Message}");
+						}
+					}
+					tx.Commit();
+					} // end transaction
+					Console.WriteLine($"Inserted {inserted} events into SQLite in-memory DB.");
+
+					// Helpers shared by T305 and T304
+					string TemplateBase() => Directory.Exists(Path.Combine(AppContext.BaseDirectory, "templates"))
+						? Path.Combine(AppContext.BaseDirectory, "templates")
+						: Path.Combine(Directory.GetCurrentDirectory(), "templates");
+
+					string InfographicsBase() => Directory.Exists(Path.Combine(AppContext.BaseDirectory, "infographics"))
+						? Path.Combine(AppContext.BaseDirectory, "infographics")
+						: Path.Combine(Directory.GetCurrentDirectory(), "infographics");
+
+					bool isColorful = string.Equals(style, "colorful", StringComparison.OrdinalIgnoreCase);
+					bool isGalnet   = string.Equals(style, "galnet",   StringComparison.OrdinalIgnoreCase);
+
+					string BuildDefaultName()
+					{
+						var s = (startDate ?? DateTime.Today).ToString("yyyy-MM-dd");
+						var e = (endDate ?? DateTime.Today).Date.ToString("yyyy-MM-dd");
+						return $"CmdrsChronicle_{s}-{e}.html";
+					}
+
+					// T305: No-data report logic
+					if (filteredEvents.Count == 0)
+					{
+						Console.WriteLine("[T305] No qualifying events found. Generating nothing-to-report page.");
+
+						// Locate template and CSS files
+						var templateFile = Path.Combine(TemplateBase(), isGalnet ? "galnet-nothing-to-report.html" : isColorful ? "colorful-nothing-to-report.html" : "elegant-nothing-to-report.html");
+						var cssFile      = Path.Combine(TemplateBase(), isGalnet ? "galnet.css" : isColorful ? "colorful.css" : "elegant.css");
+
+						if (!File.Exists(templateFile) || !File.Exists(cssFile))
+						{
+							Console.Error.WriteLine($"[ERROR] Cannot render nothing-to-report page: template or CSS not found.");
+							Console.Error.WriteLine($"  Template: {templateFile}");
+							Console.Error.WriteLine($"  CSS:      {cssFile}");
+							Environment.Exit(1);
+						}
+
+						// Load and select message by ordinal day
+						var messagesFile = Path.Combine(TemplateBase(), "no-data-messages.json");
+						var messages = NoDataMessageSelector.LoadMessages(messagesFile);
+
+						// Use --end date if given, otherwise today
+						var reportDate = endDate.HasValue ? endDate.Value.Date : DateTime.Today;
+						var selected = NoDataMessageSelector.SelectByDate(messages, reportDate)
+							?? new NoDataMessage
+							{
+								Title       = "Nothing to Report",
+								Summary     = "No qualifying activity was found for this period.",
+								Body        = "All data channels returned below qualifying thresholds for {cmdrName} during this window.",
+								ClosingNote = "Last known location: {lastSystem} on {lastDate}."
+							};
+
+							// Resolve cmdr name and last-known system from most-recent LoadGame/Commander event before start date
+							string cmdrName   = "Unknown Commander";
+							string lastSystem = "Unknown System";
+							string lastDate   = "Unknown Date";
+
+							using (var cmdrCmd = conn.CreateCommand())
+							{
+								// Try LoadGame table first (has Commander + StarSystem columns)
+								cmdrCmd.CommandText = @"
+									SELECT Commander, StarSystem, event_timestamp
+									FROM LoadGame
+									ORDER BY event_timestamp DESC
+									LIMIT 1;";
+								try
+								{
+									using var r = cmdrCmd.ExecuteReader();
+									if (r.Read())
+									{
+										if (!r.IsDBNull(0)) cmdrName   = r.GetString(0);
+										if (!r.IsDBNull(1)) lastSystem = r.GetString(1);
+										if (!r.IsDBNull(2))
+										{
+											var tsFull = r.GetString(2);
+											if (DateTime.TryParse(tsFull, out var parsedTs))
+												lastDate = ReportHelpers.FormatLoreDate(parsedTs);
+											else if (!string.IsNullOrEmpty(tsFull) && tsFull.Length >= 10 && DateTime.TryParse(tsFull[..10], out var parsedShort))
+												lastDate = ReportHelpers.FormatLoreDate(parsedShort);
+											else
+												lastDate = tsFull is not null && tsFull.Length >= 10 ? tsFull[..10] : lastDate;
+										}
+									}
+								}
+								catch { /* LoadGame table may not exist or have these columns */ }
+							}
+
+							// If DB yielded no useful info, try reading the most recent journal file before the start date
+							if ((cmdrName == "Unknown Commander" || lastSystem == "Unknown System" || lastDate == "Unknown Date") && Directory.Exists(input))
+							{
+								try
+								{
+									var (foundSystem, foundDate, foundCmdr) = ReportHelpers.FindMostRecentStarSystem(input, startDate?.Date);
+									if (!string.IsNullOrEmpty(foundSystem) && foundSystem != "Unknown System") lastSystem = foundSystem;
+									if (!string.IsNullOrEmpty(foundDate)   && foundDate   != "Unknown Date")   lastDate   = foundDate;
+									if (!string.IsNullOrEmpty(foundCmdr)   && foundCmdr   != "Unknown Commander") cmdrName = foundCmdr;
+								}
+								catch { }
+							}
+
+							// Interpolate tokens
+							selected.Body        = NoDataMessageSelector.Interpolate(selected.Body,        cmdrName, lastSystem, lastDate);
+							selected.ClosingNote = NoDataMessageSelector.Interpolate(selected.ClosingNote, cmdrName, lastSystem, lastDate);
+
+						// Format date range for masthead
+						var fromStr = startDate.HasValue ? ReportHelpers.FormatLoreDate(startDate.Value) : "—";
+						var toStr   = endDate.HasValue   ? ReportHelpers.FormatLoreDate(endDate.Value.Date) : ReportHelpers.FormatLoreDate(DateTime.Today);
+
+						var html = isGalnet
+							? GalnetReportRenderer.RenderNothingToReport(
+								templateFile, cssFile,
+								tagline ?? "Every jump tells a story.",
+								cmdrName, fromStr, toStr,
+								selected)
+							: isColorful
+							? ColorfulReportRenderer.RenderNothingToReport(
+								templateFile, cssFile,
+								tagline ?? "Every jump tells a story.",
+								cmdrName, fromStr, toStr,
+								selected)
+							: ElegantReportRenderer.RenderNothingToReport(
+								templateFile, cssFile,
+								tagline ?? "Every jump tells a story.",
+								cmdrName, fromStr, toStr,
+								selected);
+
+						var outputPath = string.IsNullOrWhiteSpace(output)
+							? Path.Combine(Directory.GetCurrentDirectory(), BuildDefaultName())
+							: output;
+
+						File.WriteAllText(outputPath, html, System.Text.Encoding.UTF8);
+						var ntrErrorComment = ReportDiagnostics.FormatParseErrorComment(errors);
+						if (ntrErrorComment.Length > 0)
+							File.AppendAllText(outputPath, ntrErrorComment, System.Text.Encoding.UTF8);
+						Console.WriteLine($"[T305] Nothing-to-report page written to: {outputPath}");
+						return;
+					}
+
+					// T304: Full report generation (qualifying events found)
+					Console.WriteLine("[T304] Qualifying events found. Generating full report.");
+
+					var definitions = InfographicLoader.LoadAll(InfographicsBase());
+
+					// Apply --category filter if provided
+					if (!string.IsNullOrWhiteSpace(category))
+					{
+						var cats = category.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+						definitions = definitions
+							.Where(d => cats.Any(c => string.Equals(c, d.Category, StringComparison.OrdinalIgnoreCase)))
+							.ToList();
+					}
+
+					Console.WriteLine($"[T304] Loaded {definitions.Count} infographic definition(s).");
+
+					// Date strings for SQL: startDate inclusive, endDate exclusive (< comparison against ISO timestamps).
+					// When --end is omitted, use tomorrow so today's events are included.
+					var queryStartDate = startDate?.Date.ToString("yyyy-MM-dd");
+					var queryEndDate   = endDate.HasValue
+						? endDate.Value.Date.ToString("yyyy-MM-dd")
+						: DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
+
+					// Parallel query phase: gather all results before rendering
+					var swAll = Stopwatch.StartNew();
+					var results = InfographicQueryRunner.RunAllAsync(
+						definitions, dbName, queryStartDate, queryEndDate, effectiveParallelism
+					).GetAwaiter().GetResult();
+					swAll.Stop();
+					Console.WriteLine($"[T304] Infographic queries completed in {swAll.Elapsed.TotalSeconds:F2}s (wall clock).");
+					// Print slowest tiles for diagnostics
+					foreach (var r in results.OrderByDescending(r => r.TotalQueryDuration).Take(10))
+					{
+						Console.WriteLine($"[PROFILE] {r.Definition.Title} - main:{r.MainQueryDuration.TotalMilliseconds:F0}ms detail:{r.DetailQueryDuration.TotalMilliseconds:F0}ms total:{r.TotalQueryDuration.TotalMilliseconds:F0}ms");
+					}
+
+					Console.WriteLine($"[T304] {results.Count(r => r.MeetsThreshold)} qualifying tile(s) from {results.Count} definition(s).");
+
+					// Resolve CMDR name from DB (best-effort)
+					string reportCmdrName = "Unknown Commander";
+					using (var cmdrLookup = conn.CreateCommand())
+					{
+						cmdrLookup.CommandText = "SELECT Commander FROM LoadGame ORDER BY event_timestamp DESC LIMIT 1;";
+						try
+						{
+							var val = cmdrLookup.ExecuteScalar();
+							if (val != null && val != DBNull.Value) reportCmdrName = val.ToString()!;
+						}
+						catch { }
+					}
+
+					var reportFromStr = startDate.HasValue ? ReportHelpers.FormatLoreDate(startDate.Value) : "\u2014";
+					var reportToStr   = endDate.HasValue   ? ReportHelpers.FormatLoreDate(endDate.Value.Date) : ReportHelpers.FormatLoreDate(DateTime.Today);
+
+					var reportTemplatePath = Path.Combine(TemplateBase(), isGalnet ? "galnet-report.html" : isColorful ? "colorful-report.html" : "elegant-report.html");
+					var reportCssPath      = Path.Combine(TemplateBase(), isGalnet ? "galnet.css" : isColorful ? "colorful.css" : "elegant.css");
+
+					if (!File.Exists(reportTemplatePath) || !File.Exists(reportCssPath))
+					{
+						Console.Error.WriteLine($"[ERROR] Report template or CSS not found: {reportTemplatePath}");
+						Environment.Exit(1);
+					}
+
+					// ── Build report sections (by-system or single) ─────────────────────
+					IReadOnlyList<SystemVisit> sections;
+					if (string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase) && queryStartDate != null)
+					{
+						// Walk FSD jumps chronologically to build per-visit windows
+						var jumps = new List<(string SystemName, string Timestamp)>();
+						using (var jumpCmd = conn.CreateCommand())
+						{
+							jumpCmd.CommandText =
+								"SELECT StarSystem, event_timestamp FROM FSDJump " +
+								"WHERE event_timestamp >= @s AND event_timestamp < @e " +
+								"ORDER BY event_timestamp ASC";
+							jumpCmd.Parameters.AddWithValue("@s", queryStartDate);
+							jumpCmd.Parameters.AddWithValue("@e", queryEndDate);
+							using var jr = jumpCmd.ExecuteReader();
+							while (jr.Read())
+								jumps.Add((jr.GetString(0), jr.GetString(1)));
+						}
+						Console.WriteLine($"[BY-SYSTEM] Found {jumps.Count} FSD jump(s) in window.");
+
+						var visits = new List<(string SystemName, string From, string To)>();
+						if (jumps.Count > 0)
+						{
+							// Include any pre-jump activity: find what system CMDR was in before window start
+							using (var priorCmd = conn.CreateCommand())
+							{
+								priorCmd.CommandText =
+									"SELECT StarSystem FROM FSDJump WHERE event_timestamp < @s " +
+									"ORDER BY event_timestamp DESC LIMIT 1";
+								priorCmd.Parameters.AddWithValue("@s", queryStartDate);
+								var priorVal = priorCmd.ExecuteScalar();
+								if (priorVal != null && priorVal != DBNull.Value)
+									visits.Add((priorVal.ToString()!, queryStartDate, jumps[0].Timestamp));
+							}
+
+							for (int i = 0; i < jumps.Count; i++)
+							{
+								var toTime = i + 1 < jumps.Count ? jumps[i + 1].Timestamp : queryEndDate;
+								visits.Add((jumps[i].SystemName, jumps[i].Timestamp, toTime));
+							}
+						}
+
+						if (visits.Count > 0)
+						{
+							var visitSections = new List<SystemVisit>(visits.Count);
+							foreach (var (sysName, fromTime, toTime) in visits)
+							{
+								var visitResults = InfographicQueryRunner.RunAllAsync(
+									definitions, dbName, fromTime, toTime, effectiveParallelism
+								).GetAwaiter().GetResult();
+
+
+								DateTime? arr = DateTime.TryParse(fromTime, null,
+									System.Globalization.DateTimeStyles.RoundtripKind, out var parsedArr)
+									? parsedArr : (DateTime?)null;
+								var arrivalLore   = arr.HasValue ? ReportHelpers.FormatLoreDate(arr.Value) + " " + arr.Value.ToString("HH:mm") : null;
+								var arrivalActual = arr.HasValue ? arr.Value.ToString("yyyy-MM-dd HH:mm") : null;
+								visitSections.Add(new SystemVisit(sysName, arrivalLore, arrivalActual, visitResults));
+							}
+							Console.WriteLine($"[BY-SYSTEM] {visitSections.Count} system visit section(s) built ({visitSections.Count(v => v.Results.Any(r => r.MeetsThreshold))} with qualifying tiles).");
+							sections = visitSections.Count > 0
+								? visitSections
+								: new[] { new SystemVisit(null, null, null, results) };
+						}
+						else
+						{
+							Console.WriteLine("[BY-SYSTEM] No FSD jumps found; falling back to single-section report.");
+							sections = new[] { new SystemVisit(null, null, null, results) };
+						}
+					}
+					else
+					{
+						if (string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase))
+							Console.WriteLine("[BY-SYSTEM] --start date required for by-system reports; falling back to single-section.");
+						sections = new[] { new SystemVisit(null, null, null, results) };
+					}
+
+					var swRender = Stopwatch.StartNew();
+					var reportHtml = isGalnet
+						? GalnetReportRenderer.Render(
+							reportTemplatePath, reportCssPath,
+							tagline ?? "Every jump tells a story.",
+							reportCmdrName, reportFromStr, reportToStr,
+							sections)
+						: isColorful
+						? ColorfulReportRenderer.Render(
+							reportTemplatePath, reportCssPath,
+							tagline ?? "Every jump tells a story.",
+							reportCmdrName, reportFromStr, reportToStr,
+							sections)
+						: ElegantReportRenderer.Render(
+							reportTemplatePath, reportCssPath,
+							tagline ?? "Every jump tells a story.",
+							reportCmdrName, reportFromStr, reportToStr,
+							sections);
+					swRender.Stop();
+					Console.WriteLine($"[TIMING] Render time: {swRender.Elapsed.TotalSeconds:F2}s");
+
+					var reportOutputPath = string.IsNullOrWhiteSpace(output)
+						? Path.Combine(Directory.GetCurrentDirectory(), BuildDefaultName())
+						: output;
+
+					var swWrite = Stopwatch.StartNew();
+					File.WriteAllText(reportOutputPath, reportHtml, System.Text.Encoding.UTF8);
+					var errorComment = ReportDiagnostics.FormatParseErrorComment(errors);
+					if (errorComment.Length > 0)
+						File.AppendAllText(reportOutputPath, errorComment, System.Text.Encoding.UTF8);
+					swWrite.Stop();
+					Console.WriteLine($"[TIMING] Write time: {swWrite.Elapsed.TotalSeconds:F2}s");
+
+					swPhase.Stop();
+					Console.WriteLine($"[TIMING] Filter->Report total: {swPhase.Elapsed.TotalSeconds:F2}s");
+					Console.WriteLine($"[T304] Report written to: {reportOutputPath}");
+				}, inputOpt, outputOpt, startOpt, endOpt, typeOpt, categoryOpt, styleOpt, maxParallelismOpt);
+
+				return rootCommand;
+			}
+
+			static async System.Threading.Tasks.Task<int> Main(string[] args)
+			{
+				var rootCommand = BuildRootCommand();
+				return await rootCommand.InvokeAsync(args);
+			}
+		}
+	}

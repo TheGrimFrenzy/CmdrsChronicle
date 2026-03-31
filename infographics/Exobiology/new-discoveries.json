@@ -1,0 +1,10 @@
+{
+  "category": "Exobiology",
+  "title": "New Discoveries",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM ScanOrganic WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND ScanType = 'Analyse' AND WasLogged = 0",
+  "details": {
+    "text": "{count} first-log discovery(ies) — never catalogued before",
+    "help": "ScanOrganic events where WasLogged=0 meaning nobody had submitted this species from this body before"
+  }
+}

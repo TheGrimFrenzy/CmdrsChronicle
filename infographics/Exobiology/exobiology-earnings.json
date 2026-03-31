@@ -1,0 +1,10 @@
+{
+  "category": "Exobiology",
+  "title": "Exobiology Earnings",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Value + Bonus), 0) AS totalReward FROM SellOrganicData_BioData bod JOIN SellOrganicData sod ON sod.event_id = bod.SellOrganicData_event_id WHERE sod.event_timestamp >= :startDate AND sod.event_timestamp < :endDate",
+  "details": {
+    "text": "{count} sample(s) sold · {totalReward} Cr total",
+    "help": "Value + first-discovery bonus from SellOrganicData transactions"
+  }
+}

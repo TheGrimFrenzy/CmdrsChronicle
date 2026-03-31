@@ -1,0 +1,10 @@
+{
+  "category": "MaterialGathering",
+  "title": "Micro-Resources Sold",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Price), 0) AS totalReward FROM SellMicroResources WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} transaction(s) · {totalReward} Cr earned",
+    "help": "On-foot micro-resources sold at a bartender"
+  }
+}

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CmdrsChronicle.Cli/CmdrsChronicle.Cli.csproj" />
+    <Project Path="src/CmdrsChronicle.Core/CmdrsChronicle.Core.csproj" />
+    <Project Path="src/CmdrsChronicle.Infographics/CmdrsChronicle.Infographics.csproj" />
+    <Project Path="src/CmdrsChronicle.Tests/CmdrsChronicle.Tests.csproj" />
+    <Project Path="src/Installer/Installer.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,7 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Ship Types Bought",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM ShipyardBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(ShipType_Localised, 'Unknown') AS label, COUNT(*) AS value FROM ShipyardBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY ShipType_Localised ORDER BY value DESC"
+}

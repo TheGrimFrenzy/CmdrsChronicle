@@ -1,0 +1,10 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Synthesis Runs",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM Synthesis WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} synthesis run(s) completed in the field",
+    "help": "Materials combined via shipboard synthesis (ammo, limpets, repairs, etc.)"
+  }
+}

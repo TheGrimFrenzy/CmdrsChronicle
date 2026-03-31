@@ -1,0 +1,10 @@
+{
+  "category": "Exobiology",
+  "title": "Species Analysed",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM ScanOrganic WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND ScanType = 'Analyse'",
+  "details": {
+    "text": "{count} full biological analysis scan(s) completed",
+    "help": "ScanOrganic events with ScanType='Analyse' (the final of three scan stages)"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "category": "CombatShip",
+  "title": "Bounty Targets",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM Bounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Target, 'Unknown') AS label, COUNT(*) AS value FROM Bounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Target ORDER BY value DESC"
+}

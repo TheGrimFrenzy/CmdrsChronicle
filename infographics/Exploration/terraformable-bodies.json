@@ -1,0 +1,10 @@
+{
+  "category": "Exploration",
+  "title": "Terraformable Bodies",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM Scan WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND TerraformState = 'Terraformable'",
+  "details": {
+    "text": "{count} terraformable body candidates found",
+    "help": "Bodies with TerraformState = 'Terraformable' from FSS and DSS scans"
+  }
+}

@@ -1,0 +1,65 @@
+<!--
+  CmdrsChronicle Nothing-to-Report Template (Colorful Style)
+  Rendered when no journal activity meets qualifying thresholds for the date range.
+  [CSS]                - replaced with inlined colorful.css content
+  [CMDR_NAME]          - commander name
+  [DATE_FROM]          - report start date (formatted)
+  [DATE_TO]            - report end date (formatted)
+  [TAGLINE]            - selected tagline
+  [GALNET_HEADLINE]    - no-data-messages.json "title"
+  [GALNET_SUBHEAD]     - no-data-messages.json "summary"
+  [GALNET_BODY]        - no-data-messages.json "body" (placeholder tokens substituted)
+  [GALNET_CLOSING_NOTE]- no-data-messages.json "closingNote" (placeholder tokens substituted)
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>CMDR&#8217;s Chronicle &mdash; Nothing to Report</title>
+    <style>
+{CSS}
+    </style>
+</head>
+<body>
+
+    <!-- Masthead -->
+    <div class="masthead">
+        <div class="mh-thick-rule"></div>
+        <div class="mh-thin-rule"></div>
+        <div class="mh-title-area">
+            <div class="mh-name">CMDR&#8217;s Chronicle</div>
+            <div class="mh-tagline">{TAGLINE}</div>
+        </div>
+        <div class="mh-thin-rule"></div>
+        <div class="mh-thick-rule"></div>
+        <div class="mh-date-strip">
+            CMDR&#8217;s Log
+            &#160;&#9830;&#160;
+            <span>{DATE_FROM}</span>
+            &#160;&#8212;&#160;
+            <span>{DATE_TO}</span>
+            &#160;&#9830;&#160;
+            <span>CMDR {CMDR_NAME} Edition</span>
+        </div>
+        <div class="mh-thick-rule"></div>
+    </div>
+
+    <!-- GalNet empty-state article -->
+    <div class="galnet-wrap">
+        <div class="galnet-article">
+            <div class="galnet-source">Pilots Federation Archive</div>
+            <div class="galnet-headline">{GALNET_HEADLINE}</div>
+            <div class="galnet-subhead">{GALNET_SUBHEAD}</div>
+            <div class="galnet-rule"></div>
+            <p class="galnet-body">{GALNET_BODY}</p>
+            <br/>
+            <p class="galnet-body galnet-closing">{GALNET_CLOSING_NOTE}</p>
+            <div class="galnet-footer">
+                This edition of CMDR&#8217;s Chronicle has been certified empty by the Pilots Federation
+                Bureau of Not Very Much Happening.
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

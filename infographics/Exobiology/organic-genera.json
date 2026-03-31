@@ -1,0 +1,7 @@
+{
+  "category": "Exobiology",
+  "title": "Organic Genera",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(DISTINCT Genus_Localised) FROM ScanOrganic WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND ScanType = 'Analyse' AND Genus_Localised IS NOT NULL",
+  "detailQuery": "SELECT Genus_Localised AS label, COUNT(*) AS value FROM ScanOrganic WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND ScanType = 'Analyse' AND Genus_Localised IS NOT NULL GROUP BY Genus_Localised ORDER BY value DESC"
+}

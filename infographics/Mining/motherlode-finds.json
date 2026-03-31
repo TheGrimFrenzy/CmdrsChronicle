@@ -1,0 +1,10 @@
+{
+  "category": "Mining",
+  "title": "Motherlode Finds",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM ProspectedAsteroid WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND MotherlodeMaterial IS NOT NULL",
+  "details": {
+    "text": "{count} motherlode asteroid(s) found",
+    "help": "Asteroids with a primary motherlode material identified by the prospector limpet"
+  }
+}

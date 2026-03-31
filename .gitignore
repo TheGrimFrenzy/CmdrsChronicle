@@ -1,0 +1,21 @@
+# .NET build artifacts
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+# Rider
+.idea/
+*.sln.iml
+# VS Code
+.vscode/
+# Installer output
+/Installer/output/
+# Test results
+/TestResults/
+# Others
+*.log
+*.tmp
+
+.fake

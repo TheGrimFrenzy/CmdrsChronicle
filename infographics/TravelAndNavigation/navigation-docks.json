@@ -1,0 +1,10 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Stations Docked",
+  "chartType": "table",
+  "query": "SELECT COUNT(DISTINCT StationName) FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT StationName AS label, COUNT(*) AS value FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY StationName ORDER BY value DESC",
+  "tableColumns": ["Station", "Dockings"],
+  "inaraSearchBase": "https://inara.cz/elite/station/?search="
+}
+

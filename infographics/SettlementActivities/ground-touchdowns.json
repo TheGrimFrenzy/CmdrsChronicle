@@ -1,0 +1,10 @@
+{
+  "category": "SettlementActivities",
+  "title": "Ground Touchdowns",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, SUM(CASE WHEN OnPlanet = 1 AND OnStation = 0 THEN 1 ELSE 0 END) AS onPlanet FROM Touchdown WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND PlayerControlled = 1",
+  "details": {
+    "text": "{count} landing(s) made · {onPlanet} on planetary surface",
+    "help": "PlayerControlled Touchdown events — SRV deployments and ship surface landings"
+  }
+}

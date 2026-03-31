@@ -1,0 +1,10 @@
+{
+  "category": "ThargoidAX",
+  "title": "AX Kill Bond Earnings",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Reward), 0) AS totalReward FROM FactionKillBond WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND VictimFaction LIKE '%Thargoid%'",
+  "details": {
+    "text": "{count} AX kill bond(s) · {totalReward} Cr awarded",
+    "help": "FactionKillBond events where VictimFaction contains 'Thargoid'"
+  }
+}

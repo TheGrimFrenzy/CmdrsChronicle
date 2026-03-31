@@ -1,0 +1,11 @@
+{
+  "category": "FleetCarrierOperations",
+  "title": "Carrier Bank Transfers",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(Deposit), 0) AS total, COALESCE(SUM(Deposit), 0) AS totalReward FROM CarrierBankTransfer WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{totalReward} Cr deposited to carrier bank",
+    "help": "Total credits deposited to fleet carrier bank account"
+  }
+}
+

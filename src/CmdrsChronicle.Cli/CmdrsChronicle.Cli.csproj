@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CmdrsChronicle.Core\CmdrsChronicle.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Deploy templates alongside the CLI binary for T305 no-data report rendering -->
+    <None Include="..\..\templates\elegant-nothing-to-report.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\elegant-nothing-to-report.html</Link>
+    </None>
+    <None Include="..\..\templates\elegant.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\elegant.css</Link>
+    </None>
+    <None Include="..\..\templates\colorful-nothing-to-report.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\colorful-nothing-to-report.html</Link>
+    </None>
+    <None Include="..\..\templates\colorful.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\colorful.css</Link>
+    </None>
+    <None Include="..\..\templates\elegant-report.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\elegant-report.html</Link>
+    </None>
+    <None Include="..\..\templates\no-data-messages.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\no-data-messages.json</Link>
+    </None>
+    <None Include="..\..\templates\taglines.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\taglines.txt</Link>
+    </None>
+    <None Include="..\..\templates\colorful-report.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\colorful-report.html</Link>
+    </None>
+    <None Include="..\..\templates\colorfulExample.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\colorfulExample.html</Link>
+    </None>
+    <None Include="..\..\templates\galnet-nothing-to-report.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\galnet-nothing-to-report.html</Link>
+    </None>
+    <None Include="..\..\templates\galnet-report.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\galnet-report.html</Link>
+    </None>
+    <None Include="..\..\templates\galnet.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\galnet.css</Link>
+    </None>
+    <!-- Deploy infographic JSON definitions alongside the CLI binary -->
+    <None Include="..\..\infographics\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>infographics\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+  </ItemGroup>
+
+</Project>

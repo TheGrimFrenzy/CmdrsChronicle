@@ -1,0 +1,7 @@
+{
+  "category": "MaterialGathering",
+  "title": "Micro-Resource Types Sold",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM SellMicroResources_MicroResources mr JOIN SellMicroResources s ON s.event_id = mr.SellMicroResources_event_id WHERE s.event_timestamp >= :startDate AND s.event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(mr.Name_Localised, mr.Name) AS label, CAST(SUM(mr.Count) AS INTEGER) AS value FROM SellMicroResources_MicroResources mr JOIN SellMicroResources s ON s.event_id = mr.SellMicroResources_event_id WHERE s.event_timestamp >= :startDate AND s.event_timestamp < :endDate GROUP BY mr.Name ORDER BY value DESC"
+}

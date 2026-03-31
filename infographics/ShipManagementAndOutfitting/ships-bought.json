@@ -1,0 +1,10 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Ships Bought",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(ShipPrice), 0) AS totalReward FROM ShipyardBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} ship(s) purchased · {totalReward} Cr spent",
+    "help": "New ships bought from a shipyard"
+  }
+}

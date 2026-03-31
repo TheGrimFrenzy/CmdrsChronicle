@@ -40,14 +40,14 @@
 ---
 
 ## 1. Phase 1: Setup
-1. [ ] T101 Create tagline file for report masthead
+1. [x] T101 Create tagline file for report masthead
    - **Acceptance Criteria:**
      - templates/taglines.txt exists with at least 5 non-comment lines
      - README documents the file and format
   - Steps:
     - Add templates/taglines.txt with one tagline per line; lines starting with # are comments and ignored
     - Document the file and its format in README
-2. [ ] T102 Generate infographics directory structure
+2. [x] T102 Generate infographics directory structure
    - **Acceptance Criteria:**
      - /infographics directory exists with subdirectories for all categories in spec.md
      - README documents the structure
@@ -56,7 +56,7 @@
     - For each identified infographic category (see spec.md), create a subdirectory under /infographics (e.g., /infographics/Travel, /infographics/Combat, etc.)
     - Document the directory structure in README for onboarding
 
-3. [ ] T103 Create initial project structure for library-first .NET solution
+3. [x] T103 Create initial project structure for library-first .NET solution
    - **Acceptance Criteria:**
      - Solution and all main project folders created as per plan.md
      - .gitignore, README.md, .sln present
@@ -67,7 +67,7 @@
     - Set up standard directory layout for tests/unit, tests/integration, tests/contract
     - Document the folder structure in README for clarity
 
-4. [ ] T104 Add .NET 8 SDK and configure solution for C# 12
+4. [x] T104 Add .NET 8 SDK and configure solution for C# 12
    - **Acceptance Criteria:**
      - All csproj files target net8.0 and C# 12
      - global.json pins SDK if needed
@@ -78,7 +78,7 @@
     - Add global.json if needed to pin SDK
     - Document SDK and language version requirements in README
 
-5. [ ] T105 Add xUnit test project and configure CI for build/test
+5. [x] T105 Add xUnit test project and configure CI for build/test
    - **Acceptance Criteria:**
      - xUnit project added, sample test runs
      - CI pipeline runs build and test
@@ -89,7 +89,7 @@
     - Set up GitHub Actions or Azure Pipelines for build and test
     - Document test execution in CONTRIBUTING.md
 
-6. [ ] T106 Add documentation stubs (README, CONTRIBUTING, usage)
+6. [x] T106 Add documentation stubs (README, CONTRIBUTING, usage)
    - **Acceptance Criteria:**
      - README.md, CONTRIBUTING.md, USAGE.md exist as stubs in correct locations
      - All link to quickstart.md and spec.md
@@ -101,7 +101,7 @@
 
 ## 2. Phase 2: Foundational
 
-1. [ ] T201 Implement core data model classes in CmdrsChronicle.Core
+1. [x] T201 Implement core data model classes in CmdrsChronicle.Core
    - **Acceptance Criteria:**
      - All models defined as per data-model.md
      - Unit tests verify property mapping
@@ -112,7 +112,7 @@
     - Add XML doc comments for all properties to aid learning
     - Ensure reserved word handling for DB mapping (prefix with event_ for SQLite reserved words)
 
-2. [ ] T202 Implement Elite Dangerous journal schema loader and reserved word logic
+2. [x] T202 Implement Elite Dangerous journal schema loader and reserved word logic
    - **Acceptance Criteria:**
      - Reserved word handling logic matches plan.md and spec.md
      - Tests verify prefixing for SQLite reserved words
@@ -123,21 +123,26 @@
     - Implement reserved word prefixing for SQL mapping (maintain reserved word list for SQLite)
     - Document reserved word list and logic in code comments
 
-3. [ ] T203 Implement in-memory event storage and relational mapping using SQLite
+3. [x] T203 Implement in-memory event storage and relational mapping using SQLite
    - **Acceptance Criteria:**
      - Integration tests verify schema mapping and data insertion
      - SQLite in-memory DB used for each run
      - All event schemas mapped to tables as per data-model.md
+    - Static SQL schema file is generated from canonical event schemas and committed to the repo
+    - Integration and unit tests are written before implementation (test-first)
   - Steps:
-    - Write integration tests to verify schema mapping and data insertion (test-first)
+    - Write integration and unit tests to verify schema mapping and data insertion (test-first, before implementation)
+    - Implement a generator that produces a static SQL schema file (or C# migration) from all canonical event schemas (table-per-schema)
+    - Commit the generated SQL/migration to the repo; use it to initialize the in-memory DB at runtime for every report generation
     - Integrate Microsoft.Data.Sqlite or System.Data.SQLite NuGet package
-    - Initialize SQLite in-memory database for each report generation run
-    - For each event schema, create a table in SQLite (table-per-schema)
+    - Initialize SQLite in-memory database for each report generation run using the committed static SQL schema
     - Map event properties to columns, handling reserved words and complex types (child tables for objects/arrays, JSON truncation for deep nesting)
+    - If upstream schemas change, re-run the generator and update the committed SQL; ensure this process is documented
     - Add synthetic primary key event_id to each table
     - Document why SQLite in-memory is used (ad-hoc queries, no persistence, cross-platform)
+    - All code and changes must follow test-first discipline and be covered by integration tests
 
-4. [ ] T204 Implement CLI contract and argument parsing in CmdrsChronicle.Cli
+4. [x] T204 Implement CLI contract and argument parsing in CmdrsChronicle.Cli
    - **Acceptance Criteria:**
      - Argument parsing supports all CLI options from contracts/cli.md
      - --help output is detailed
@@ -150,7 +155,7 @@
 
 
 ## 3. Phase 3: [US1] Generate a weekly summary report (P1)
-1. [ ] T301 Implement report tagline selection logic
+1. [x] T301 Implement report tagline selection logic
    - **Acceptance Criteria:**
      - Random non-comment line from templates/taglines.txt is used as masthead tagline
      - Test ensures only non-comment lines are selected and taglines rotate randomly
@@ -158,32 +163,38 @@
     - On report generation, select a random non-comment line from templates/taglines.txt as the masthead tagline
     - Write a test to ensure only non-comment lines are selected and that taglines rotate randomly
 
-2. [ ] T302 [P] [US1] Implement journal file discovery and parsing
+2. [x] T302 [P] [US1] Implement journal file discovery and parsing
    - **Acceptance Criteria:**
-     - File discovery, parallel parsing, and concurrency cap logic tested
-     - Directory scan and filename validation as per research-naming.md
-     - Parallelism uses TPL with concurrency cap
+     - File discovery, parallel parsing, and concurrency cap logic are covered by unit and integration tests (test-first, enforced by CI)
+     - Directory scan and filename validation strictly follow research-naming.md; only files matching `Journal.<YYYY-MM-DDThhmmss>.<nn>.log` are processed
+     - Invalid, unreadable, or non-canonical files are skipped and logged as errors in a standardized format
+     - Concurrency cap is configurable via CLI (--max-parallelism), environment variable (CMDRSCHRONICLE_MAX_PARALLELISM), or config file; default is Environment.ProcessorCount
+     - All new logic is documented with code comments and referenced in the README (rationale for parallelism, concurrency cap, and error handling)
+     - All requirements above are cross-referenced in spec.md §2.1 and plan.md §2.1 to avoid duplication
   - Steps:
-    - Write tests for file discovery, parallel parsing, and concurrency cap logic (test-first)
-    - Scan default or user-specified directory for journal files (see research-naming.md for pattern)
-    - Validate filename pattern and file accessibility
-    - Read and parse journal files in parallel using Task Parallel Library (TPL) with a concurrency cap (set MaxDegreeOfParallelism to Environment.ProcessorCount or configurable value)
+    - Write unit and integration tests for file discovery, parallel parsing, and concurrency cap logic (test-first, before implementation)
+    - Scan default or user-specified directory for journal files, strictly following research-naming.md
+    - Validate filename pattern; only process files matching `Journal.<YYYY-MM-DDThhmmss>.<nn>.log`; skip and log all others
+    - Check file accessibility; log unreadable files as errors in a standardized format
+    - Read and parse journal files in parallel using Task Parallel Library (TPL) with a concurrency cap (configurable as above)
     - Use Parallel.ForEach or Task.Run for parallelism; avoid creating raw threads
-    - Parse each line as JSON, skip invalid lines, log errors for diagnostics
+    - Parse each line as JSON, skip invalid lines, log errors for diagnostics in a standardized format
     - Document in code and README why parallelism and concurrency cap are used (performance, resource safety)
+    - Ensure all new logic is covered by code comments and documentation for maintainability (per constitution)
 
-3. [ ] T303 [P] [US1] Store parsed events in SQLite in-memory DB and aggregate for report
+3. [x] T303 [P] [US1] Store parsed events in SQLite in-memory DB and aggregate for report
    - **Acceptance Criteria:**
      - Valid events inserted into SQLite in-memory DB
      - Aggregation queries produce correct summary/timeline/infographics
      - Tests for event insertion and aggregation
   - Steps:
-    - Insert valid events into SQLite in-memory DB using schema mapping logic
+    - Insert valid events into SQLite in-memory DB using the committed static SQL schema
     - Use SQL queries to aggregate events for summary, timeline, and infographics
     - Handle empty or malformed files gracefully (log errors, skip bad lines)
-    - Write tests for event insertion and aggregation queries
+    - Write tests for event insertion and aggregation queries (test-first, before implementation)
 
-4. [ ] T304 [P] [US1] Implement HTML report generation (summary, timeline, infographics)
+4. [x] T304 [P] [US1] Implement HTML report generation (summary, timeline, infographics)
+   - **Note:** Three styles implemented: elegant, colorful, galnet. Galnet added beyond original spec.
    - **Acceptance Criteria:**
      - HTML template for summary report created (elegant style default)
      - Infographic tiles rendered from /infographics JSON files by category
@@ -199,7 +210,7 @@
     - Write tests for parallel infographic rendering and concurrency cap
     - Document in code and README why parallelism and concurrency cap are used (performance, resource safety)
 
-5. [ ] T305 [US1] Implement 'no data' report logic and message selection
+5. [x] T305 [US1] Implement 'no data' report logic and message selection
    - **Acceptance Criteria:**
      - No valid events triggers message selection by ordinal day
      - Leap year logic correct
@@ -215,7 +226,8 @@
     - Populate report with fallback details if none found (mark as unknown)
     - Write tests for 'no data' scenarios, including day-based selection and fallback
 
-6. [ ] T306 [US1] Add CLI exit code and error handling logic
+6. [x] T306 [US1] Add CLI exit code and error handling logic
+   - **Note:** Unrecoverable errors (missing input dir, schema, templates) call `Environment.Exit(1)`. Parse errors suppressed from stderr and embedded as HTML comment in output file via `ReportDiagnostics.FormatParseErrorComment()`. Unit tests in `ReportDiagnosticsTests.cs`.
    - **Acceptance Criteria:**
      - Exit code 0 for success, non-zero for unrecoverable errors
      - Parsing errors logged in report, not console
@@ -253,7 +265,8 @@
 
 ## 5. Phase 5: [US3] Custom date range, style, and category filtering (P3)
 
-1. [ ] T501 [P] [US3] Implement --start, --end, --style, and --category options
+1. [x] T501 [P] [US3] Implement --start, --end, --style, and --category options
+   - **Note:** --style now supports elegant, colorful, and galnet.
    - **Acceptance Criteria:**
      - CLI options for all filters present
      - Arguments validated and parsed
@@ -265,7 +278,8 @@
     - Apply filters to SQLite DB queries and report generation
     - Write tests for argument validation and filter application
 
-2. [ ] T502 [US3] Implement style switching and category ordering in report
+2. [x] T502 [US3] Implement style switching and category ordering in report
+   - **Note:** Style switching implemented for elegant, colorful, galnet. Category ordering via --category filter.
    - **Acceptance Criteria:**
      - Style switching logic loads correct template
      - Category ordering matches --category argument

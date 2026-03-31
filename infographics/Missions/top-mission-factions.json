@@ -1,0 +1,9 @@
+{
+  "category": "Missions",
+  "title": "Top Mission Factions",
+  "chartType": "table",
+  "query": "SELECT COUNT(DISTINCT Faction) FROM MissionCompleted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Faction IS NOT NULL",
+  "detailQuery": "SELECT Faction AS label, COUNT(*) AS value FROM MissionCompleted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Faction IS NOT NULL GROUP BY Faction ORDER BY value DESC",
+  "tableColumns": ["Faction", "Completions"],
+  "inaraSearchBase": "https://inara.cz/elite/minorfaction/?search="
+}

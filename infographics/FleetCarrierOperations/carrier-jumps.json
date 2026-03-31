@@ -1,0 +1,11 @@
+{
+  "category": "FleetCarrierOperations",
+  "title": "Carrier Jumps",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM CarrierJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} fleet carrier jump(s) made",
+    "help": "CarrierJump events representing the carrier arriving at a new system"
+  }
+}
+

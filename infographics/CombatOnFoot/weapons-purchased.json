@@ -1,0 +1,11 @@
+{
+  "category": "CombatOnFoot",
+  "title": "Weapons Purchased",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Price), 0) AS totalReward FROM BuyWeapon WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} weapon(s) purchased · {totalReward} Cr spent",
+    "help": "On-foot personal weapons bought from outfitting"
+  }
+}
+

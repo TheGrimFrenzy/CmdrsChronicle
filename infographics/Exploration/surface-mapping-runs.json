@@ -1,0 +1,10 @@
+{
+  "category": "Exploration",
+  "title": "Surface Mapping Runs",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, SUM(CASE WHEN ProbesUsed <= EfficiencyTarget THEN 1 ELSE 0 END) AS efficient FROM SAAScanComplete WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} DSS mapping run(s) · {efficient} at or under probe efficiency target",
+    "help": "SAAScanComplete events from surface detail scanning. Efficient = probes used ≤ efficiency target"
+  }
+}

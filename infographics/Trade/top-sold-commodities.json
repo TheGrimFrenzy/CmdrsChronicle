@@ -1,0 +1,7 @@
+{
+  "category": "Trade",
+  "title": "Top Sold Commodities",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Type_Localised, 'Unknown') AS label, CAST(SUM(TotalSale) AS INTEGER) AS value FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Type_Localised ORDER BY value DESC"
+}

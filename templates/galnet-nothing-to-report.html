@@ -1,0 +1,60 @@
+<!--
+  CmdrsChronicle Nothing-to-Report Template (Galnet Style)
+  Rendered when no journal activity meets qualifying thresholds for the date range.
+  {CSS}                - replaced with inlined galnet.css content
+  {CMDR_NAME}          - commander name
+  {DATE_FROM}          - report start date (formatted)
+  {DATE_TO}            - report end date (formatted)
+  {TAGLINE}            - selected tagline
+  {GALNET_HEADLINE}    - no-data-messages.json "title"
+  {GALNET_SUBHEAD}     - no-data-messages.json "summary"
+  {GALNET_BODY}        - no-data-messages.json "body" (placeholder tokens substituted)
+  {GALNET_CLOSING_NOTE}- no-data-messages.json "closingNote" (placeholder tokens substituted)
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CMDR&#8217;s Chronicle &mdash; Nothing to Report</title>
+  <style>
+{CSS}
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Masthead -->
+    <div class="mast">
+      <div class="mast-rule-top"></div>
+      <div class="mast-badge">&#9670; Pilots Federation &mdash; Personal Dossier &#9670;</div>
+      <div class="mast-chronicle">CMDR&#8217;s Chronicle</div>
+      <div class="mast-cmdr">CMDR {CMDR_NAME}</div>
+      <div class="mast-tagline">&#8220;{TAGLINE}&#8221;</div>
+      <div class="mast-dates">
+        <strong>{DATE_FROM}</strong>
+        &nbsp;&nbsp;/&nbsp;&nbsp;
+        <strong>{DATE_TO}</strong>
+      </div>
+      <div class="mast-rule-bottom"></div>
+    </div>
+
+    <!-- GalNet empty-state article -->
+    <div class="galnet-ntr-wrap">
+      <div class="galnet-ntr-article">
+        <div class="galnet-ntr-source">Pilots Federation Archive</div>
+        <div class="galnet-ntr-headline">{GALNET_HEADLINE}</div>
+        <div class="galnet-ntr-subhead">{GALNET_SUBHEAD}</div>
+        <hr class="galnet-ntr-rule" />
+        <p class="galnet-ntr-body">{GALNET_BODY}</p>
+        <br />
+        <p class="galnet-ntr-body galnet-ntr-closing">{GALNET_CLOSING_NOTE}</p>
+        <div class="galnet-ntr-footer">
+          This edition of CMDR&#8217;s Chronicle has been certified empty by the Pilots Federation
+          Bureau of Not Very Much Happening.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

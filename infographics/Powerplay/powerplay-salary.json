@@ -1,0 +1,10 @@
+{
+  "category": "Powerplay",
+  "title": "Powerplay Salary",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Amount), 0) AS totalReward FROM PowerplaySalary WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} salary payment(s) · {totalReward} Cr total",
+    "help": "Weekly Powerplay salary payments from the pledged power"
+  }
+}

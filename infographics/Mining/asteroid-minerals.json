@@ -1,0 +1,7 @@
+{
+  "category": "Mining",
+  "title": "Asteroid Minerals",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM ProspectedAsteroid WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Content IS NOT NULL",
+  "detailQuery": "SELECT Content AS label, COUNT(*) AS value FROM ProspectedAsteroid WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Content IS NOT NULL GROUP BY Content ORDER BY value DESC"
+}

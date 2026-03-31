@@ -1,0 +1,10 @@
+{
+  "category": "CombatOnFoot",
+  "title": "On-Foot Kills",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(TotalReward), 0) AS totalReward FROM Bounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Target = 'Humanoid'",
+  "details": {
+    "text": "{count} humanoid target(s) eliminated",
+    "help": "Bounty events with Target='Humanoid', indicating on-foot personnel kills"
+  }
+}

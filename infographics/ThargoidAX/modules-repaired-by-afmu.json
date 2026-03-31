@@ -1,0 +1,7 @@
+{
+  "category": "ThargoidAX",
+  "title": "Modules Repaired by AFMU",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM AfmuRepairs WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Module_Localised, Module) AS label, COUNT(*) AS value FROM AfmuRepairs WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Module ORDER BY value DESC"
+}

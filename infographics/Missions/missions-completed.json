@@ -1,0 +1,11 @@
+{
+  "category": "Missions",
+  "title": "Missions Completed",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Reward), 0) AS totalReward FROM MissionCompleted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} mission(s) completed · {totalReward} Cr earned",
+    "help": "All mission completions including Wing and passenger missions"
+  }
+}
+

@@ -1,0 +1,7 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Station Types Visited",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND StationType IS NOT NULL",
+  "detailQuery": "SELECT StationType AS label, COUNT(*) AS value FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND StationType IS NOT NULL GROUP BY StationType ORDER BY value DESC"
+}

@@ -1,0 +1,7 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Top Modules Bought",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) FROM ModuleBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(BuyItem_Localised, 'Unknown') AS label, COUNT(*) AS value FROM ModuleBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY BuyItem_Localised ORDER BY value DESC"
+}

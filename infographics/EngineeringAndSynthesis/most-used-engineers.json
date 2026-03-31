@@ -1,0 +1,9 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Most Used Engineers",
+  "chartType": "table",
+  "query": "SELECT COUNT(DISTINCT Engineer) FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Engineer AS label, COUNT(*) AS value FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Engineer ORDER BY value DESC",
+  "tableColumns": ["Engineer", "Crafts"],
+  "inaraSearchBase": "https://inara.cz/elite/engineer/?search="
+}

@@ -1,0 +1,10 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Modules Purchased",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(BuyPrice), 0) AS totalReward FROM ModuleBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} module(s) purchased · {totalReward} Cr spent",
+    "help": "All outfitting module purchases"
+  }
+}

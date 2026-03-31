@@ -1,0 +1,9 @@
+{
+  "category": "CrimeAndSecurity",
+  "title": "Crimes Against Factions",
+  "chartType": "table",
+  "query": "SELECT COUNT(DISTINCT Faction) FROM CommitCrime WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Faction IS NOT NULL",
+  "detailQuery": "SELECT Faction AS label, COUNT(*) AS value FROM CommitCrime WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Faction IS NOT NULL GROUP BY Faction ORDER BY value DESC",
+  "tableColumns": ["Faction", "Crimes"],
+  "inaraSearchBase": "https://inara.cz/elite/minorfaction/?search="
+}

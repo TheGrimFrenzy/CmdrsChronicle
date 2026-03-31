@@ -1,0 +1,8 @@
+# CmdrsChronicle Taglines
+# Lines starting with # are comments and ignored
+
+To boldly go where no pilot has gone before.
+The galaxy is vast—make your mark.
+Every jump tells a story.
+From humble Sidewinder to legend.
+Charting the unknown, one log at a time.
