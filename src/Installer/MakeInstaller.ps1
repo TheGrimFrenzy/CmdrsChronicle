@@ -1,8 +1,11 @@
 param(
-    [string]$SolutionDir = "$(Resolve-Path "$(Split-Path -Parent $MyInvocation.MyCommand.Definition)")",
-    [string]$Configuration = "Release",
-    [string]$Runtime = "win-x64",
-    [Switch]$ProduceMsi
+  [string]$SolutionDir = "$(Resolve-Path "$(Split-Path -Parent $MyInvocation.MyCommand.Definition)")",
+  [string]$Configuration = "Release",
+  [string]$Runtime = "win-x64",
+  [Switch]$ProduceMsi,
+  [Switch]$SingleFile,
+  [Switch]$SelfContained,
+  [string]$AssemblyName = "CmdrsChronicle"
 )
 
 # Publish the CLI
@@ -17,7 +20,13 @@ if (Test-Path $publishDir) { Remove-Item -Recurse -Force $publishDir }
 New-Item -ItemType Directory -Path $publishDir | Out-Null
 
 Write-Host "Publishing CLI project..."
-dotnet publish $cliProj -c $Configuration -r $Runtime -o $publishDir --self-contained false -p:PublishSingleFile=false
+
+# Build publish arguments
+$publishArgs = @("-c", $Configuration, "-r", $Runtime, "-o", $publishDir, "-p:AssemblyName=$AssemblyName")
+if ($SingleFile) { $publishArgs += "-p:PublishSingleFile=true" } else { $publishArgs += "-p:PublishSingleFile=false" }
+if ($SelfContained) { $publishArgs += "-p:SelfContained=true" } else { $publishArgs += "-p:SelfContained=false" }
+
+dotnet publish $cliProj @publishArgs
 if ($LASTEXITCODE -ne 0) { Write-Error "dotnet publish failed"; exit $LASTEXITCODE }
 
 # Copy infographics and templates if present
@@ -35,6 +44,17 @@ New-Item -ItemType Directory -Path $artifactsDir | Out-Null
 $zipPath = Join-Path $artifactsDir "CmdrsChronicle-CLI-$Configuration-$Runtime.zip"
 Write-Host "Creating zip installer: $zipPath"
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+# If single-file publish produced an exe with a different name, ensure expected name
+if ($SingleFile) {
+  # The published exe will be $AssemblyName.exe in $publishDir
+  $exePath = Join-Path $publishDir "$AssemblyName.exe"
+  if (-not (Test-Path $exePath)) {
+    Write-Warning "Expected single-file executable $exePath not found. Listing publish directory:" 
+    Get-ChildItem -Path $publishDir
+  }
+}
+
 [IO.Compression.ZipFile]::CreateFromDirectory($publishDir, $zipPath)
 
 Write-Host "Created installer artifact: $zipPath"
