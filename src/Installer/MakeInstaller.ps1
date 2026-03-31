@@ -63,52 +63,81 @@ if ($SingleFile) {
 }
 
 [IO.Compression.ZipFile]::CreateFromDirectory($publishDir, $zipPath)
+    
+# Clean up unnecessary files to keep installer minimal
+Write-Host "Cleaning up leftover host exe and PDBs from publish folder..."
+$removePatterns = @('CmdrsChronicle.Cli.exe','*.pdb')
+foreach ($pat in $removePatterns) {
+  Get-ChildItem -Path $publishDir -Filter $pat -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+    if ($_.FullName -ne (Join-Path $publishDir "$AssemblyName.exe")) {
+      Remove-Item -Path $_.FullName -Force -ErrorAction SilentlyContinue
+      Write-Host "Removed: $($_.FullName)"
+    }
+  }
+}
+
 
 Write-Host "Created installer artifact: $zipPath"
 
-if ($ProduceMsi) {
-    Write-Host "MSI production requested. Trying to produce MSI via WiX (requires candle.exe and light.exe in PATH)."
-    $wixTemplate = @"
+    if ($ProduceMsi) {
+        Write-Host "MSI production requested. Trying to produce MSI via WiX (requires heat.exe, candle.exe and light.exe in PATH)."
+
+        # Paths for generated WiX artifacts
+        $wxsMain = Join-Path $artifactsDir "InstallerMain.wxs"
+        $wxsHarvest = Join-Path $artifactsDir "Harvest.wxs"
+        $wixobjMain = [System.IO.Path]::ChangeExtension($wxsMain, '.wixobj')
+        $wixobjHarvest = [System.IO.Path]::ChangeExtension($wxsHarvest, '.wixobj')
+
+        # Main WXS content: references harvested component group and uses WixUI_InstallDir
+        $wxsMainTemplate = @"
 <?xml version='1.0' encoding='UTF-8'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product Id='*' Name='CmdrsChronicle' Language='1033' Version='1.0.0.0' Manufacturer='CmdrsChronicle' UpgradeCode='PUT-GUID-HERE'>
-    <Package InstallerVersion='200' Compressed='yes' InstallScope='perMachine' />
+    <Package InstallerVersion='500' Compressed='yes' InstallScope='perMachine' />
     <MediaTemplate />
+    <UIRef Id='WixUI_InstallDir' />
+    <Property Id='WIXUI_INSTALLDIR' Value='INSTALLFOLDER' />
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='ProgramFilesFolder'>
         <Directory Id='INSTALLFOLDER' Name='CmdrsChronicle' />
       </Directory>
     </Directory>
-    <DirectoryRef Id='INSTALLFOLDER'>
-      <Component Id='CLIFiles' Guid='*'>
-        <File Source='__PUBLISH_DIR__\CmdrsChronicle.Cli.dll' />
-      </Component>
-    </DirectoryRef>
-    <Feature Id='DefaultFeature' Level='1'>
-      <ComponentRef Id='CLIFiles' />
+
+    <!-- Component group will be harvested into Harvest.wxs -->
+    <Feature Id='ProductFeature' Title='CmdrsChronicle' Level='1'>
+      <ComponentGroupRef Id='ProductComponents' />
     </Feature>
   </Product>
+  <WixVariable Id='WixUILicenseRtf' Value=''>
+  </WixVariable>
 </Wix>
 "@
-    $wxs = Join-Path $artifactsDir "installer.wxs"
-    $wxsContent = $wixTemplate -replace "__PUBLISH_DIR__", ($publishDir -replace '\\','\\\\')
-    Set-Content -Path $wxs -Value $wxsContent -Encoding UTF8
 
-    # Run WiX tools
-    $candle = Get-Command candle.exe -ErrorAction SilentlyContinue
-    $light = Get-Command light.exe -ErrorAction SilentlyContinue
-    if (-not $candle -or -not $light) {
-        Write-Warning "WiX tools not found in PATH. Skipping MSI creation. Install WiX Toolset and ensure candle.exe/light.exe are available.";
-    } else {
-        Push-Location $artifactsDir
-        & $candle $wxs
-        if ($LASTEXITCODE -ne 0) { Write-Error "candle failed"; Pop-Location; exit $LASTEXITCODE }
-        $wixobj = [System.IO.Path]::ChangeExtension($wxs, '.wixobj')
-        & $light $wixobj -o "CmdrsChronicle-CLI-$Configuration-$Runtime.msi"
-        if ($LASTEXITCODE -ne 0) { Write-Error "light failed"; Pop-Location; exit $LASTEXITCODE }
-        Pop-Location
-        Write-Host "MSI created in $artifactsDir"
+        Set-Content -Path $wxsMain -Value $wxsMainTemplate -Encoding UTF8
+
+        $heat = Get-Command heat.exe -ErrorAction SilentlyContinue
+        $candle = Get-Command candle.exe -ErrorAction SilentlyContinue
+        $light = Get-Command light.exe -ErrorAction SilentlyContinue
+
+        if (-not $heat -or -not $candle -or -not $light) {
+            Write-Warning "WiX heat/candle/light not all found in PATH. Skipping MSI creation. Install WiX Toolset (heat.exe, candle.exe, light.exe) and rerun with -ProduceMsi.";
+        } else {
+            Write-Host "Harvesting publish directory into WiX fragment..."
+            # heat dir produces a wxs fragment with ComponentGroup Id=ProductComponents
+            & $heat dir $publishDir -cg ProductComponents -dr INSTALLFOLDER -var var.PublishDir -out $wxsHarvest -sreg -srd -template fragment
+            if ($LASTEXITCODE -ne 0) { Write-Error "heat failed"; exit $LASTEXITCODE }
+
+            Push-Location $artifactsDir
+            & $candle $wxsHarvest -dPublishDir=$publishDir
+            if ($LASTEXITCODE -ne 0) { Write-Error "candle (harvest) failed"; Pop-Location; exit $LASTEXITCODE }
+            & $candle $wxsMain
+            if ($LASTEXITCODE -ne 0) { Write-Error "candle (main) failed"; Pop-Location; exit $LASTEXITCODE }
+
+            & $light (Split-Path $wxsHarvest -LeafBase + '.wixobj') (Split-Path $wxsMain -LeafBase + '.wixobj') -o "CmdrsChronicle-CLI-$Configuration-$Runtime.msi"
+            if ($LASTEXITCODE -ne 0) { Write-Error "light failed"; Pop-Location; exit $LASTEXITCODE }
+            Pop-Location
+            Write-Host "MSI created in $artifactsDir"
+        }
     }
-}
 
 Write-Host "Installer packaging complete. Artifacts in: $artifactsDir"
