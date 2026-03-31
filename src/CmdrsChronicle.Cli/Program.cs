@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace CmdrsChronicle.Cli
 {
-		internal class Program
+		public class Program
 		{
 			// Helper: Try parse environment variable
 			static int? TryParseEnvVar(string varName)
@@ -33,7 +33,7 @@ namespace CmdrsChronicle.Cli
 
 			// Date formatting now handled by Core helpers
 
-			static RootCommand BuildRootCommand()
+			public static RootCommand BuildRootCommand()
 			{
 				var inputOpt = new Option<string>("--input", "Path to the directory containing journal log files.");
 				var outputOpt = new Option<string>("--output", "Path to write the generated HTML report.");

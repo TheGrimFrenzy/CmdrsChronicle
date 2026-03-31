@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <!-- Avoid producing reference assembly for test project to prevent refint write issues on some CI/hosts -->
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +17,7 @@
   </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.CommandLine" Version="2.0.0" />
-      <PackageReference Include="System.CommandLine.Testing" Version="2.0.0" />
+      <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CmdrsChronicle.SchemaGen\CmdrsChronicle.SchemaGen.csproj" />
     <ProjectReference Include="..\CmdrsChronicle.Core\CmdrsChronicle.Core.csproj" />
+    <ProjectReference Include="..\CmdrsChronicle.Cli\CmdrsChronicle.Cli.csproj" />
   </ItemGroup>
 
 </Project>
