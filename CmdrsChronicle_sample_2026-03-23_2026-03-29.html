@@ -1,0 +1,867 @@
+﻿<!--
+  CmdrsChronicle Nothing-to-Report Template (Colorful Style)
+  Rendered when no journal activity meets qualifying thresholds for the date range.
+  [CSS]                - replaced with inlined colorful.css content
+  [CMDR_NAME]          - commander name
+  [DATE_FROM]          - report start date (formatted)
+  [DATE_TO]            - report end date (formatted)
+  [TAGLINE]            - selected tagline
+  [GALNET_HEADLINE]    - no-data-messages.json "title"
+  [GALNET_SUBHEAD]     - no-data-messages.json "summary"
+  [GALNET_BODY]        - no-data-messages.json "body" (placeholder tokens substituted)
+  [GALNET_CLOSING_NOTE]- no-data-messages.json "closingNote" (placeholder tokens substituted)
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>CMDR&#8217;s Chronicle &mdash; Nothing to Report</title>
+    <style>
+/*
+  CmdrsChronicle Report - Colorful Theme
+  Vibrant purple/pink gradient masthead, category-colored tile cards.
+  CSS2 compatible: floats + display:table only (no flexbox/grid) for OpenHTMLtoPDF.
+  System fonts only (no Google Fonts dependency).
+  Self-contained; does not require base.css.
+*/
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    color: #fff;
+    text-align: center;
+}
+
+.mh-thick-rule {
+    height: 8px;
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 50%, #667eea 100%);
+    margin: 0;
+}
+
+.mh-thin-rule {
+    height: 2px;
+    background: rgba(255,255,255,0.4);
+    margin: 4px 0 0 0;
+}
+
+.mh-title-area {
+    padding: 28px 40px 22px;
+}
+
+.mh-name {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 3.8em;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0 0 10px 0;
+    line-height: 1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.mh-tagline {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 300;
+    font-size: 1.1em;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: 0.06em;
+    margin: 0;
+}
+
+.mh-date-strip {
+    background: rgba(0,0,0,0.15);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.82em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    padding: 8px 40px;
+    font-weight: 500;
+}
+
+/* ── TIMELINE LAYOUT ── */
+/* CSS2 float-based two-column layout; fixed 1072px wide centred on page */
+.timeline-wrap {
+    width: 1072px;
+    margin: 48px auto 80px;
+}
+
+.tl-row {
+    position: relative;
+    overflow: visible;
+    /* stronger negative overlap so tiles visibly tuck under subsequent rows */
+    margin-bottom: -85px;
+    padding: 8px 0;
+}
+
+/* Clearfix: float-wrapping without overflow:hidden so shadow is not clipped */
+.tl-row:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.tl-row:last-child {
+    margin-bottom: 120px;
+}
+
+/* ── LEFT TILE: [icon 60px][tile 456px] + 20px centre gap = 536px total ── */
+.left-tile-wrapper {
+    float: left;
+    box-sizing: border-box;
+    width: 536px;
+    padding-right: 20px;
+}
+
+/* left-tile-wrapper is a standard float container; no position:relative needed */
+.left-tile-wrapper { }
+
+.left-tile-wrapper:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.left-icon {
+    float: left;
+    width: 60px;
+    height: 200px;
+    text-align: center;
+    line-height: 200px;
+    font-size: 2.4em;
+}
+
+.left-tile {
+    float: left;
+    display: table;
+    table-layout: fixed;
+    width: 456px;
+    height: 200px;
+    border-radius: 24px 0 0 24px;
+    box-shadow: 0 0 28px 6px rgba(0,0,0,0.30);
+    overflow: hidden;
+}
+
+.left-badge-section {
+    display: table-cell;
+    width: 72px;
+    vertical-align: middle;
+    text-align: center;
+    background: rgba(0,0,0,0.18);
+    border-right: 1px solid rgba(255,255,255,0.15);
+}
+
+.left-badge {
+    display: inline-block;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.06em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.55);
+    line-height: 1;
+}
+
+.left-badge-unit {
+    display: block;
+    font-size: 0.7em;
+    color: #fff;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.left-content {
+    display: table-cell;
+    vertical-align: top;
+    padding: 0 28px 0 16px;
+    text-align: right;
+}
+
+/* ── RIGHT TILE: [tile 456px][icon 60px] + 20px centre gap = 536px total ── */
+.right-tile-wrapper {
+    float: right;
+    box-sizing: border-box;
+    width: 536px;
+    padding-left: 20px;
+}
+
+/* right-tile-wrapper is a standard float container */
+.right-tile-wrapper { }
+
+.right-tile-wrapper:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.right-tile {
+    float: left;
+    display: table;
+    table-layout: fixed;
+    width: 456px;
+    height: 200px;
+    border-radius: 0 24px 24px 0;
+    box-shadow: 0 0 28px 6px rgba(0,0,0,0.30);
+    overflow: hidden;
+}
+
+.right-content {
+    display: table-cell;
+    vertical-align: top;
+    padding: 0 16px 0 28px;
+    text-align: left;
+}
+.tile-flex {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.tile-body-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+.right-badge-section {
+    display: table-cell;
+    width: 72px;
+    vertical-align: middle;
+    text-align: center;
+    background: rgba(0,0,0,0.18);
+    border-left: 1px solid rgba(255,255,255,0.15);
+}
+
+.right-badge {
+    display: inline-block;
+    writing-mode: vertical-rl;
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.06em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.55);
+    line-height: 1;
+}
+
+.right-badge-unit {
+    display: block;
+    font-size: 0.7em;
+    color: #fff;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.right-icon {
+    float: left;
+    width: 60px;
+    height: 200px;
+    text-align: center;
+    line-height: 200px;
+    font-size: 2.4em;
+}
+
+/* Styles for renderer's tile classes (from ElegantReportRenderer) when using colorful theme */
+.tiles-container {
+    max-width: 1200px;
+    margin: 24px auto 80px;
+    padding: 0 24px;
+}
+.tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 28px;
+    /* modest bottom margin to keep divider clear while not over-spacing tiles */
+    margin-bottom: 64px;
+}
+.infographic-tile {
+    background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.88) 100%);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    border: 1px solid rgba(255,255,255,0.6);
+    overflow: hidden;
+}
+.tile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.tile-title {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.65);
+    letter-spacing: 1px;
+    text-align: center;
+    width: 100%;
+}
+.tile-metric {
+    text-align: right;
+}
+.tile-metric-value {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: rgba(0,0,0,0.65);
+}
+.tile-body {
+    color: rgba(0,0,0,0.75);
+    font-size: 14px;
+}
+.tile-body .tile-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 8px;
+}
+.tile-body table th {
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    color: rgba(0,0,0,0.45);
+    padding: 10px 12px;
+}
+.tile-body table td {
+    padding: 10px 12px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+.tile-body table tbody tr td:first-child { padding-left: 0; }
+
+/* make small white panels inside the tile for detail lists (like in screenshot) */
+.tile-body .detail-panel {
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06) inset;
+}
+
+/* Additional tweaks to better match colorfulExample.html visuals */
+.infographic-tile {
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(250,250,250,0.98) 100%);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+    border-left: 8px solid rgba(102,126,234,0.18);
+}
+
+.infographic-tile .tile-header { 
+    align-items: flex-start;
+}
+
+.tile-title {
+    color: rgba(255,255,255,0.92);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.95rem;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.tile-metric-value {
+    font-size: 2.2rem;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 4px 12px rgba(0,0,0,0.28);
+}
+
+/* Place the metric as a badge-like panel on the top-right */
+.tile-metric {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+}
+
+.tile-body {
+    margin-top: 10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,1));
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.tile-body .tile-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+}
+.tile-body table th {
+    color: #666;
+    font-size: 0.78rem;
+    padding: 6px 8px;
+}
+.tile-body table td {
+    color: #222;
+    padding: 8px 8px;
+    background: transparent;
+}
+
+/* Make inara icon blend when inside white panels */
+.inara-icon { filter: brightness(0) invert(1); opacity: 0.9; }
+
+/* Accent stripe for category classes on tiles (uses pseudo-element for gradient) */
+.infographic-tile { position: relative; padding-left: 28px; }
+.infographic-tile::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    bottom: 12px;
+    width: 12px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.06);
+}
+.infographic-tile .tile-badge { display: none; }
+
+/* Map category gradients to the tile accent */
+.infographic-tile.grad-travel::before      { background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%); }
+.infographic-tile.grad-combat::before      { background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%); }
+.infographic-tile.grad-exploration::before { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.infographic-tile.grad-exobiology::before  { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.infographic-tile.grad-trade::before       { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.infographic-tile.grad-powerplay::before   { background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%); }
+.infographic-tile.grad-fleetcarriers::before { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
+.infographic-tile.grad-colonisation::before  { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.infographic-tile.grad-onfoot::before        { background: linear-gradient(135deg, #e96443 0%, #904e95 100%); }
+.infographic-tile.grad-mining::before        { background: linear-gradient(135deg, #373b44 0%, #4286f4 100%); }
+.infographic-tile.grad-engineering::before   { background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%); }
+.infographic-tile.grad-crew::before          { background: linear-gradient(135deg, #7f00ff 0%, #e100ff 100%); }
+
+
+
+/* Compatibility styles for renderer-generated tile HTML (.infographic-tile, .tile-grid)
+   The renderer emits elegant-style tile markup; add colorful equivalents so the
+   same markup renders nicely under the colorful theme. */
+.tiles-container {
+    max-width: 1200px;
+    margin: 24px auto 80px;
+    padding: 20px;
+}
+.tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 28px;
+    /* extra bottom margin to keep divider clear of tile shadows */
+    margin-bottom: 120px;
+}
+.infographic-tile {
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(0,0,0,0.03));
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    overflow: hidden;
+    border-left: 6px solid rgba(255,255,255,0.06);
+    padding: 20px 20px 24px 20px;
+}
+.tile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.tile-title {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.tile-metric {
+    text-align: right;
+}
+.tile-metric-value {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+}
+.tile-metric-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.85);
+}
+.tile-body {
+    color: #111;
+    background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.98));
+    padding: 12px;
+    border-radius: 8px;
+}
+.tile-body table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.tile-body table th {
+    text-align: left;
+    padding: 8px 6px;
+    font-weight: 700;
+    color: #333;
+    font-size: 0.75rem;
+}
+.tile-body table td {
+    padding: 8px 6px;
+    color: #222;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.inara-link { margin-right: 6px; }
+
+
+/* ── TILE INNER CONTENT (display:table rows) ── */
+.tile-inner {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    height: 200px;
+}
+
+.tile-title-bar {
+    display: table-row;
+    height: 45px;
+}
+
+.tile-body-bar {
+    display: table-row;
+    height: auto;
+}
+
+.tile-body-cell {
+    display: table-cell;
+    vertical-align: middle;
+    padding-bottom: 14px;
+}
+
+.infographic-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
+    padding-top: 14px;
+    line-height: 1.1;
+    color: #111;
+    text-align: center;
+}
+
+.tile-stat {
+    font-size: 2em;
+    font-weight: bold;
+    letter-spacing: 1px;
+    line-height: 1;
+    margin: 0 0 6px 0;
+    color: #111;
+}
+
+.infographic-detail {
+    font-size: 0.9em;
+    color: rgba(0,0,0,0.75);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ── TABLE INSIDE TILE ── */
+.tile-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82em;
+    margin-top: 6px;
+}
+
+.tile-table th {
+    font-weight: 600;
+    padding: 3px 8px 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.75);
+}
+
+.tile-table th:first-child { text-align: left; }
+.tile-table th:last-child  { text-align: right; padding-right: 0; }
+
+.tile-table td {
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.9);
+}
+
+.tile-table td:first-child { text-align: left; padding-left: 17px; }
+.tile-table td:first-child:has(.inara-link) { padding-left: 0; }
+.tile-table td:last-child  { text-align: right; }
+
+/* ── INARA EXTERNAL LINKS ── */
+.inara-link {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 4px;
+    opacity: 0.85;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.inara-link:hover {
+    opacity: 1;
+}
+
+.inara-icon {
+    width: 13px;
+    height: 13px;
+    vertical-align: middle;
+    display: inline-block;
+    background-image: url("data:image/x-icon;base64,AAABAAMAMDAAAAEAIACoJQAANgAAACAgAAABACAAqBAAAN4lAAAQEAAAAQAgAGgEAACGNgAAKAAAADAAAABgAAAAAQAgAAAAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFyAmAhcgJgIAAAAAERERIxEREYURERHOERER9REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREfURERHOERERhRERESMAAAAAFyAmAhcgJgIAAAAAA8PDwURERGDERER9REREf8QEBD9ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8QEBD9ERER/xEREfURERGDDw8PBQAAAAAXICYCAAAAABcgJgIAAAAAEREREREREcIRERH/EBAQ/RAQEP0QEBD9ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8QEBD9EBAQ/RAQEP0RERH/ERERwhEREREAAAAAFyAmAgAAAAAPDw8FERERwhEREf8RERH5EBAQ/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAQEP0RERH5ERER/xEREcIPDw8FAAAAAAAAAAARERGDERER/xEREfkRERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER+REREf8RERGDAAAAABERESMRERHwERER/xAQEP0RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERES/xEREv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EBAQ/REREf8RERHwERERIxEREYMRERH/EBAQ/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8REhP/ERIT/xEREf8QEA//EBAP/xAQD/8RERH/ERIT/xITFP8REhP/ERES/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAQEP0RERH/ERERgxEREc4RERH/EBAQ/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/ERER/w8NC/8OCwf/DgsH/xAQD/8SFRj/Ehcb/xIVGP8QDw7/DgsH/w0HAv8OCwf/EBAP/xITFP8RERL/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAQEP0RERH/ERERzhEREfARERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8PDQv/EBAP/xYeKf8dMEf/I0Jm/yhPeP8rVoT/MmOW/zVsq/81bKv/M2ah/yhPeP8aLEH/ERMW/w0JBf8PDQv/EhMU/xEREv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER8BAQEP0RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8WHin/HTBH/x0wR/8aJzb/Fh8m/xIXG/8SFRj/EhUY/xYfJv8dMEf/KE94/zh3t/8/jNf/OHe3/yRIcP8WHyb/DQkF/xAQD/8REhP/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EBAQ/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xESE/8WHyb/EhMU/w4LB/8OCwf/Dw0L/xAPDv8QEA//EBAP/w8NC/8OCwf/DQcC/xAPDv8eNk7/OHe3/0KR3v84f8P/K09v/xEREf8PDQv/EhMU/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8QDw7/EBAP/xESE/8RERL/ERES/xEREf8RERH/ERER/xEREv8REhP/EhMU/xEREf8NCQX/ERIT/yRIcP84hMz/O4jS/zl0pv8WHyb/DgsH/xITFP8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8SExT/EBAP/w0HAv8eOFT/OH/D/ziEzP84f8P/Gic2/w4LB/8SExT/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERES/xITFP8NBwL/ITxY/ziEzP84hMz/OH/D/xgjLP8OCwn/EhMU/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8SExT/DQcC/yhPeP8/jNf/O4jS/zh3t/8TFBX/EA8O/xEREv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAQD/8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/ERER/xEREv84d7f/P4zX/0KR3v8zYIj/DQcC/xITFP8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/EBAP/xUbI/8RExb/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EhMU/w0HAv8hPFj/S57q/0KR3v9Lnur/HC47/w4LB/8SExT/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8QEA//EhUY/xgnPf8QDw7/ERES/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/RorJ/0ue6v9VpvD/OXSm/w0JBf8SExT/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xESE/8PDQv/Gic2/xolLv8PDQv/ERES/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xMUFf8NBwL/M2CI/2K1//9VpvD/Vabw/xolLv8PDQv/ERIT/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8PDQv/HjhU/xIXG/8QDw7/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xITFP8NCQX/JT5R/2i9//9gr/X/aL3//zRYc/8KBQH/ExQV/xEREf8RERH/ERER/xEREf8RERH/ERES/xEREf8RERH/ERER/xEREf8RERH/ERER/xAQD/8SFRj/I0Jm/xAPDv8RERL/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAPDv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8PDQv/GCMs/2i49v9ovf//dMn//02Ks/8MBwX/EhMU/xEREf8RERH/ERER/xEREv8QEA//EA8O/xEREf8RERH/ERER/xEREf8RERH/ERES/w8NC/8YIyz/I0Jm/w4LB/8REhP/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EBAP/xUbI/8QEA//ERER/xEREv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8QDw7/Ehcb/2qz4v90yf//dMn//2Ot3f8SExT/EBAP/xEREv8RERH/ERIT/xAPDv8SExT/Fh8m/xEREf8RERH/ERER/xEREf8RERH/ERIT/w4LB/8aLEH/JEhw/w0JBf8SExT/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/EA8O/xYeKf8dMEf/DgsJ/xEREf8RERL/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8QEA//ERMW/2qz4v9+0P//ftD//3PD9P8WHyb/Dw0L/xEREv8SExT/EA8O/xEREv8hPFj/FRsj/xEREf8RERH/ERER/xEREf8RERH/ERIT/w0JBf8eNk7/KE94/w0HAv8SExT/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERES/w4LB/8aJS7/KkVX/w4LCf8QEA//EhMU/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8RERL/EhUY/2+23/+F1P//ftD//37N/f8eKTD/DgsJ/xMUFf8NDAz/EhQU/zZgdf8WHin/DgsH/xEREf8RERH/ERER/xEREf8RERH/ERIT/w0HAv8eOFT/K1aE/w0HAv8SExT/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xITFP8NCQX/JDE7/zthev8NDAz/Dw0L/xMUFf8RERH/ERER/xEREf8RERH/EBAP/xMUFf8cLjv/Fx0g/4DF8f+F1P//hdT//37N/f8eKTD/EA8O/w4LCf8SFRj/UY6W/yQvM/8MBwX/EhQU/xEREf8RERH/ERER/xEREf8RERH/ERIT/w0JBf8eNk7/MmOW/w0HAv8SExT/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8TFBX/CgUB/zRFUf9cian/DRET/wwHBf8TFBX/ERES/xEREf8RERH/EA8O/xMZHv9AWm3/JDE7/47S//+O0v//jtL//4DF8f8aJS7/BgEA/xUbI/9joMP/Kz5K/wgDAf8TFBX/ERER/xEREf8RERH/ERER/xEREf8RERH/ERIT/w4LB/8cLjv/QX6v/w4LB/8REhP/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ExQV/wYBAP9FYnb/grri/x4pMP8GAQD/ERER/xMUFf8SExT/Dw0L/x4pMP9ikK3/R2d9/5rf//+Sz/r/ltf//4K64v8ICQr/Kz5K/4DF8f81TmH/BgEA/xMUFf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERES/xAPDv8TGR7/UZbC/xMZHv8QDw7/ERES/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xMUFf8DAAD/Yoee/6vg//9HZ33/DRET/wYBAP8QEA//DAcF/zRFUf+Sz/r/grri/6DY/v+X0vz/ndz9/3u01/9Ja4X/ouj//1p7kP8DAAD/ExQV/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xITFP8KBQH/VJK5/ypFV/8KBQH/EhMU/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8RERH/Dw8P/4y0z/+58///jrvb/0Babf8bJCX/AwAA/2KHnv+v6f//oNj+/6DY/v+g2P7/oNj+/6DY/v+s6f//hLzV/w0RE/8RERH/ERES/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xIUFP8IAwH/O2F6/1CLqv8IAwH/ExQV/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8TFBX/CAUE/zNASf+z4f//teX+/7fq//+g0u7/dZ24/6DS7v+r4P//qdz//6nc//+p3P//qdz//6nc//+r4P//TEVR/wgFBP8TFBX/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8PDQv/Fh8m/2+23/8aJS7/Dw0L/xESE/8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ExQV/wgFBP9/orf/wO///6/b9/+35P//wO///7Xl/v+z4P//s+H//7Pg//+z4P//q+D//7rr/v98orr/CAUE/xIUFP8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8TFBX/BgEA/1eAmv9ajrL/BgEA/xMUFf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EhQU/wgFBP80RVH/xO7//7jj+/+65P//uOP7/7fk//+65P//t+T//7fk//+35P//tuD7/8Dv//9BVWP/CAUE/xMUFf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/Dw0L/xcdIP+JzPH/Lklc/wYBAP8TFBX/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xESE/8SExT/EhQU/w4LCf8ICQr/o8rk/8Ts//+85f//veb+/73m/v+85f//vOX//7zl//+65P//vuf//6/b9/8TGR7/DAcF/xMUFf8SFBT/EhMU/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ExQV/wgDAf8/Wmn/mNn5/xolLv8KBQH/ExQV/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EBAP/w4LCf8IBQT/CAUE/xMZHv9DXGP/rtTs/8Ts//+/5///v+f//7/n//+/5///v+f//77n//+95v7/wOj//6/b9/9BVWP/Exke/wgFBP8IBQT/DAcF/xAPDv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xIUFP8GAQD/Z4ui/5nS8v8YIyz/CAMB/xMUFf8RERL/ERER/xEREf8RERH/ERER/xEREv8QEA//Exke/ys+Sv9ac4T/iKvE/7jj+//T/v//xOz//7/n//+/5///v+f//7/n//+/5///v+f//7/n//+/5///v+f//8Do///T/v//uuv+/4irxP9beYz/Q1xj/xcdIP8QDw7/ERES/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8RERH/CAkK/3KfvP+d3P3/Kz5K/wMAAP8QDw7/ExQV/xESE/8RERH/ERER/xEREf8RERH/EhMU/xcdIP8kLzP/M0BJ/1lxff+MtM//vOX//7/n//+/5///v+f//7/n//+/5///v+f//7/n//+/5///v+f//73m/v+Iq8T/WXF9/zRFUf8kLzP/GyQl/xMUFf8QEA//ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8REhP/EBAP/wgJCv9ikK3/pe3//1eAmv8SFxv/BgEA/w4LCf8RERL/ExQV/xMUFf8TFBX/EhMU/xAQD/8NDAz/CAkK/wMAAP8ICQr/nsTb/8Tu//+95v7/vuf//77n//++5///vuf//77n//+95v7/xOz//6jU7P8NERP/AwAA/wgFBP8OCwn/DQwM/xAQD/8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERIT/xEREf8IBQT/RWJ2/5rf//+JzPH/TnKJ/x4pMP8OCwn/CgUB/woFAf8KBQH/CgUB/w0HAv8KBQH/DQkF/w8PD/8kLzP/uOP7/8Do//+95v7/veb+/73m/v++5///veb+/73m/v+95v7/veb+/77n//8rOkT/DgsJ/xMUFf8RERL/ERES/xEREf8RERH/ERER/xAQEP0RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREv8SExT/CAMB/xolLv9ajrL/hdT//37N/f9dodr/SHed/zthev80VGf/Lklc/y5JXP80WHP/VJK5/x84Sv9ac4T/xvX//7bg+/+24Pv/uuT//7rk//+65P//uuT//7rk//+24Pv/tuD7/8b1//9lhJf/AwAA/xMUFf8RERH/ERER/xEREf8RERH/EBAQ/REREfARERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ExQV/w4LCf8IBQT/Gic2/z1pj/9dodr/YrX//2zB//9swf//bMH//2zB//90yf//XaHa/xolLv+jyuT/t+T//7rk///A7///t+T//7Ph//+z4P//s+H//7fk///A7///uuT//7Pg//+n1+//GyQl/w0MDP8REhP/ERER/xEREf8RERH/ERER8BEREc4RERH/EBAQ/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xITFP8SExT/DgsH/woFAf8PDw//GCMs/x84Sv8nSGT/K09v/ytPb/8rT2//Exke/1t5jP/A7///teX+/4676/9ac4T/JDE7/3yiuv/G9f//Z4ui/yQxO/9ae5D/msXn/7Xl/v/A7///aY2Z/wYBAP8TFBX/ERER/xAQEP0RERH/ERERzhEREYMRERH/EBAQ/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERIT/xMUFf8RERH/Dw0L/w0JBf8NBwL/DQcC/w4LB/8DAAD/NEVR/7rr/v+Ou9v/QVVj/xESE/8IBQT/AwAA/0FVY/+15f7/KzpE/wMAAP8IBQT/EhUY/0Fidv+axef/t+r//ys6RP8IBQT/ExQV/xAQEP0RERH/ERERgxERESMRERHwERER/xAQEP0RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERIT/xITFP8SExT/EhUY/w4LCf8aJS7/mdLy/2eLov8RExb/CAMB/xEREf8SFRj/Dw0L/x4pMP+MtM//EhUY/xEREf8TFBX/EBAP/wYBAP8VGyP/dZ24/5bI6f8SFxv/Dw0L/xITFP8RERHwERERIwAAAAARERGDERER/xEREfkRERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8SExT/Dw0L/xMUFf9yn7z/QFpt/wMAAP8QEA//ExQV/xEREv8RERH/EA8O/xcdIP9XgJr/Dw8P/xEREf8RERH/ERES/xMUFf8PDQv/AwAA/05yif9yn7z/EBAQ/RAPDv8RERGDAAAAAAAAAAAPDw8FERERwhEREf8RERH5EBAQ/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xESE/8QDw7/ERER/05yif8rOkT/AwAA/xMUFf8RERL/ERER/xEREf8RERH/EBAP/xIVGP81TmH/Dw8P/xEREv8RERH/ERER/xEREf8SExT/EhQU/wMAAP88VGX5TnKJ/wkGBboXICYCAAAAABcgJgIAAAAAEREREREREcIRERH/EBAQ/RAQEP0QEBD9ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERES/xAPDv8QEA//NFRn/x4pMP8KBQH/ExQV/xEREf8RERH/ERER/xEREf8RERH/ERER/xESE/8WHyb/EBAP/xEREf8RERH/ERER/xEREf8QEBD9EBAQ/RIVGP8GAQD/MUpZ0Gm76HIXICYCAAAAAAAAAAAXICYCAAAAAA8PDwURERGDERER9REREf8QEBD9ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EBAP/xETFv8lPlH/Fh8m/w0JBf8TFBX/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8QDw7/ERER/xEREf8RERH/ERER/xEREf8QEBD9ERER/xEREfURERGDAAAAAFez6zJGlcZlDw8PBQAAAAAAAAAAFyAmAhcgJgIAAAAAERERIxEREYURERHOERER9REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/Dw0L/xwuO/8WHyb/DgsH/xITFP8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERL/ERER/xEREf8RERH/ERER/xEREfURERHOERERhRERESMAAAAAFyAmAgAAAABXs+syO4q/QPwAAAAAPwAA8AAAAAAPAADgAAAAAAcAAMAAAAAAAwAAgAAAAAABAACAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAQAAgAAAAAABAADAAAAAAAMAAOAAAAAABwAA8AAAAAAPAAD8AAAAAD8AACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASEhNSERERwxEREfQRERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREfQRERHDEhITUgAAAAAAAAAAAAAAAAAAAAANEBkGERERohEREf8RERH+ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf4RERH/ERERog0QGQYAAAAAAAAAABAQD6ARERH/EBER/RAREf0RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EBER/RAREf0RERH/EBAPoAAAAAAREhJVERER/xAREf0RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERIT/xESE/8REhP/ERIT/xIUFP8REhP/ERIS/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAREf0RERH/ERISVREREb4RERH/EBER/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/w8NDP8PDAr/DwwK/w8MCv8OCwf/DQgD/w4JBP8QDw7/EhQU/xESE/8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EBER/REREf8RERG+ERER8BEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAPEP8REhP/Fh4n/xwuRP8gOVf/JEZo/yhPdv8oT3b/IDlX/xQaIP8NCAP/Dw0M/xIUFP8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREfARERH+ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8QDxD/ExUW/xglNP8YJTT/Fh4n/xQaIP8UGiD/FyIu/yQ8VP8wX5P/OXq+/ytajP8WHif/DgkE/xESE/8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/hEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8REhP/ERER/w8MCv8PDQz/EA8O/xAPDv8PDAr/DgkE/w0IA/8YJTT/N3Gp/zyGz/8lRV//DgsH/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERIS/xESEv8RERH/ERER/xESEv8REhP/EhQU/w4LB/8PDQz/K1qM/0CS4P8oT3b/DgsH/xESE/8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EhQU/xAPDv8QDw7/MGuk/0CS4P8kRmj/DgkE/xIUFP8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xESE/8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EhQU/w4LB/8YJTT/QY7Y/0CS4P8dKjT/DgsH/xESE/8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAPDv8TFRb/Fh4n/xAPDv8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EhQU/w0IA/83arr/WbD//zdxqf8OCwf/ERIT/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8REhL/Dw0M/xciLv8WHif/Dw0M/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8SFBT/DQgD/yQ8VP9ZsP//XKrx/x0qNP8NCgn/ERIT/xEREf8RERH/ERER/xEREf8RERH/ERER/xESEv8PDQz/HC5E/xMVFv8QDw7/ERER/xEREf8RERH/ERER/xEREf8RERH/EA8O/xEREf8RERH/ERER/xEREf8RERH/ERER/xESEv8PDQz/GyMp/2W08/9wyP//NVpz/wkEAf8SFBT/ERIS/xEREf8QDw7/ERER/xEREf8RERH/ERER/xESE/8gOVf/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xAPEP8WHif/EA8Q/xAPEP8REhL/ERER/xEREf8RERH/ERIS/xAPDv8UGBz/bbbj/4Tc//9NgqP/CAQB/xMVFv8QDw7/ERIT/xciLv8RERH/ERER/xEREf8QDw7/ExUW/yRGaP8QDw7/ERER/xEREf8RERH/ERER/xEREf8RERH/EA8O/xQaIP8kMz7/Dw0M/xAPDv8SFBT/ERER/xEREf8REhL/EA8O/xQYHP9ttuP/hNz//2Cavf8NCgn/EA8O/xIUFP8nPk//FBgc/xEREf8RERH/ERER/xAPDv8UGBz/KE92/xAPDv8RERH/ERER/xEREf8RERH/ERER/xEREf8REhL/DwwK/xYeJ/81VGb/EA8Q/w0KCf8TFRb/ERIS/xAPDv8WHif/Iy83/3m+6/+Q3///YJq9/wUAAP8UGBz/QW14/xgeIf8NCgn/ERER/xEREf8RERH/ERER/xESE/85YYH/ExUW/xAPEP8RERH/ERER/xEREf8RERH/ERER/xEREf8SFBT/CwgG/yMvN/9aiar/GB4h/wUAAP8TFRb/DQoJ/zBCT/9Lb4j/lM75/53e//9YgZ//FBog/1+Rs/8dKjT/CwgG/xIUFP8RERH/ERER/xEREf8SFBT/CwgG/zxrhv8fKS//DwwK/xESEv8RERH/ERER/xEREf8RERH/ERER/xEREf8TFRb/BQAA/z9UY/+Wy/D/P1Rj/xAPEP8BAAD/VnuV/5/W/f+Uzvn/nd7//3eqzP+Kxef/OU1c/wUAAP8TFRb/ERER/xEREf8RERH/ERER/xIUFP8JBAF/NVRm/zVYa/8JBAF/EhQU/xEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8TFRb/AQAA/2uJnP/C8///j7jU/1p4iv+bxN//seP//6fa/v+f1v3/tO7//2mQof8FAAD/ExUW/xEREf8RERH/ERER/xEREf8RERH/ERIS/w8NDP8YHiH/Womq/xAPEP8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xESE/8PDQz/Hycr/67a9f/B7P//wvP//7vl/v+z4f3/s+H9/7Hj//+q2/b/Hykv/w8NDP8SFBT/ERER/xEREf8RERH/ERER/xEREf8RERH/EhQU/wUAAP9Lb4j/S2+I/wEAAP8TFRb/ERER/xEREf8RERH/ERER/xEREf8RERH/Dw0M/w0KCf8BAAD/d5et/8r0//+54vr/u+X+/7vl/v+54vr/wvP//3+ivP8BAAD/CwgG/w0KCf8QDxD/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/w8NDP90p8f/OU1c/wEAAP8TFRb/ERIT/xEREf8RERH/ERER/xESE/8bIyn/MT9G/1Ztef+kyN//wez//7/n//+/5///v+f//7/n///B7P//pMjf/1Ztef8xP0b/Hycr/xIUFP8QDxD/ERER/xEREf8RERH/ERER/xEREf8REhP/DQoJ/xsjKf+Audz/Qlxt/wEAAP8NCgn/EhQU/xIUFP8REhP/ExUW/yQzPv9QZnX/jrDE/7vl/v+/5///v+f//7/n//+/5///v+f//8Dp//+54vr/jrDE/1Bmdf8xP0b/ExUW/xAPEP8RERH/ERER/xEREf8RERH/ERER/xEREf8SFBT/CwgG/xsjKf+Audz/Z5e1/x8pL/8JBAF/CQQB/wkEAf8NCAP/CQQB/wEAAP8BAAD/dpKk/8r0//+54vr/v+f//7/n//+54vr/yvT//3uddP8BAAD/CQQB/wsIBv8QDxD/ERER/xEREf4RERH/ERER/xEREf8RERH/ERER/xEREf8SFBT/DQoJ/w0NDv9We5X/eb7r/1uVxP85YYH/Lkpe/yc+T/8nPk//OWGB/yQzPv+bxN//wez//8Hs//+75f7/v+f//8Hs///A6f//pc7n/xgeIf8RERH/EhQU/xEREf8RERH+ERER8BEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8REhP/EA8Q/wUAAP8WHif/OWGB/1CLwP9Yn+D/WJ/g/1yq8f9CfLH/Vm15/8j5//+z4f3/j7jU/67a9f+n0/D/j7jU/7Ph/f/I+f//Vm15/wUAAP8TFRb/ERER/xEREfARERG+ERER/xAREf0RERH/ERER/xEREf8RERH/ERER/xEREf8REhL/EhQU/w8NDP8JBAF/CQQB/w0NDv8UGBz/DQ0O/x8nK/+n0/D/d5et/y45Q/8BAAD/e520/2uJnP8BAAD/MT9G/3+ivP+q2/b/Hycr/w0KCf8SFBT/ERERvhESElURERH/EBER/REREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERIS/xIUFP8SFBT/ERIS/w0KCf8SFBT/cpq3/z9UY/8BAAD/DwwK/wkEAf9CXG3/OU1c/wkEAf8NCgn/BQAA/0lfcf9ymrf/EBER/RAPDv8REhJVAAAAABAQD6ARERH/EBER/RAREf0RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/ERER/xESEv8QDw7/ERIT/0Jcbf8jLzf/BQAA/xMVFv8SFBT/DQoJ/yQzPv8dKjT/DwwK/xIUFP8SFBT/BQAA/yw6RPpCXG3/EBAPoAAAAAAAAAAADRAZBhEREaIRERH/ERER/hEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8RERH/EA8Q/xESE/8nO0j/GB4h/wsIBv8TFRb/ERER/xEREf8QDxD/ExUW/xMVFv8QDxD/ERER/xEREf8TFRb/CwgG/yMyO6tqxPhGDRAZBgAAAAAAAAAAAAAAABISE1IRERHDERER9BEREf8RERH/ERER/xEREf8RERH/ERER/xEREf8QDw7/HSo0/xQYHP8PDAr/EhQU/xEREf8RERH/ERER/xEREf8QDxD/EA8Q/xEREf8RERH/ERER9BEREcMSEhNSAAAAAE2g1CA+jcI78AAAD8AAAAOAAAABgAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAGAAAABwAAAA/AAAA8oAAAAEAAAACAAAAABACAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAERERAREREYIPDw71ERER/xEREf4RERH/ERER/xESEv8REhL/ERIS/xEREf8RERH+ERER/w8PDvURERGCERERAREREYIRERH/ERER/hEREf8RERH/ERER/xAPD/8PDQz/DgsJ/w4LCf8REhL/ERIS/xEREf8RERH+ERER/xEREYIQDw/tERER/xEREf4RERH/ERER/xESEv8VGyD/GCUz/xwwQ/8YJTP/DgsJ/w8NDP8REhL/ERER/hEREf8QDw/tERER/hEREf8RERH/ERER/xEREf8UFxr/FRsg/xUbIP8YJTP/JEFh/ytXgv8XHyX/DgsJ/xESEv8RERH/ERER/hEREf4RERH/ERER/xEREf8RERH/ERER/xAPD/8QDw//Dw0M/wsFAf8cMEP/NXa0/xcfJf8PDQz/ERIS/xEREf4RERH/ERER/xESEv8TFRb/ERER/xEREf8RERH/ERER/xESEv8TFRb/CwUB/ytXgv88erP/DAgF/xESEv8RERH/ERER/xAPD/8VGyD/FBca/xAPD/8RERH/ERER/xAPD/8RERH/ERIS/w4LCf8dJi3/YLL1/xwsOP8OCwn/ERER/xESEv8PDQz/GCUz/xQXGv8QDw//ERER/xEREf8XHyX/EA8P/xAPD/8REhL/ExUW/3fI+P8wS2D/CwUB/x0mLf8REhL/Dw0M/xwwQ/8VGyD/EA8P/xEREf8RERH/ExUW/zJEUP8UFxr/AgAA/zJEUP+N0///Q2F0/yY5Rf8UFxr/ERIS/wwIBf8mOUX/HCw4/w4LCf8REhL/ERIS/w4LCf8dJi3/eZ+5/0VZZf+EtNL/qeL//4S00v8XHyX/DgsJ/xEREf8QDw//FRsg/ztXbP8MCAX/ERER/xESEv8UFxr/AgAA/1xyff/R////uOH4/8Lu//9ccn3/AgAA/xMVFv8RERH+ERIS/wwIBf8yRFD/Q2F0/w4LCf8LBQH/DAgF/yQqL/6Bn7L/v+j8/7jh+P/C7v//gZ+y/yk2Pf8RERH+ERER/hEREf8REhL/DAgF/zJEUP9OdI7/MEtg/yY5Rf8cLDj/X3eD/9H///+/6Pz/0f///1xyff8CAAD/FBca/xAPD+0RERH/ERER/hESEv8LBQH/FRsg/zBLYP8yVnf/OV5//4asx/9pg5b/gZ+y/2mDlv+GrMf/FBca/xAPD+0RERGCERER/xEREf4RERH/ERIS/w8NDP8LBQH/CwUB/zM/R/8dJi3/AgAA/yk2Pf8CAAD/JCov/jJEUP8PEBCFERERAREREYIPDw71ERER/xEREf4REhL/ERIS/x0mLf8UFxr/DgsJ/xMVFv8RERH+ExUW/w8PDvUXHiOGduj/HIABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAAA=");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* ── BAR CHART AND SUMMARY INSIDE COLORFUL TILE ── */
+.tile-chart {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.chart-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.chart-label {
+    font-size: 0.78em;
+    color: rgba(255,255,255,0.85);
+    width: 110px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.chart-bar-container {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.chart-bar-fill {
+    height: 100%;
+    background: rgba(255,255,255,0.55);
+    border-radius: 3px;
+}
+
+.chart-value {
+    font-size: 0.75em;
+    color: #fff;
+    font-weight: 700;
+    text-align: right;
+    min-width: 38px;
+    flex-shrink: 0;
+}
+
+.tile-summary {
+    margin-top: 8px;
+}
+
+.summary-text {
+    font-size: 0.9em;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ── CATEGORY GRADIENTS ── */
+.grad-travel        { background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%); }
+.grad-combat        { background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%); }
+.grad-exploration   { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.grad-exobiology    { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.grad-trade         { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.grad-powerplay     { background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%); }
+.grad-fleetcarriers { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
+.grad-colonisation  { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.grad-onfoot        { background: linear-gradient(135deg, #e96443 0%, #904e95 100%); }
+.grad-mining        { background: linear-gradient(135deg, #373b44 0%, #4286f4 100%); }
+.grad-engineering   { background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%); }
+.grad-crew          { background: linear-gradient(135deg, #7f00ff 0%, #e100ff 100%); }
+
+/* Aliases to match renderer category slugs (auto-generated) */
+.grad-crimeandsecurity           { background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%); }
+.grad-fleetcarrieroperations     { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
+.grad-materialgathering          { background: linear-gradient(135deg, #373b44 0%, #4286f4 100%); }
+.grad-missions                   { background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%); }
+.grad-passengertransport         { background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%); }
+.grad-salvageandrecovery         { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.grad-settlementactivities       { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.grad-shipmanagementandoutfitting{ background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%); }
+.grad-thargoidax                 { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+/* ── EMPTY STATE: GALNET ARTICLE ── */
+.galnet-wrap {
+    width: 700px;
+    margin: 60px auto 80px;
+}
+
+.galnet-article {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 3px solid #f093fb;
+    padding: 40px 50px;
+    text-align: center;
+    color: #fff;
+}
+
+.galnet-source {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.72em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.9);
+    margin: 0 0 16px 0;
+    font-weight: 600;
+}
+
+.galnet-headline {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 2.8em;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #fff;
+    margin: 0 0 8px 0;
+    line-height: 1.1;
+}
+
+.galnet-subhead {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 300;
+    font-size: 1.0em;
+    color: rgba(255,255,255,0.9);
+    margin: 0 0 28px 0;
+}
+
+.galnet-rule {
+    height: 2px;
+    background: rgba(255,255,255,0.4);
+    margin: 0 0 24px 0;
+}
+
+.galnet-body {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.95em;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.7;
+    text-align: left;
+    margin: 0 0 18px 0;
+}
+
+.galnet-footer {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.72em;
+    font-style: italic;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.04em;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 16px;
+    margin-top: 8px;
+    text-align: center;
+}
+
+/* ── SYSTEM DIVIDER (by-system report) ── */
+.sys-div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    /* keep a clear separation from the overlapping tiles above */
+    padding: 24px 0 12px;
+    /* compensate for .tl-row negative overlap (-85px) so divider stays visibly separated */
+    margin-top: 140px;
+    clear: both;
+    /* slightly stronger divider for clearer visual separation */
+    border-top: 2px solid rgba(0,0,0,0.16);
+    font-family: 'Orbitron', sans-serif;
+}
+.sys-div-name {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #2b2b2b;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.sys-div-date {
+    font-size: 0.75em;
+    color: rgba(0,0,0,0.6);
+    letter-spacing: 0.05em;
+    cursor: default;
+}
+.sys-empty {
+    color: rgba(0,0,0,0.5);
+    font-family: 'Segoe UI', sans-serif;
+    font-style: italic;
+    font-size: 0.9em;
+    padding: 12px 4px 24px;
+    clear: both;
+}
+
+/* ── PRINT / PDF PAGE BREAKS ── */
+@media print {
+    .tl-row { page-break-inside: avoid; }
+}
+
+    </style>
+</head>
+<body>
+
+    <!-- Masthead -->
+    <div class="masthead">
+        <div class="mh-thick-rule"></div>
+        <div class="mh-thin-rule"></div>
+        <div class="mh-title-area">
+            <div class="mh-name">CMDR&#8217;s Chronicle</div>
+            <div class="mh-tagline">From humble Sidewinder to legend.</div>
+        </div>
+        <div class="mh-thin-rule"></div>
+        <div class="mh-thick-rule"></div>
+        <div class="mh-date-strip">
+            CMDR&#8217;s Log
+            &#160;&#9830;&#160;
+            <span>3312-03-23</span>
+            &#160;&#8212;&#160;
+            <span>3312-03-29</span>
+            &#160;&#9830;&#160;
+            <span>CMDR Unknown Commander Edition</span>
+        </div>
+        <div class="mh-thick-rule"></div>
+    </div>
+
+    <!-- GalNet empty-state article -->
+    <div class="galnet-wrap">
+        <div class="galnet-article">
+            <div class="galnet-source">Pilots Federation Archive</div>
+            <div class="galnet-headline">A Day of Identity and Visibility</div>
+            <div class="galnet-subhead">A cultural observance passed without any detectable movement.</div>
+            <div class="galnet-rule"></div>
+            <p class="galnet-body">Pilots Federation analysts reviewed long‑range sensor data and station logs for signs of celebratory travel, community gatherings, or even idle comms chatter referencing the day’s theme. None were found. The Commander’s vessel remained entirely absent from all known traffic lanes, and no transmissions bearing their signature were detected.<br /><br />Some analysts speculated that the Commander might be observing the occasion privately, perhaps reflecting on the galaxy’s diverse communities. Others suggested that the ship’s transponder might have been intentionally muted to avoid themed broadcasts. One correspondent noted that the Commander’s operational profile was “as quiet as a beacon in standby mode,” a phrase that has become increasingly popular among the analysis team.<br /><br />No verifiable activity was recorded.</p>
+            <br/>
+            <p class="galnet-body galnet-closing">The trail ends in Plaa Eurk IS-Y c28-7 on 3312-03-08; nothing further has been recorded.</p>
+            <div class="galnet-footer">
+                This edition of CMDR&#8217;s Chronicle has been certified empty by the Pilots Federation
+                Bureau of Not Very Much Happening.
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

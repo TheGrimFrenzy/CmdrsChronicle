@@ -129,7 +129,12 @@ namespace CmdrsChronicle.Cli
 					var swPhase = Stopwatch.StartNew(); // measure from end of filtering until report written
 
 					// T303: Insert filtered events into in-memory SQLite DB
+					// Prefer schema in app base, then in app base Schema subfolder, then repo root fallback
 					var schemaPath = Path.Combine(AppContext.BaseDirectory, "cmdrschronicle_schema.sql");
+					if (!File.Exists(schemaPath))
+					{
+						schemaPath = Path.Combine(AppContext.BaseDirectory, "Schema", "cmdrschronicle_schema.sql");
+					}
 					if (!File.Exists(schemaPath))
 					{
 						// Try repo root fallback

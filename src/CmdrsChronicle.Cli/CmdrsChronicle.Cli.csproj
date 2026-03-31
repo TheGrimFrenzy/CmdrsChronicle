@@ -49,9 +49,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>templates\colorful-report.html</Link>
     </None>
-    <None Include="..\..\templates\colorfulExample.html">
+    <None Include="..\..\templates\examples\colorfulExample.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>templates\colorfulExample.html</Link>
+      <Link>templates\examples\colorfulExample.html</Link>
     </None>
     <None Include="..\..\templates\galnet-nothing-to-report.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -69,6 +69,11 @@
     <None Include="..\..\infographics\**\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>infographics\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+    <!-- Deploy canonical SQLite schema from Core project -->
+    <None Include="..\CmdrsChronicle.Core\Schema\cmdrschronicle_schema.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Schema\cmdrschronicle_schema.sql</Link>
     </None>
   </ItemGroup>
 
