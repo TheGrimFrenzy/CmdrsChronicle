@@ -1,0 +1,16 @@
+{
+  "category": "Exploration",
+  "title": "Planet Classes Mapped",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS count FROM Scan WHERE PlanetClass IS NOT NULL AND PlanetClass != '' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT PlanetClass AS label, COUNT(*) AS value FROM Scan WHERE PlanetClass IS NOT NULL AND PlanetClass != '' AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY PlanetClass ORDER BY value DESC",
+  "details": {
+    "text": "{count} planetary bod(y/ies) scanned during the report period.",
+    "help": "Filters Scan events to those with a PlanetClass to exclude star scans. Top 5 planet types shown in bar chart."
+  },
+  "tagLines": [
+    "Planetary survey data archived. The cartographic commission notes adequate classification diversity.",
+    "Rocky, icy, molten, or (occasionally) alive — the universe has a lot of real estate.",
+    "Each class is a different world. Each world, a different story waiting in the silence."
+  ]
+}

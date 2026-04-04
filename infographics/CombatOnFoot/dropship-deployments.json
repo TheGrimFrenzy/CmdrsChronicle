@@ -1,0 +1,16 @@
+{
+  "category": "CombatOnFoot",
+  "title": "Dropship Deployments",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS count FROM DropshipDeploy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(NearestDestination_Localised, NearestDestination, 'Unknown') AS label, COUNT(*) AS value FROM DropshipDeploy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{count} dropship insertion(s) executed during the report period. Each deployment marks a hot-drop into a live settlement — you left the ship behind and went in on foot.",
+    "help": "DropshipDeploy fires when the player is dropped off by an Apex or NPC dropship at a settlement. NearestDestination identifies the site."
+  },
+  "tagLines": [
+    "Dropship deployment logs compiled. Tactical insertion records forwarded to the relevant operational command.",
+    "You left the ship. You went in. That's either brave or stupid — probably both.",
+    "Every dropship insertion is a one-way ticket until the extraction arrives. It always arrives. Usually."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "category": "CodexAndDiscoveries",
+  "title": "Systems Fully Surveyed",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total FROM FSSAllBodiesFound WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} system(s) fully surveyed with the FSS during the report period. The chime when the last body registers in a fully scanned system is one of the game's most satisfying sounds — this count shows how many star systems you've documented completely rather than merely passing through.",
+    "help": "FSSAllBodiesFound fires when the FSS has found every body in a system. total drives the title as the complete-survey count."
+  },
+  "tagLines": [
+    "Full system FSS survey completion log compiled. Thoroughly documented systems noted in the cartography record.",
+    "The FSS chime when everything is found is its own reward. You heard it this many times.",
+    "Most commanders honk and move on. You stayed until the system had given up everything it knew."
+  ]
+}

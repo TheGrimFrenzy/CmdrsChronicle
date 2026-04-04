@@ -1,0 +1,16 @@
+{
+  "category": "CrimeAndSecurity",
+  "title": "Impound Incidents",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total FROM GetImpounded WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(SUM(Cost), 0) AS recovered FROM ClearImpound WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} ship impound incident(s) recorded during the report period. Getting impounded is expensive and operationally humiliating — it means a station's authority had enough of your criminal record and seized your vessel. Even one impound event is a memorable session story, and a high count reveals a pattern of persistent station-level antagonism.",
+    "help": "GetImpounded fires on impound; ClearImpound when recovered. total drives the title as the impound incident count."
+  },
+  "tagLines": [
+    "Ship impound incidents logged. Station authority intervention events noted in the security record.",
+    "They took your ship. You had to buy it back. The lesson was expensive.",
+    "Impound is what happens when fines and bounties stop being a deterrent. The stations noticed."
+  ]
+}

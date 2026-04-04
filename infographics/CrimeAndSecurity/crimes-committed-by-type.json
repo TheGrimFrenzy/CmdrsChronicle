@@ -1,0 +1,16 @@
+{
+  "category": "CrimeAndSecurity",
+  "title": "Crimes Committed by Type",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM CommitCrime WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT CrimeType AS label, COUNT(*) AS value FROM CommitCrime WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY CrimeType ORDER BY value DESC",
+  "details": {
+    "text": "{total} crime(s) committed during the report period. This is your official rap sheet broken down by crime category — murder vs. assault vs. cargo theft vs. trespass paint distinct pictures of whether you're a pirate, a careless pilot, or an ambitious criminal enterprise operating at scale.",
+    "help": "CommitCrime CrimeType values include murder, assault, disobeyPolice, illegalCargo, and others. total drives the title as the total criminal incident count."
+  },
+  "tagLines": [
+    "Criminal activity log compiled. Incident breakdown by crime category noted in the security record.",
+    "The Pilots Federation notes every transgression. This is yours. Own it.",
+    "Some crimes are operational decisions. Others are accidents with consequences. The type column clarifies which."
+  ]
+}

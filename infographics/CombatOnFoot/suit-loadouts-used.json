@@ -1,0 +1,16 @@
+{
+  "category": "CombatOnFoot",
+  "title": "Suit Loadouts Used",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS count FROM SwitchSuitLoadout WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT SuitName AS label, COUNT(*) AS value FROM SwitchSuitLoadout WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY SuitName ORDER BY value DESC",
+  "details": {
+    "text": "{count} suit loadout switch(es) recorded during the report period. Your most-used suit is the clearest indicator of your Odyssey identity — Dominator means soldier, Maverick means operative, Artemis means scientist.",
+    "help": "SwitchSuitLoadout fires each time the player changes to a different suit loadout slot. SuitName contains the suit type."
+  },
+  "tagLines": [
+    "Suit deployment frequency logged. Tactical preferences noted by the Pilots Federation Operational Advisory.",
+    "Dominator, Maverick, or Artemis — the suit you reach for most is the operative you really are.",
+    "Armour is a second skin. The one you wear most often is the truest version of yourself."
+  ]
+}

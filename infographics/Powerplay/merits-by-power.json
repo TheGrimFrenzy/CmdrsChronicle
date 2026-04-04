@@ -1,0 +1,16 @@
+{
+  "category": "Powerplay",
+  "title": "Merits by Power",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Power AS label, SUM(Count) AS value FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Power UNION ALL SELECT Power AS label, SUM(Count) AS value FROM PowerplayDeliver WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Power ORDER BY value DESC",
+  "details": {
+    "text": "{total} merit collection event(s) logged during the report period. For commanders who have served multiple Powers, this chart reveals the true distribution of political work — loyalty is easy to claim, but the merit data shows where the effort actually went.",
+    "help": "Combines PowerplayCollect and PowerplayDeliver grouped by Power to show which Power received the most operational support. total is a secondary count for context."
+  },
+  "tagLines": [
+    "Powerplay merit distribution by faction compiled. Political contribution audit complete.",
+    "You served the Power. The merit data shows exactly how much, and for whom, if there was ever a question.",
+    "Some commanders hedge their political bets. This chart shows whether you did the same."
+  ]
+}

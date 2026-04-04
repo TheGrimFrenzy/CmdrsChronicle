@@ -1,0 +1,16 @@
+{
+  "category": "Powerplay",
+  "title": "Allegiance Timeline",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS joins FROM PowerplayJoin WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COUNT(*) AS defections FROM PowerplayDefect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{joins} Power pledge(s) made during the report period. Switching Powers is a high-drama event in Powerplay circles — a defection entry in your log is the equivalent of a political scandal, and the pattern of joins and leaves reveals how stable or mercurial your loyalties have been.",
+    "help": "PowerplayJoin fires when joining a Power; PowerplayDefect when switching while pledged. joins drives the title as the active loyalty action count."
+  },
+  "tagLines": [
+    "Powerplay allegiance change events compiled. Political loyalty record updated in the Pilots Federation database.",
+    "Every defection is a story. Something changed — the Power, the galaxy, or you. The timestamp marks the moment.",
+    "Some commanders pledge once and never look back. This record shows which type you are."
+  ]
+}

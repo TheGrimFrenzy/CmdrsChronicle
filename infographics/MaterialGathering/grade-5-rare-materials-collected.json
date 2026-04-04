@@ -1,0 +1,16 @@
+{
+  "category": "MaterialGathering",
+  "title": "Grade 5 Rare Materials Collected",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM MaterialCollected WHERE Grade = 5 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, SUM(Count) AS value FROM MaterialCollected WHERE Grade = 5 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC",
+  "details": {
+    "text": "{total} Grade 5 material unit(s) collected during the report period. G5 materials are the bottleneck of every serious engineer build — seeing how much of each rare material you've accumulated validates the grind and shows whether your stockpile can sustain continued high-grade crafting.",
+    "help": "Grade 5 is the maximum rarity tier. MaterialCollected Grade = 5 filters to only the highest tier. total drives the title as the premium material haul."
+  },
+  "tagLines": [
+    "Grade 5 material acquisition log compiled. Rare material stockpile additions noted in the engineering record.",
+    "Grade 5 materials define the ceiling of what your engineer builds can be. You're stocking that ceiling.",
+    "Every G5 has a specific source. Finding enough of them is half the engineering journey."
+  ]
+}

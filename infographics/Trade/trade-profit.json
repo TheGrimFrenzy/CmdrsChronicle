@@ -1,0 +1,15 @@
+{
+  "category": "Trade",
+  "title": "Trade Profit",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(TotalSale), 0) AS total, COALESCE((SELECT SUM(TotalCost) FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS spent, COUNT(*) AS sales FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{sales} market sale(s) generating {total} Cr in revenue during the report period, with {spent} Cr spent buying goods. Net profit represents your actual earnings after the cost of cargo — the trader's true scorecard.",
+    "help": "total (sale revenue) drives the title. spent comes from a subquery against MarketBuy. Net = total - spent. Both tables needed for profit calculation."
+  },
+  "tagLines": [
+    "Trade ledger reconciled. Revenue and cost of goods are logged. The margin is yours to interpret.",
+    "Buy low, sell high. Simple in theory. The market has opinions about when you try it.",
+    "Every credit of profit is a route that worked, a price that held, and a cargo hold that wasn't wasted."
+  ]
+}

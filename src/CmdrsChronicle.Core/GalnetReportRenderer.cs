@@ -77,8 +77,6 @@ namespace CmdrsChronicle.Core
             {
                 var qualifying = section.Results
                     .Where(r => r.MeetsThreshold)
-                    .OrderBy(r => r.Definition.Category)
-                    .ThenBy(r => r.Definition.Title)
                     .ToList();
 
                 if (section.SystemName != null)
@@ -267,10 +265,10 @@ $@"      <article class=""panel"">
 
         private static string RenderCaption(InfographicDefinition def)
         {
-            if (def.Captions == null || def.Captions.Length == 0)
+            if (def.TagLines == null || def.TagLines.Length == 0)
                 return string.Empty;
 
-            var caption = def.Captions[_rng.Next(def.Captions.Length)];
+            var caption = def.TagLines[_rng.Next(def.TagLines.Length)];
             return $"\n          <div class=\"panel-caption\">{TileRenderer.HtmlEncode(caption)}</div>";
         }
     }

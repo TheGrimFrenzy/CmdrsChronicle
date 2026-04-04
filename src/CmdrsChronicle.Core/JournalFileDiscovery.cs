@@ -64,7 +64,6 @@ namespace CmdrsChronicle.Core
             var parsedEvents = new System.Collections.Concurrent.ConcurrentBag<JsonElement>();
             var errorLog = new System.Collections.Concurrent.ConcurrentBag<string>();
             var files = DiscoverJournalFiles(directoryPath, startDate, endDate);
-            Console.WriteLine($"Parsing {files.Count} journal file(s) (date pre-filter applied: {startDate.HasValue || endDate.HasValue}).");
             System.Threading.Tasks.Parallel.ForEach(
                 files,
                 new System.Threading.Tasks.ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },

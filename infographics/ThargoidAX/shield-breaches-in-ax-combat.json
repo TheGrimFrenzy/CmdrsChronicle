@@ -1,0 +1,15 @@
+{
+  "category": "ThargoidAX",
+  "title": "Shield Breaches in AX Combat",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total FROM ShieldState WHERE ShieldsUp = 0 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} shield failure event(s) recorded during the report period. Thargoids punch through human shields faster than almost any other adversary in the galaxy — a high breach count alongside few deaths shows genuine AX resilience; alongside many deaths, it honestly reflects the learning curve every AX pilot goes through.",
+    "help": "ShieldState ShieldsUp = 0 fires when shields collapse. total drives the title as the total shield breach count."
+  },
+  "tagLines": [
+    "Shield failure events compiled. Shield-down incidents noted in the anti-xeno combat record.",
+    "No shields in Thargoid space means cauterised hull. You lost your shields. You survived. Usually.",
+    "The shield down alarm in a Thargoid fight sounds different than it does anywhere else. You know it well."
+  ]
+}

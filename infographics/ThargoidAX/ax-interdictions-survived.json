@@ -1,0 +1,16 @@
+{
+  "category": "ThargoidAX",
+  "title": "AX Interdictions Survived",
+  "chartType": "summary-tile",
+  "query": "SELECT (SELECT COUNT(*) FROM Interdicted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS total, (SELECT COUNT(*) FROM EscapeInterdiction WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS escaped",
+  "detailQuery": "",
+  "details": {
+    "text": "{total} interdiction(s) faced with {escaped} successful escape(s) during the report period. Being pulled from hyperspace in Thargoid-controlled space is one of the game's defining moments of terror — surviving by escaping rather than submitting is a genuine test of frameshift boost and interdiction counter-manoeuvre skill.",
+    "help": "Interdicted fires when pulled from supercruise; EscapeInterdiction when successfully broken free. total drives the title as the total times faced."
+  },
+  "tagLines": [
+    "Interdiction survival record compiled. Hyperspace extraction events and escape outcomes noted.",
+    "Something pulled you out of hyperspace. In Thargoid space, that's not a metaphor for a bad day.",
+    "The interdiction counter mechanic works. You know that because you're still here to read this."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "SocialMulticrew",
+  "title": "NPC Crew Wages Paid",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(Amount), 0) AS total FROM NpcCrewPaidWage WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT NpcCrewName AS label, COALESCE(SUM(Amount), 0) AS value FROM NpcCrewPaidWage WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY NpcCrewName ORDER BY value DESC",
+  "details": {
+    "text": "{total} Cr paid in NPC crew wages during the report period. NPC crew quietly drain credits through weekly wages — this chart shows exactly how much your hired hands have cost you and which crew members have been most consistently on the payroll. A well-paid fighter pilot earns back their wages many times over in combat.",
+    "help": "NpcCrewPaidWage Amount is the weekly wage payment. total drives the title as the total crew salary expenditure."
+  },
+  "tagLines": [
+    "NPC crew payroll records compiled. Hired crew weekly wage disbursements noted.",
+    "They work every session, whether you notice them or not. The payroll reflects that.",
+    "Good NPC crew earns their wages in combat and fighter operations. The pay stub tells you who was really working."
+  ]
+}

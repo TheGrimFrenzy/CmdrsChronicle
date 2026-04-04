@@ -1,0 +1,15 @@
+{
+  "category": "Trade",
+  "title": "Cargo Depot Completions",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total, SUM(CASE WHEN UpdateType = 'Collect' THEN 1 ELSE 0 END) AS pickups, SUM(CASE WHEN UpdateType = 'Deliver' THEN 1 ELSE 0 END) AS deliveries FROM CargoDepot WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} wing cargo depot event(s) during the report period: {deliveries} delivery(s) and {pickups} pickup(s). Wing cargo depot missions require coordination between multiple pilots to move large quantities of goods — they contribute directly to faction influence and community goals.",
+    "help": "CargoDepot fires on both collect and deliver phases of a wing cargo mission. total drives the title as the full activity count."
+  },
+  "tagLines": [
+    "Wing cargo depot participation logged. Coordinated logistics contributions noted in the faction record.",
+    "Someone had to move all that cargo. You and your wing made sure it happened.",
+    "Wing logistics missions are the unsung backbone of faction warfare. The numbers prove you showed up."
+  ]
+}

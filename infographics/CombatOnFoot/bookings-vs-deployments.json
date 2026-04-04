@@ -1,0 +1,15 @@
+{
+  "category": "CombatOnFoot",
+  "title": "Bookings vs. Deployments",
+  "chartType": "summary-tile",
+  "query": "SELECT (SELECT COUNT(*) FROM BookDropship WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS bookings, (SELECT COUNT(*) FROM DropshipDeploy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS deployments",
+  "details": {
+    "text": "{bookings} dropship booking(s) made vs. {deployments} actual deployment(s) during the report period. The gap between bookings and deployments reflects cancelled operations, rethought plans, or missions that fell apart before launch.",
+    "help": "bookings is the primary metric as it captures intent. deployments shows execution. A clean 1:1 ratio indicates disciplined mission planning."
+  },
+  "tagLines": [
+    "Dropship utilisation rate calculated. Operational planning efficiency noted by logistics command.",
+    "Plans are made in safety. Deployments happen in chaos. The ratio tells you which won.",
+    "Every cancelled booking is a battle you chose not to fight. Sometimes that's wisdom."
+  ]
+}

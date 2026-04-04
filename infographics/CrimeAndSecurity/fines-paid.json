@@ -1,0 +1,16 @@
+{
+  "category": "CrimeAndSecurity",
+  "title": "Fines Paid",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(Amount), 0) AS total FROM PayFines WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Faction AS label, COALESCE(SUM(Amount), 0) AS value FROM PayFines WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Faction ORDER BY value DESC",
+  "details": {
+    "text": "{total} Cr paid in minor fines during the report period. Fines are the slap-on-the-wrist end of the justice system — a high fines chart suggests aggressive flying, careless docking violations, or persistent scanning of ships that didn't appreciate the attention.",
+    "help": "PayFines Amount tracks fine clearance payments. total drives the title as the total fine expenditure."
+  },
+  "tagLines": [
+    "Fine payment records compiled. Minor criminal penalty expenditure noted in the security log.",
+    "Small crimes, small fines. The accumulation is what adds up. This is what obstinance cost you.",
+    "Fines are the galaxy's way of charging you for not paying attention. You paid the bill."
+  ]
+}

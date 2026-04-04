@@ -13,7 +13,7 @@ namespace CmdrsChronicle.Core
             /// </summary>
             /// <param name="taglinesPath">Path to the taglines.txt file.</param>
             /// <returns>A random tagline string, or null if none found.</returns>
-            public static string SelectRandomTagline(string taglinesPath)
+            public static string? SelectRandomTagline(string taglinesPath)
             {
                 if (!System.IO.File.Exists(taglinesPath)) return null;
                 var lines = System.IO.File.ReadAllLines(taglinesPath);
@@ -30,11 +30,11 @@ namespace CmdrsChronicle.Core
             }
 
             /// <summary>Title of the report.</summary>
-            public string Title { get; set; }
+            public string Title { get; set; } = string.Empty;
             /// <summary>Date and time the report was generated.</summary>
             public DateTime DateGenerated { get; set; }
             /// <summary>Style of the report ("elegant" or "colorful").</summary>
-            public string Style { get; set; }
+            public string Style { get; set; } = string.Empty;
             /// <summary>Sections included in the report.</summary>
             public List<ReportSection> Sections { get; set; } = new();
             /// <summary>Embedded assets (base64 or inline).</summary>

@@ -1,0 +1,15 @@
+{
+  "category": "Mining",
+  "title": "Mining Revenue",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(TotalSale), 0) AS total, COUNT(*) AS sales FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Type IN ('LowTemperatureDiamond','Painite','Alexandrite','Rhodplumsite','Serendibite','Monazite','Grandidierite','Void Opal','Core Dynamic Composites','Bromellite','Lithium','Indite','Gallite','Coltan','Bertrandite','Bauxite','Cobalt','Gold','Silver','Palladium','Platinum','Osmium')",
+  "details": {
+    "text": "{sales} sale(s) of mined commodities totalling {total} Cr during the report period. This is the payoff number that validates all the time spent in the rings — a large total means you found a good spot, refined efficiently, and got to market before prices shifted.",
+    "help": "Filters MarketSell to known mineable commodity types. total drives the title as the headline revenue figure. The commodity list covers laserable, core, and sub-surface minerals."
+  },
+  "tagLines": [
+    "Mining revenue reconciled. The commodities exchanges confirm receipt of refined materials.",
+    "The rings paid out. Eventually. After a lot of prospecting.",
+    "Everything here was rock thirty minutes ago. Laser physics and patience converted it to credits."
+  ]
+}

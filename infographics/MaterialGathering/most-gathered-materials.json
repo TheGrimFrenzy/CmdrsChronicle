@@ -1,7 +1,0 @@
-{
-  "category": "MaterialGathering",
-  "title": "Most Gathered Materials",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(DISTINCT Name) FROM MaterialCollected WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, CAST(SUM(Count) AS INTEGER) AS value FROM MaterialCollected WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC"
-}

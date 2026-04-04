@@ -1,7 +1,0 @@
-{
-  "category": "CombatOnFoot",
-  "title": "On-Foot Crimes",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM CommitCrime WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND CrimeType IN ('assault', 'murder', 'manslaughter', 'onFoot_murder', 'onFoot_assault')",
-  "detailQuery": "SELECT CrimeType AS label, COUNT(*) AS value FROM CommitCrime WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND CrimeType IN ('assault', 'murder', 'manslaughter', 'onFoot_murder', 'onFoot_assault') GROUP BY CrimeType ORDER BY value DESC"
-}

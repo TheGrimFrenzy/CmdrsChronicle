@@ -1,0 +1,16 @@
+{
+  "category": "CombatShip",
+  "title": "Capital Ship Bonds",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(Reward), 0) AS total FROM CapShipBond WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT AwardingFaction AS label, COALESCE(SUM(Reward), 0) AS value FROM CapShipBond WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY AwardingFaction ORDER BY value DESC",
+  "details": {
+    "text": "{total} Cr earned in capital ship combat bonds during the report period.",
+    "help": "CapShipBond fires when participating in capital ship destruction in a high-intensity conflict zone. Rare and high-value events."
+  },
+  "tagLines": [
+    "Capital vessel engagement bond submissions processed. Fleet Command acknowledges your participation.",
+    "You helped take down a capital ship. That's not a Tuesday for most pilots.",
+    "Capital ship bonds are paid for one reason — because something enormous needed to be destroyed."
+  ]
+}

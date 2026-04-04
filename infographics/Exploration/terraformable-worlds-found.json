@@ -1,0 +1,15 @@
+{
+  "category": "Exploration",
+  "title": "Terraformable Worlds Found",
+  "chartType": "summary-tile",
+  "query": "SELECT SUM(CASE WHEN TerraformState = 'Terraformable' THEN 1 ELSE 0 END) AS count, COUNT(*) AS totalScanned FROM Scan WHERE PlanetClass IS NOT NULL AND PlanetClass != '' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} terraformable world(s) — bodies flagged by the Universal Cartographics survey database as candidates for future atmospheric conversion and human colonisation — identified among {totalScanned} planetary bodies scanned during the report period. These worlds command the highest cartographic survey bonuses.",
+    "help": "TerraformState = 'Terraformable' indicates a body eligible for terraforming. These command significant cartographic survey bonuses."
+  },
+  "tagLines": [
+    "The Terraforming Commission notes potential colonial candidates pending further assessment.",
+    "Future real estate. Assuming humanity survives long enough to move in.",
+    "Terraformable worlds are humanity's tomorrow — cold and untouched, waiting for us to arrive."
+  ]
+}

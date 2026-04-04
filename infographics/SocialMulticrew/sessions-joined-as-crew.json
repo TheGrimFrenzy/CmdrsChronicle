@@ -1,0 +1,16 @@
+{
+  "category": "SocialMulticrew",
+  "title": "Sessions Joined as Crew",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS sessions FROM JoinACrew WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Captain AS label, COUNT(*) AS value FROM JoinACrew WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Captain ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{sessions} multicrew session(s) joined as crew member during the report period. Joining as crew is the opposite of captaining — you trusted someone else to lead while you operated their weapons systems or flew their ship-launched fighter. The captain breakdown shows whose ships you've spent the most time aboard.",
+    "help": "JoinACrew Captain is the hosting commander's name. sessions drives the title as the total crewing sessions count."
+  },
+  "tagLines": [
+    "Crew membership session log compiled. Ships joined and captains flown with noted.",
+    "Someone else's ship, someone else's call. You flew gunner, fighter, or helm. All valid contributions.",
+    "The captains you flew with most are the ones who made it worth coming back. The log remembers."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "Powerplay",
+  "title": "Merits Earned",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE((SELECT SUM(Count) FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS collected, COALESCE((SELECT SUM(Count) FROM PowerplayDeliver WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS delivered",
+  "detailQuery": "",
+  "details": {
+    "text": "{collected} merit(s) collected and {delivered} merit(s) delivered during the report period. Merits are the currency of political loyalty — each one represents a commodity run, a fortification action, or an undermining operation carried out in service of your chosen Power.",
+    "help": "PowerplayCollect fires when merits are picked up; PowerplayDeliver when cashed in. collected drives the title as the total acquisition."
+  },
+  "tagLines": [
+    "Powerplay merit activity compiled. The relevant Power's systems office has noted your contribution to the weekly cycle.",
+    "Every merit was a trip made. Some were dangerous. The Power only counts the ones that delivered.",
+    "Merits expire. You got yours in on time. Your power's expansion thanks you. Probably."
+  ]
+}

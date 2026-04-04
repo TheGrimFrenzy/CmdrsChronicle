@@ -1,0 +1,15 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Fuel Scooped from Stars",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(Scooped), 0) AS total, COUNT(*) AS scoops FROM FuelScoop WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} tonnes of fuel scooped from scoopable stars across {scoops} stellar refuelling pass(es) during the report period. Fuel scooping is the quiet pulse of long-range travel — a large total represents many stellar passes, careful corona-skirting, and the skill of knowing which star types are worth the approach.",
+    "help": "FuelScoop Scooped is the amount scooped per pass. total drives the title as the cumulative fuel volume."
+  },
+  "tagLines": [
+    "Stellar fuel scoop telemetry compiled. Total hydrogen fuel collected from scoopable stars during the period.",
+    "Every scoop was a carefully calculated approach into a stellar corona. You've done it many times.",
+    "The fuel doesn't cost credits. It costs attention, timing, and knowing your heat tolerance by feel."
+  ]
+}

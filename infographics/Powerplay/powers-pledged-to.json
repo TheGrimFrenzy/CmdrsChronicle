@@ -1,7 +1,0 @@
-{
-  "category": "Powerplay",
-  "title": "Powers Pledged To",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM PowerplaySalary WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT Power AS label, COUNT(*) AS value FROM PowerplaySalary WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Power ORDER BY value DESC"
-}

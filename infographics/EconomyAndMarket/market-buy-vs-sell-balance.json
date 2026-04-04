@@ -1,0 +1,16 @@
+{
+  "category": "EconomyAndMarket",
+  "title": "Market Buy vs. Sell Balance",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(TotalSale), 0) AS totalSales FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(SUM(TotalCost), 0) AS totalCost FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{totalSales} Cr earned through sales vs. cost to acquire during the report period. This ratio cuts straight to the bottom line of your trading activity — if expenditure exceeds revenue, either market prices moved against you, you were deliberately stockpiling for a future run, or a route selection needs rethinking.",
+    "help": "totalSales from MarketSell vs. totalCost subquery from MarketBuy. totalSales drives the title as the gross revenue headline."
+  },
+  "tagLines": [
+    "Market buy vs. sell financial balance compiled. Trade account net position calculated for the report period.",
+    "Every buy is a bet. Every sell is the verdict. The balance shows whether the bet paid off.",
+    "If you sold more than you spent, you made money. If not, something changed that your route didn't account for."
+  ]
+}

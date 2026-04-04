@@ -1,0 +1,15 @@
+{
+  "category": "PassengerTransport",
+  "title": "Hostile Passenger Incidents",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total FROM MissionAccepted WHERE PassengerMission = 1 AND PassengerWanted = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} passenger mission(s) involving wanted or hostile passengers accepted during the report period. Carrying a wanted passenger means every interdiction is a potential firefight — even one is a story worth noting, and a pattern of wanted-passenger run reveals either a very lucrative risk tolerance or a somewhat desperate financial situation.",
+    "help": "MissionAccepted PassengerWanted = 1 flags missions where passengers have active warrants. total drives the title as the risk exposure count."
+  },
+  "tagLines": [
+    "Hostile passenger transport incidents noted. Wanted-status passenger carriage log compiled.",
+    "The mission board warned you. You took it anyway. That says something about your appetite for complications.",
+    "Wanted passengers pay better than innocent ones. The premium is called an inconvenience fee. And it's earned."
+  ]
+}

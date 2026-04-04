@@ -1,0 +1,16 @@
+{
+  "category": "EconomyAndMarket",
+  "title": "Commodity Reward Income",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM CommodityReward WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, SUM(Count) AS value FROM CommodityReward WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC",
+  "details": {
+    "text": "{total} unit(s) of commodities received as rewards during the report period. Commodity rewards are the in-kind payment economy of the galaxy — rare goods handed over as mission rewards or site loot can be worth far more than a credit payout when sold at the right market.",
+    "help": "CommodityReward Name_Localised is the reward item. total drives the title as the total reward units received."
+  },
+  "tagLines": [
+    "Commodity reward receipts compiled. In-kind mission and event payment log noted.",
+    "Some rewards aren't credits. They're goods. The market determines what those goods were actually worth.",
+    "Commodity rewards are the galaxy's barter economy. What you received here has a real market value."
+  ]
+}

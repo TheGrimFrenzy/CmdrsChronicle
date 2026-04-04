@@ -1,7 +1,0 @@
-{
-  "category": "PassengerTransport",
-  "title": "Passenger Types Carried",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Name LIKE 'Mission_Passenger%' AND PassengerType IS NOT NULL",
-  "detailQuery": "SELECT PassengerType AS label, COUNT(*) AS value FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Name LIKE 'Mission_Passenger%' AND PassengerType IS NOT NULL GROUP BY PassengerType ORDER BY value DESC"
-}

@@ -42,55 +42,115 @@ namespace CmdrsChronicle.Cli
 				var typeOpt = new Option<string>("--type", "Report type: summary (default) or by-system.");
 				var categoryOpt = new Option<string>("--category", "Infographic category filter (comma-separated).");
 				var styleOpt = new Option<string>("--style", "Report style: elegant (default), colorful, or galnet.");
+				var sortOpt = new Option<string>("--sort", "Comma-separated list of categories to control infographic sort order. If provided, infographics are sorted by category order (descending metric within each). If not provided, all infographics are sorted by metric ascending.");
 				var maxParallelismOpt = new Option<int?>("--max-parallelism", "Maximum number of files to parse in parallel (overrides environment/config).");
 
-				var rootCommand = new RootCommand("CmdrsChronicle CLI - Generate self-contained Elite Dangerous HTML reports.");
-				rootCommand.Add(inputOpt);
-				rootCommand.Add(outputOpt);
-				rootCommand.Add(startOpt);
-				rootCommand.Add(endOpt);
-				rootCommand.Add(typeOpt);
-				rootCommand.Add(categoryOpt);
-				rootCommand.Add(styleOpt);
-				rootCommand.Add(maxParallelismOpt);
+			var interactiveOpt = new Option<bool>("--interactive", "Launch interactive mode to review and edit all options before generating the report. Any options supplied on the command line are used as defaults in the UI.");
+			var silentOpt      = new Option<bool>("--silent",      "Suppress all console output except the final report path. Intended for batch/scripted use.");
 
-				rootCommand.SetHandler((string input, string output, string start, string end, string type, string category, string style, int? maxParallelism) =>
+			var rootCommand = new RootCommand("CmdrsChronicle CLI - Generate self-contained Elite Dangerous HTML reports.");
+			rootCommand.Add(inputOpt);
+			rootCommand.Add(outputOpt);
+			rootCommand.Add(startOpt);
+			rootCommand.Add(endOpt);
+			rootCommand.Add(typeOpt);
+			rootCommand.Add(categoryOpt);
+			rootCommand.Add(styleOpt);
+			rootCommand.Add(sortOpt);
+			rootCommand.Add(maxParallelismOpt);
+			rootCommand.Add(interactiveOpt);
+			rootCommand.Add(silentOpt);
+
+			rootCommand.SetHandler((System.CommandLine.Invocation.InvocationContext ctx) =>
+			{
+				var input          = ctx.ParseResult.GetValueForOption(inputOpt);
+				var output         = ctx.ParseResult.GetValueForOption(outputOpt);
+				var start          = ctx.ParseResult.GetValueForOption(startOpt);
+				var end            = ctx.ParseResult.GetValueForOption(endOpt);
+				var type           = ctx.ParseResult.GetValueForOption(typeOpt);
+				var category       = ctx.ParseResult.GetValueForOption(categoryOpt);
+				var style          = ctx.ParseResult.GetValueForOption(styleOpt);
+				var sort           = ctx.ParseResult.GetValueForOption(sortOpt);
+				var maxParallelism = ctx.ParseResult.GetValueForOption(maxParallelismOpt);
+				var interactive    = ctx.ParseResult.GetValueForOption(interactiveOpt);
+				var silent         = ctx.ParseResult.GetValueForOption(silentOpt);
+
+				// If --interactive, show TUI wizard pre-populated with any CLI-supplied values.
+				if (interactive)
 				{
-					// T301: Select a random tagline for the report masthead
+					var cliOpts  = new ReportOptions(input, output, start, end, type, category, style, sort, maxParallelism);
+					var resolved = InteractiveSetup.Run(cliOpts, InfographicsBase());
+					input          = resolved.Input;
+					output         = resolved.Output;
+					start          = resolved.Start;
+					end            = resolved.End;
+					type           = resolved.Type;
+					category       = resolved.Category;
+					style          = resolved.Style;
+					sort           = resolved.Sort;
+					maxParallelism = resolved.MaxParallelism;
+				}
+
+				if (interactive) InteractiveSetup.ShowGenerationHeader();
+				void Step(string label)        { if (!silent) InteractiveSetup.ShowStep(label); }
+				void StepDone(string detail)   { if (!silent) InteractiveSetup.ShowStepDone(detail); }
+				void DbProgress(int n, int t)  { if (!silent) InteractiveSetup.ShowDbInsertProgress(n, t); }
+				void VisitProg(int n, int t)   { if (!silent) InteractiveSetup.ShowVisitProgress(n, t); }
+				void Log(string msg) { }
+
+				// T301: Tagline for the report masthead (set after startDate/endDate are initialized)
+			string? tagline = null;
+				DateTime? startDate = null, endDate = null;
+					// If input is not specified, use Elite Dangerous default journal directory
+					if (string.IsNullOrWhiteSpace(input))
+					{
+						var userProfile = Environment.GetEnvironmentVariable("USERPROFILE") ?? "";
+						input = Path.Combine(userProfile, "Saved Games", "Frontier Developments", "Elite Dangerous");
+					Log($"No --input specified. Using default journal directory: {input}");
+				}
+
+				Log($"Input: {input}");
+				Log($"Output: {output}");
+				Log($"Start: {start}");
+				Log($"End: {end}");
+				Log($"Type: {type}");
+				Log($"Category: {category}");
+				Log($"Style: {style}");
+				Log($"Sort: {sort}");
+				Log($"MaxParallelism (CLI): {maxParallelism}");
+
+
+
+				// T501: Parse --start / --end BEFORE file discovery so we can pre-filter by filename
+				if (!string.IsNullOrWhiteSpace(start))
+				{
+					if (DateTime.TryParse(start, out var dt)) startDate = dt.Date;
+					else Console.Error.WriteLine($"[WARN] Could not parse --start date: {start}");
+				}
+				if (!string.IsNullOrWhiteSpace(end))
+				{
+					if (DateTime.TryParse(end, out var dt)) endDate = dt.Date.AddDays(1).AddTicks(-1);
+					else Console.Error.WriteLine($"[WARN] Could not parse --end date: {end}");
+				}
+
+				// Now that startDate/endDate are initialized, select tagline if not by-system
+				if (!string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase) || !startDate.HasValue || !endDate.HasValue)
+				{
 					var taglinesPath = Path.Combine(AppContext.BaseDirectory, "templates", "taglines.txt");
 					if (!File.Exists(taglinesPath))
 					{
 						// Try repo root fallback
 						taglinesPath = Path.Combine(Directory.GetCurrentDirectory(), "templates", "taglines.txt");
 					}
-					var tagline = Report.SelectRandomTagline(taglinesPath);
-					if (!string.IsNullOrEmpty(tagline))
-						Console.WriteLine($"[Tagline] {tagline}");
-					else
-						Console.WriteLine("[Tagline] (No tagline found)");
+					tagline = Report.SelectRandomTagline(taglinesPath);
+					Log(!string.IsNullOrEmpty(tagline) ? $"[Tagline] {tagline}" : "[Tagline] (No tagline found)");
+				}
 
-					// If input is not specified, use Elite Dangerous default journal directory
-					if (string.IsNullOrWhiteSpace(input))
-					{
-						var userProfile = Environment.GetEnvironmentVariable("USERPROFILE") ?? "";
-						input = Path.Combine(userProfile, "Saved Games", "Frontier Developments", "Elite Dangerous");
-						Console.WriteLine($"No --input specified. Using default journal directory: {input}");
-					}
-
-					Console.WriteLine($"Input: {input}");
-					Console.WriteLine($"Output: {output}");
-					Console.WriteLine($"Start: {start}");
-					Console.WriteLine($"End: {end}");
-					Console.WriteLine($"Type: {type}");
-					Console.WriteLine($"Category: {category}");
-					Console.WriteLine($"Style: {style}");
-					Console.WriteLine($"MaxParallelism (CLI): {maxParallelism}");
-
-					int effectiveParallelism = maxParallelism
-						?? TryParseEnvVar("CMDRSCHRONICLE_MAX_PARALLELISM")
-						?? TryParseConfig("maxParallelism")
-						?? Environment.ProcessorCount;
-					Console.WriteLine($"Effective MaxParallelism: {effectiveParallelism}");
+				int effectiveParallelism = maxParallelism
+					?? TryParseEnvVar("CMDRSCHRONICLE_MAX_PARALLELISM")
+					?? TryParseConfig("maxParallelism")
+					?? Environment.ProcessorCount;
+				Log($"Effective MaxParallelism: {effectiveParallelism}");
 
 					if (!Directory.Exists(input))
 					{
@@ -99,7 +159,6 @@ namespace CmdrsChronicle.Cli
 					}
 
 					// T501: Parse --start / --end BEFORE file discovery so we can pre-filter by filename
-					DateTime? startDate = null, endDate = null;
 					if (!string.IsNullOrWhiteSpace(start))
 					{
 						if (DateTime.TryParse(start, out var dt)) startDate = dt.Date;
@@ -111,11 +170,10 @@ namespace CmdrsChronicle.Cli
 						else Console.Error.WriteLine($"[WARN] Could not parse --end date: {end}");
 					}
 
-					var (events, errors) = JournalFileDiscovery.ParseJournalFilesParallel(input, effectiveParallelism, startDate, endDate);
-					Console.WriteLine($"Parsed {events.Count} events from journal files.");
-					Console.WriteLine(ReportDiagnostics.HasErrors(errors)
-						? $"{errors.Count} parse error(s) encountered — will be embedded in report output."
-						: "No errors encountered during parsing.");
+				var journalFileCount = JournalFileDiscovery.DiscoverJournalFiles(input, startDate, endDate).Count;
+				Step($"Parsing {journalFileCount:N0} journal file{(journalFileCount == 1 ? "" : "s")}...");
+				var (events, errors) = JournalFileDiscovery.ParseJournalFilesParallel(input, effectiveParallelism, startDate, endDate);
+				StepDone($"Parsed {events.Count:N0} events" + (errors.Count > 0 ? $" ({errors.Count} parse error{(errors.Count == 1 ? "" : "s")})" : ""));
 					var filteredEvents = new List<System.Text.Json.JsonElement>();
 					foreach (var evt in events)
 					{
@@ -125,7 +183,7 @@ namespace CmdrsChronicle.Cli
 						if (endDate.HasValue && ts > endDate.Value) continue;
 						filteredEvents.Add(evt);
 					}
-					Console.WriteLine($"Filtered to {filteredEvents.Count} events by date range.");
+					Log($"Filtered to {filteredEvents.Count} events by date range.");
 					var swPhase = Stopwatch.StartNew(); // measure from end of filtering until report written
 
 					// T303: Insert filtered events into in-memory SQLite DB
@@ -171,6 +229,7 @@ namespace CmdrsChronicle.Cli
 						pragmaCache[evtName] = info;
 					}
 
+						Step($"Inserting {filteredEvents.Count:N0} events into database...");
 					int inserted = 0;
 					using (var tx = conn.BeginTransaction())
 					{
@@ -234,17 +293,18 @@ namespace CmdrsChronicle.Cli
 						{
 							cmd.ExecuteNonQuery();
 							inserted++;
+							if (inserted % 500 == 0 || inserted == filteredEvents.Count)
+								DbProgress(inserted, filteredEvents.Count);
 						}
 						catch (Exception ex)
 						{
-							Console.Error.WriteLine($"[DB ERROR] {ex.Message}");
+							Log($"[DB ERROR] {ex.Message}");
 						}
 					}
 					tx.Commit();
 					} // end transaction
-					Console.WriteLine($"Inserted {inserted} events into SQLite in-memory DB.");
-
-					// Helpers shared by T305 and T304
+				if (!silent) Console.WriteLine(); // advance past \r progress line
+				StepDone($"Inserted {inserted:N0} events into database");
 					string TemplateBase() => Directory.Exists(Path.Combine(AppContext.BaseDirectory, "templates"))
 						? Path.Combine(AppContext.BaseDirectory, "templates")
 						: Path.Combine(Directory.GetCurrentDirectory(), "templates");
@@ -266,7 +326,7 @@ namespace CmdrsChronicle.Cli
 					// T305: No-data report logic
 					if (filteredEvents.Count == 0)
 					{
-						Console.WriteLine("[T305] No qualifying events found. Generating nothing-to-report page.");
+						Step("Generating nothing-to-report page...");
 
 						// Locate template and CSS files
 						var templateFile = Path.Combine(TemplateBase(), isGalnet ? "galnet-nothing-to-report.html" : isColorful ? "colorful-nothing-to-report.html" : "elegant-nothing-to-report.html");
@@ -377,12 +437,18 @@ namespace CmdrsChronicle.Cli
 						var ntrErrorComment = ReportDiagnostics.FormatParseErrorComment(errors);
 						if (ntrErrorComment.Length > 0)
 							File.AppendAllText(outputPath, ntrErrorComment, System.Text.Encoding.UTF8);
-						Console.WriteLine($"[T305] Nothing-to-report page written to: {outputPath}");
+						if (interactive) InteractiveSetup.ShowComplete(outputPath);
+						else Console.WriteLine(outputPath);
+						if (!silent)
+						{
+							try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(outputPath) { UseShellExecute = true }); }
+							catch { /* Default browser may not be configured; report is still written to disk */ }
+						}
 						return;
 					}
 
 					// T304: Full report generation (qualifying events found)
-					Console.WriteLine("[T304] Qualifying events found. Generating full report.");
+					Log("[T304] Qualifying events found. Generating full report.");
 
 					var definitions = InfographicLoader.LoadAll(InfographicsBase());
 
@@ -395,7 +461,21 @@ namespace CmdrsChronicle.Cli
 							.ToList();
 					}
 
-					Console.WriteLine($"[T304] Loaded {definitions.Count} infographic definition(s).");
+					// Apply --sort: pre-order definitions by category so parallel queries run in roughly
+					// the right bucket order; final sort by MainValue happens after queries complete.
+					List<string>? sortCatsList = null;
+					if (!string.IsNullOrWhiteSpace(sort))
+					{
+						sortCatsList = sort.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+						definitions = definitions
+							.OrderBy(d => {
+								var idx = sortCatsList.FindIndex(c => string.Equals(c, d.Category, StringComparison.OrdinalIgnoreCase));
+								return idx >= 0 ? idx : int.MaxValue;
+							})
+							.ToList();
+					}
+
+					Log($"[T304] Loaded {definitions.Count} infographic definition(s) after sorting.");
 
 					// Date strings for SQL: startDate inclusive, endDate exclusive (< comparison against ISO timestamps).
 					// When --end is omitted, use tomorrow so today's events are included.
@@ -405,19 +485,41 @@ namespace CmdrsChronicle.Cli
 						: DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
 
 					// Parallel query phase: gather all results before rendering
+					Step("Running infographic queries...");
 					var swAll = Stopwatch.StartNew();
-					var results = InfographicQueryRunner.RunAllAsync(
+					var rawResults = InfographicQueryRunner.RunAllAsync(
 						definitions, dbName, queryStartDate, queryEndDate, effectiveParallelism
 					).GetAwaiter().GetResult();
 					swAll.Stop();
-					Console.WriteLine($"[T304] Infographic queries completed in {swAll.Elapsed.TotalSeconds:F2}s (wall clock).");
-					// Print slowest tiles for diagnostics
-					foreach (var r in results.OrderByDescending(r => r.TotalQueryDuration).Take(10))
+					Log($"[T304] Infographic queries completed in {swAll.Elapsed.TotalSeconds:F2}s (wall clock).");
+
+					// Sort results by MainValue (the primary query metric) now that we have real values.
+					// If --sort was given: category order first, then MainValue descending within each category.
+					// Otherwise: MainValue descending across all tiles.
+					IReadOnlyList<InfographicQueryResult> results;
+					if (sortCatsList != null)
 					{
-						Console.WriteLine($"[PROFILE] {r.Definition.Title} - main:{r.MainQueryDuration.TotalMilliseconds:F0}ms detail:{r.DetailQueryDuration.TotalMilliseconds:F0}ms total:{r.TotalQueryDuration.TotalMilliseconds:F0}ms");
+						results = rawResults
+							.OrderBy(r => {
+								var idx = sortCatsList.FindIndex(c => string.Equals(c, r.Definition.Category, StringComparison.OrdinalIgnoreCase));
+								return idx >= 0 ? idx : int.MaxValue;
+							})
+							.ThenByDescending(r => r.MainValue)
+							.ToList();
+					}
+					else
+					{
+						results = rawResults.OrderByDescending(r => r.MainValue).ToList();
 					}
 
-					Console.WriteLine($"[T304] {results.Count(r => r.MeetsThreshold)} qualifying tile(s) from {results.Count} definition(s).");
+					// Print slowest tiles for diagnostics
+					StepDone($"{results.Count(r => r.MeetsThreshold)} qualifying tiles ready ({swAll.Elapsed.TotalSeconds:F1}s)");
+					foreach (var r in results.OrderByDescending(r => r.TotalQueryDuration).Take(10))
+					{
+						Log($"[PROFILE] {r.Definition.Title} - main:{r.MainQueryDuration.TotalMilliseconds:F0}ms detail:{r.DetailQueryDuration.TotalMilliseconds:F0}ms total:{r.TotalQueryDuration.TotalMilliseconds:F0}ms");
+					}
+
+					Log($"[T304] {results.Count(r => r.MeetsThreshold)} qualifying tile(s) from {results.Count} definition(s).");
 
 					// Resolve CMDR name from DB (best-effort)
 					string reportCmdrName = "Unknown Commander";
@@ -448,6 +550,10 @@ namespace CmdrsChronicle.Cli
 					IReadOnlyList<SystemVisit> sections;
 					if (string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase) && queryStartDate != null)
 					{
+						// Exclude infographics that are only meaningful in a summary report.
+						definitions = definitions.Where(d => !d.SummaryOnly).ToList();
+						Log($"[BY-SYSTEM] Filtered to {definitions.Count} non-summary-only definition(s).");
+
 						// Walk FSD jumps chronologically to build per-visit windows
 						var jumps = new List<(string SystemName, string Timestamp)>();
 						using (var jumpCmd = conn.CreateCommand())
@@ -462,7 +568,7 @@ namespace CmdrsChronicle.Cli
 							while (jr.Read())
 								jumps.Add((jr.GetString(0), jr.GetString(1)));
 						}
-						Console.WriteLine($"[BY-SYSTEM] Found {jumps.Count} FSD jump(s) in window.");
+						Log($"[BY-SYSTEM] Found {jumps.Count} FSD jump(s) in window.");
 
 						var visits = new List<(string SystemName, string From, string To)>();
 						if (jumps.Count > 0)
@@ -488,39 +594,81 @@ namespace CmdrsChronicle.Cli
 
 						if (visits.Count > 0)
 						{
-							var visitSections = new List<SystemVisit>(visits.Count);
-							foreach (var (sysName, fromTime, toTime) in visits)
+							Step($"Querying {visits.Count} system visit{(visits.Count == 1 ? "" : "s")} in parallel...");
+							// Pre-sized array preserves chronological order even though visits run concurrently.
+							var visitSections = new SystemVisit[visits.Count];
+							var visitsDone    = new int[1]; // int[] so the lambda can Interlocked.Increment it
+							using var visitSem = new System.Threading.SemaphoreSlim(Math.Max(1, effectiveParallelism));
+							var visitTasks = visits.Select(async (v, i) =>
 							{
-								var visitResults = InfographicQueryRunner.RunAllAsync(
-									definitions, dbName, fromTime, toTime, effectiveParallelism
-								).GetAwaiter().GetResult();
+								await visitSem.WaitAsync().ConfigureAwait(false);
+								try
+								{
+									// Each visit runs its tile queries sequentially (concurrency=1); visit-level
+									// parallelism is controlled by visitSem above, capped at effectiveParallelism.
+									var visitRaw = await InfographicQueryRunner.RunAllAsync(
+										definitions, dbName, v.From, v.To, 1
+									).ConfigureAwait(false);
 
+									IReadOnlyList<InfographicQueryResult> visitResults;
+									if (sortCatsList != null)
+									{
+										visitResults = visitRaw
+											.OrderBy(r => {
+												var idx = sortCatsList.FindIndex(c => string.Equals(c, r.Definition.Category, StringComparison.OrdinalIgnoreCase));
+												return idx >= 0 ? idx : int.MaxValue;
+											})
+											.ThenByDescending(r => r.MainValue)
+											.ToList();
+									}
+									else
+									{
+										visitResults = visitRaw.OrderByDescending(r => r.MainValue).ToList();
+									}
 
-								DateTime? arr = DateTime.TryParse(fromTime, null,
-									System.Globalization.DateTimeStyles.RoundtripKind, out var parsedArr)
-									? parsedArr : (DateTime?)null;
-								var arrivalLore   = arr.HasValue ? ReportHelpers.FormatLoreDate(arr.Value) + " " + arr.Value.ToString("HH:mm") : null;
-								var arrivalActual = arr.HasValue ? arr.Value.ToString("yyyy-MM-dd HH:mm") : null;
-								visitSections.Add(new SystemVisit(sysName, arrivalLore, arrivalActual, visitResults));
-							}
-							Console.WriteLine($"[BY-SYSTEM] {visitSections.Count} system visit section(s) built ({visitSections.Count(v => v.Results.Any(r => r.MeetsThreshold))} with qualifying tiles).");
-							sections = visitSections.Count > 0
-								? visitSections
+									DateTime? arr = DateTime.TryParse(v.From, null,
+										System.Globalization.DateTimeStyles.RoundtripKind, out var parsedArr)
+										? parsedArr : (DateTime?)null;
+									var arrivalLore   = arr.HasValue ? ReportHelpers.FormatLoreDate(arr.Value) + " " + arr.Value.ToString("HH:mm") : null;
+									var arrivalActual = arr.HasValue ? arr.Value.ToString("yyyy-MM-dd HH:mm") : null;
+									visitSections[i] = new SystemVisit(v.SystemName, arrivalLore, arrivalActual, visitResults);
+
+								var done = System.Threading.Interlocked.Increment(ref visitsDone[0]);
+								VisitProg(done, visits.Count);
+								}
+								finally { visitSem.Release(); }
+							}).ToList();
+							System.Threading.Tasks.Task.WhenAll(visitTasks).GetAwaiter().GetResult();
+
+							var visitSectionsList = visitSections.ToList();
+							StepDone($"{visitSectionsList.Count} system visit{(visitSectionsList.Count == 1 ? "" : "s")} ready");
+							sections = visitSectionsList.Count > 0
+								? visitSectionsList
 								: new[] { new SystemVisit(null, null, null, results) };
+
+							// Set custom masthead for by-system report
+							if (string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase) && startDate.HasValue && endDate.HasValue)
+							{
+								var systemCount = visitSectionsList.Count;
+								var days = (endDate.Value.Date - startDate.Value.Date).Days + 1;
+								tagline = $"{systemCount} System{(systemCount == 1 ? "" : "s")} in {days} Day{(days == 1 ? "" : "s")}";
+								Log($"[Tagline] {tagline}");
+							}
 						}
 						else
 						{
-							Console.WriteLine("[BY-SYSTEM] No FSD jumps found; falling back to single-section report.");
+							Log("[BY-SYSTEM] No FSD jumps found; falling back to single-section report.");
 							sections = new[] { new SystemVisit(null, null, null, results) };
 						}
 					}
 					else
 					{
 						if (string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase))
-							Console.WriteLine("[BY-SYSTEM] --start date required for by-system reports; falling back to single-section.");
+							Log("[BY-SYSTEM] --start date required for by-system reports; falling back to single-section.");
 						sections = new[] { new SystemVisit(null, null, null, results) };
 					}
 
+					Step("Rendering HTML report...");
 					var swRender = Stopwatch.StartNew();
 					var reportHtml = isGalnet
 						? GalnetReportRenderer.Render(
@@ -540,26 +688,32 @@ namespace CmdrsChronicle.Cli
 							reportCmdrName, reportFromStr, reportToStr,
 							sections);
 					swRender.Stop();
-					Console.WriteLine($"[TIMING] Render time: {swRender.Elapsed.TotalSeconds:F2}s");
+					Log($"[TIMING] Render time: {swRender.Elapsed.TotalSeconds:F2}s");
 
 					var reportOutputPath = string.IsNullOrWhiteSpace(output)
 						? Path.Combine(Directory.GetCurrentDirectory(), BuildDefaultName())
 						: output;
 
 					var swWrite = Stopwatch.StartNew();
+					Step("Writing output file...");
 					File.WriteAllText(reportOutputPath, reportHtml, System.Text.Encoding.UTF8);
 					var errorComment = ReportDiagnostics.FormatParseErrorComment(errors);
 					if (errorComment.Length > 0)
 						File.AppendAllText(reportOutputPath, errorComment, System.Text.Encoding.UTF8);
 					swWrite.Stop();
-					Console.WriteLine($"[TIMING] Write time: {swWrite.Elapsed.TotalSeconds:F2}s");
-
 					swPhase.Stop();
-					Console.WriteLine($"[TIMING] Filter->Report total: {swPhase.Elapsed.TotalSeconds:F2}s");
-					Console.WriteLine($"[T304] Report written to: {reportOutputPath}");
-				}, inputOpt, outputOpt, startOpt, endOpt, typeOpt, categoryOpt, styleOpt, maxParallelismOpt);
+					if (interactive)
+						InteractiveSetup.ShowComplete(reportOutputPath);
+					else
+						Console.WriteLine(reportOutputPath);
+					if (!silent)
+					{
+						try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(reportOutputPath) { UseShellExecute = true }); }
+						catch { /* Default browser may not be configured; report is still written to disk */ }
+					}
+			});
 
-				return rootCommand;
+			return rootCommand;
 			}
 
 			static async System.Threading.Tasks.Task<int> Main(string[] args)

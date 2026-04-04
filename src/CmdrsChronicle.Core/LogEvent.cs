@@ -13,7 +13,7 @@ namespace CmdrsChronicle.Core
         /// <summary>Timestamp of the event.</summary>
         public DateTime Timestamp { get; set; }
         /// <summary>Type of the event.</summary>
-        public string EventType { get; set; }
+        public string EventType { get; set; } = string.Empty;
         /// <summary>Raw JSON payload of the event.</summary>
         public JsonElement Payload { get; set; }
         /// <summary>System name (nullable).</summary>

@@ -1,0 +1,16 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Experimental Effects Applied",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS experimentals FROM EngineerCraft WHERE ExperimentalEffect IS NOT NULL AND ExperimentalEffect != '' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(ExperimentalEffect_Localised, ExperimentalEffect) AS label, COUNT(*) AS value FROM EngineerCraft WHERE ExperimentalEffect IS NOT NULL AND ExperimentalEffect != '' AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{experimentals} experimental effect(s) applied to modules during the report period. Experimental effects are the finishing touches that define a high-end engineered build — choices like Drag Munitions or Mass Lock Modifier are signatures of a pilot who has thought carefully about how each module serves the overall strategy.",
+    "help": "ExperimentalEffect_Localised is non-null when an experimental was applied alongside a blueprint craft. experimentals drives the title."
+  },
+  "tagLines": [
+    "Experimental effect application log compiled. Module customisation data archived in the engineering record.",
+    "The experimental is the decision you make after you've already committed to the blueprint direction.",
+    "Certain experimental combinations are famous. Yours might be among them. The chart knows."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "category": "PassengerTransport",
+  "title": "Taxi Bookings",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total FROM BookTaxi WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} Apex taxi booking(s) made during the report period. Booking the Apex taxi is the game's own acknowledgement that sometimes you just need a lift — a non-zero count hints at at least one session where your ship was elsewhere and you needed to get somewhere in a hurry.",
+    "help": "BookTaxi fires when the Apex NPC taxi service is booked. total drives the title as the total trips booked."
+  },
+  "tagLines": [
+    "Apex Interstellar taxi booking records compiled. Passenger transport requisitions archived.",
+    "You needed to be somewhere and your ship wasn't where you were. The COVAS doesn't book cabs. You did.",
+    "Commander, boarded a taxi. Destination logged. The dignity protocol is in effect."
+  ]
+}

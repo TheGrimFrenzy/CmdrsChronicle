@@ -1,0 +1,16 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Most Docked Stations",
+  "chartType": "table",
+  "query": "SELECT COUNT(*) AS total FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT StationName AS label, COUNT(*) AS value FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY StationName ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} docking event(s) recorded during the report period. Your most-visited stations are your home ports — the Inara link lets you check the current state of the place you keep returning to, whether it's a trading hub, an engineering pit stop, or the home base you always return to after a long run.",
+    "help": "Docked StationName is the destination. total drives the title as the total docking event count."
+  },
+  "tagLines": [
+    "Station docking frequency analysis compiled. Most visited installations noted in the flight record.",
+    "The station you dock at most is probably the one that feels like home. The log confirms which one that is.",
+    "Some stations are stopovers. Others become anchors. Frequency reveals which is which."
+  ]
+}

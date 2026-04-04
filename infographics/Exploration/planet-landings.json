@@ -1,0 +1,15 @@
+{
+  "category": "Exploration",
+  "title": "Planet Landings",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM Touchdown WHERE OnStation = 0 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} planetary surface landing(s) during the report period, touching down on worlds ranging from airless rock to high-gravity giants — each one requiring manual approach or SRV deployment rather than staying safely in orbit.",
+    "help": "Touchdown events with OnStation = false represent genuine planetary landings rather than station docking. Does not deduplicate revisits to the same body."
+  },
+  "tagLines": [
+    "Planetary touchdown events recorded. Surface operations data archived by the Pilots Federation.",
+    "You could have stayed in orbit. You didn't. Respect.",
+    "Every landing is a choice — to go down there, to touch the ground, to leave a bootprint."
+  ]
+}

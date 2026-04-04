@@ -1,0 +1,16 @@
+{
+  "category": "MaterialGathering",
+  "title": "Scientific Research Donations",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM ScientificResearch WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, SUM(Count) AS value FROM ScientificResearch WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC",
+  "details": {
+    "text": "{total} material unit(s) donated to scientific research during the report period. Donating materials to research is quiet civic participation in the galaxy's science community — the contributions track your investment in community goals and the Pilots Federation's collective knowledge of the Milky Way.",
+    "help": "ScientificResearch fires when materials are donated to a research station. total drives the title as the donation volume headline."
+  },
+  "tagLines": [
+    "Scientific research material donation log compiled. Contribution totals recorded with the research institutions.",
+    "The scientists needed it more than the engineer did. Sometimes that's the right call.",
+    "Materials you don't donate get crafted. Materials you do donate become someone else's discovery. Both matter."
+  ]
+}

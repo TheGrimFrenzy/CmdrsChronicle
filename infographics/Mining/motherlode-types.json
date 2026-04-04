@@ -1,7 +1,0 @@
-{
-  "category": "Mining",
-  "title": "Motherlode Types",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM ProspectedAsteroid WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND MotherlodeMaterial IS NOT NULL",
-  "detailQuery": "SELECT MotherlodeMaterial AS label, COUNT(*) AS value FROM ProspectedAsteroid WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND MotherlodeMaterial IS NOT NULL GROUP BY MotherlodeMaterial ORDER BY value DESC"
-}

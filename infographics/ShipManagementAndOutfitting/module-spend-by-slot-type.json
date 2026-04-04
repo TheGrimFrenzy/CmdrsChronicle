@@ -1,0 +1,16 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Module Spend by Slot Type",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(BuyPrice), 0) AS total FROM ModuleBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Slot AS label, COALESCE(SUM(BuyPrice), 0) AS value FROM ModuleBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Slot ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} Cr spent on module purchases during the report period. Module spend is where the real outfitting investment lives — the slot breakdown reveals your build priorities: FSD upgrades signal range focus, weapons slots signal combat investment, shield generators signal survivability concerns.",
+    "help": "ModuleBuy Slot is the hardpoint/optional slot identifier. total drives the title as the total outfitting expenditure."
+  },
+  "tagLines": [
+    "Module purchase expenditure compiled. Slot type spend distribution noted in the outfitting record.",
+    "The slots you spent the most on are the ones you care about most. The chart makes that explicit.",
+    "Outfitting credits go to the slots that define your build. The distribution is your build philosophy in numbers."
+  ]
+}

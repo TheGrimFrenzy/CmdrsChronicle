@@ -2,6 +2,15 @@
   "category": "TravelAndNavigation",
   "title": "Station Types Visited",
   "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND StationType IS NOT NULL",
-  "detailQuery": "SELECT StationType AS label, COUNT(*) AS value FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND StationType IS NOT NULL GROUP BY StationType ORDER BY value DESC"
+  "query": "SELECT COUNT(*) AS total FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT StationType AS label, COUNT(*) AS value FROM Docked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY StationType ORDER BY value DESC",
+  "details": {
+    "text": "{total} docking event(s) across all station types during the report period. Your station type mix is a travel demographic — lots of outpost docks suggest frontier and deep space work; Coriolis and Orbis dominance suggests core worlds trading; megaship docking flags rescue response or Thargoid incursion activity.",
+    "help": "Docked StationType values include Coriolis, Orbis, Outpost, AsteroidBase, Megaship, FleetCarrier, etc. total drives the title."
+  },
+  "tagLines": [
+    "Station architecture type docking log compiled. Station category frequency noted in the travel record.",
+    "Outposts mean the frontier. Ocellus stations mean economy. Fleet carriers mean someone let you aboard.",
+    "The types of stations you dock at are a map of where you operate in the galaxy's hierarchy."
+  ]
 }

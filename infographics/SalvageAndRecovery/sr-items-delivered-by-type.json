@@ -1,0 +1,16 @@
+{
+  "category": "SalvageAndRecovery",
+  "title": "S\u0026R Items Delivered by Type",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM SearchAndRescue WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, SUM(Count) AS value FROM SearchAndRescue WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC",
+  "details": {
+    "text": "{total} S&R item(s) delivered to rescue megaships during the report period. The mix of recovered items tells the story of the disaster you were responding to — escape pods mean survivors still waiting; black boxes mean catastrophe investigation; occupied cryopods are the most haunting and most valuable commodity in any rescue scenario.",
+    "help": "SearchAndRescue Name_Localised is the commodity type. total drives the title as the delivery volume."
+  },
+  "tagLines": [
+    "Search and rescue item delivery log compiled. Recovery commodity breakdown noted in the humanitarian record.",
+    "Escape pods mean people. Black boxes mean answers. You brought back both.",
+    "Every item type is a chapter of someone else's disaster. You gathered the evidence and delivered it."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "SettlementActivities",
+  "title": "Settlements Visited",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(DISTINCT SettlementName) AS total FROM ApproachSettlement WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT SettlementName AS label, COUNT(*) AS value FROM ApproachSettlement WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY SettlementName ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} settlement approach(es) recorded during the report period. Favoured settlements are the recurring stages of your Odyssey story — repeatedly visiting the same installation means you know its layout, its patrol patterns, and exactly where the most interesting items spawn.",
+    "help": "ApproachSettlement fires when the ship gets close to a surface settlement. total drives the title."
+  },
+  "tagLines": [
+    "Settlement approach log compiled. Most frequently visited installations noted in the operations record.",
+    "You scout a settlement once. After the tenth visit, you know it like your own carrier.",
+    "Some settlements become familiar. The log shows which ones you keep coming back to."
+  ]
+}

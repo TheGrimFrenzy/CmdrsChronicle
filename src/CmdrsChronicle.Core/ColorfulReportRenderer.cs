@@ -76,8 +76,6 @@ namespace CmdrsChronicle.Core
             {
                 var qualifying = section.Results
                     .Where(r => r.MeetsThreshold)
-                    .OrderBy(r => r.Definition.Category)
-                    .ThenBy(r => r.Definition.Title)
                     .ToList();
 
                 if (section.SystemName != null)
@@ -123,13 +121,14 @@ namespace CmdrsChronicle.Core
             var def           = result.Definition;
             var categoryClass = TileRenderer.CategoryClass(def.Category);
             var badgeText     = TileRenderer.HtmlEncode(TileRenderer.FormatMetric(TileRenderer.PrimaryValue(result)));
+            var icon          = TileRenderer.CategoryIcon(def.Category);
             var header        = TileRenderer.RenderTileHeader(result, includeMetric: false);
             var body          = TileRenderer.RenderTileBody(result);
 
             if (isLeft)
             {
                 return $@"        <div class='left-tile-wrapper'>
-            <div class='left-icon'></div>
+            <div class='left-icon'><span title='{TileRenderer.HtmlEncode(TileRenderer.CategoryDisplayName(def.Category))}'>{icon}</span></div>
             <div class='left-tile{categoryClass}'>
                 <div class='left-badge-section'><div class='left-badge'>{badgeText}</div></div>
                 <div class='left-content'>
@@ -158,7 +157,7 @@ namespace CmdrsChronicle.Core
                 </div>
                 <div class='right-badge-section'><div class='right-badge'>{badgeText}</div></div>
             </div>
-            <div class='right-icon'></div>
+            <div class='right-icon'><span title='{TileRenderer.HtmlEncode(TileRenderer.CategoryDisplayName(def.Category))}'>{icon}</span></div>
         </div>
 ";
             }

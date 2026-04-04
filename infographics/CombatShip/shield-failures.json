@@ -1,0 +1,15 @@
+{
+  "category": "CombatShip",
+  "title": "Shield Failures",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM ShieldState WHERE ShieldsUp = 0 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} shield failure(s) recorded during the report period — each one a moment when incoming fire overwhelmed the shield generator, leaving the hull directly exposed to weapons fire until shields recharged. Shield failures in sustained combat often precede hull breaches.",
+    "help": "ShieldState with ShieldsUp = false (0) indicates shields dropped. Each event is a moment of genuine danger."
+  },
+  "tagLines": [
+    "Shield integrity breach events logged. Pilots Federation safety advisory: consider shield reinforcement.",
+    "That many shield failures means you were in some real fights. Or you're very bad at range management.",
+    "Each drop is a heartbeat — the moment between 'this is fine' and 'get to the escape hatch'."
+  ]
+}

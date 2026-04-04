@@ -1,0 +1,16 @@
+{
+  "category": "PassengerTransport",
+  "title": "Passengers by Cabin Class",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(PassengerCount) AS total FROM MissionAccepted WHERE PassengerMission = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(PassengerType, 'Unknown') AS label, SUM(PassengerCount) AS value FROM MissionAccepted WHERE PassengerMission = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY PassengerType ORDER BY value DESC",
+  "details": {
+    "text": "{total} passenger(s) transported during the report period. The cabin class mix tells you what market you're serving — Luxury VIPs pay the most per head but are the most demanding; a bulk Economy chart means you're running a mass-transit operation rather than a private charter service.",
+    "help": "MissionAccepted PassengerType values are Tourist, Bulk, VIP, and similar. total drives the title as the total heads transported."
+  },
+  "tagLines": [
+    "Passenger manifest cabin class breakdown compiled. Transport volume by class category noted.",
+    "Economy passengers fill the seats. VIPs fill the credits. You decided the mix that worked for your route.",
+    "Luxury cabins for wealthy travellers who expect perfection. Bulk economy for everyone else. Both pay."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "Trade",
+  "title": "Top Commodities by Units Moved",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM (SELECT Count FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate UNION ALL SELECT Count FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate)",
+  "detailQuery": "SELECT COALESCE(Type_Localised, Type) AS label, SUM(Count) AS value FROM (SELECT Type_Localised, Type, Count FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate UNION ALL SELECT Type_Localised, Type, Count FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{total} total unit(s) traded across all commodities during the report period. The top commodity is the fingerprint of your trade route — Tritium means carrier logistics, LTDs mean mining payoff, Biowaste means something unusual is going on.",
+    "help": "Combines MarketBuy and MarketSell counts via UNION ALL for a total units-moved figure. Type_Localised is the human-readable commodity name."
+  },
+  "tagLines": [
+    "Commodity flow data compiled. The relevant trading exchanges acknowledge the volume.",
+    "Every ton on this chart is a route flown, a dock queued, and a market judged correctly. Or not.",
+    "The galaxy's economy runs on tonnage. This is your contribution to keeping the lights on."
+  ]
+}

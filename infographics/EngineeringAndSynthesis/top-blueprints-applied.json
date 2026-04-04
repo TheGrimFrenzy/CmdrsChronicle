@@ -1,7 +1,0 @@
-{
-  "category": "EngineeringAndSynthesis",
-  "title": "Top Blueprints Applied",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT BlueprintName AS label, COUNT(*) AS value FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY BlueprintName ORDER BY value DESC"
-}

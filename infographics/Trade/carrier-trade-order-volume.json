@@ -1,0 +1,16 @@
+{
+  "category": "Trade",
+  "title": "Carrier Trade Order Volume",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS orders FROM CarrierTradeOrder WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Commodity AS label, SUM(Quantity) AS value FROM CarrierTradeOrder WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Commodity ORDER BY value DESC",
+  "details": {
+    "text": "{orders} carrier trade order(s) posted during the report period. Running carrier trade orders turns your fleet carrier into a trading post — regularly posting orders builds a steady flow of autonomous commerce across the galaxy.",
+    "help": "CarrierTradeOrder fires when a trade order is created. Quantity and Commodity define the volume. orders is the primary metric."
+  },
+  "tagLines": [
+    "Carrier trade order activity logged. Your fleet carrier's commercial ledger has been updated.",
+    "A floating market that follows you everywhere. The margins don't always follow, but the commodities do.",
+    "The galaxy's traders will fill your carrier holds if the price is right. Sometimes it is."
+  ]
+}

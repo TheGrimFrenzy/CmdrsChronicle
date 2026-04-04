@@ -1,0 +1,16 @@
+{
+  "category": "Exploration",
+  "title": "Neutron Highway Boosts",
+  "chartType": "summary-tile",
+  "summaryOnly": true,
+  "query": "SELECT COUNT(*) AS count FROM JetConeBoost WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} neutron star jet cone boost(s) taken during the report period — each one supercharging the frame shift drive by skimming through the jet emission cone of a neutron star, multiplying jump range at the cost of increased FSD wear.",
+    "help": "JetConeBoost fires each time a jet cone boost is applied from a neutron star or white dwarf. Each boost multiplies the next FSD jump range. summaryOnly: trivially 0 or 1 per system."
+  },
+  "tagLines": [
+    "Neutron jet cone utilisation logged. Pilots Federation recommends appropriate frame shift drive maintenance.",
+    "You flew through a neutron star. On purpose. For the range boost. Respect.",
+    "The neutron highway: where the fuel stations are dying stars and the signs point toward the void."
+  ]
+}

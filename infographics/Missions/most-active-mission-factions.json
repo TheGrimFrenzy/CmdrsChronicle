@@ -1,0 +1,18 @@
+{
+  "category": "Missions",
+  "title": "Most Active Mission Factions",
+  "chartType": "table",
+  "query": "SELECT COUNT(*) AS count FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Faction AS label, COUNT(*) AS value FROM MissionAccepted WHERE Faction IS NOT NULL AND Faction != '' AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Faction ORDER BY value DESC",
+  "tableColumns": ["Faction", "Missions"],
+  "inaraSearchBase": "https://inara.cz/elite/minorfaction/?search=",
+  "details": {
+    "text": "{count} mission(s) accepted from minor factions during the report period.",
+    "help": "Faction is the issuing minor faction. inaraSearchBase enables click-through to Inara faction pages."
+  },
+  "tagLines": [
+    "Minor faction engagement data updated in the Pilots Federation BGS activity register.",
+    "Some factions got a lot more of your time than others. Here's the invoice.",
+    "These are the factions whose futures you shaped, one accepted contract at a time."
+  ]
+}

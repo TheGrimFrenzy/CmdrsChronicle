@@ -1,0 +1,16 @@
+{
+  "category": "PassengerTransport",
+  "title": "Most Popular Destinations",
+  "chartType": "table",
+  "query": "SELECT COUNT(*) AS total FROM MissionAccepted WHERE PassengerMission = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT DestinationSystem AS label, COUNT(*) AS value FROM MissionAccepted WHERE PassengerMission = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY DestinationSystem ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} passenger mission(s) accepted during the report period. The destination breakdown reveals the economic and political hot spots attracting the galaxy's travellers — conflict zones, tourist beacons, and permit-locked systems each draw distinct passenger types with very different risk profiles.",
+    "help": "MissionAccepted DestinationSystem for passenger missions. total drives the title as the accepted mission volume."
+  },
+  "tagLines": [
+    "Passenger destination frequency analysis compiled. Most requested systems noted in the transport log.",
+    "Certain systems attract a certain kind of traveller. Your most popular destinations reveal what kind.",
+    "The route shapes the clientele. Where people are going tells you as much as who they are."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "Missions",
+  "title": "Top Mission Types",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS count FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT CASE WHEN Name LIKE 'Mission_Massacre%' THEN 'Massacre' WHEN Name LIKE 'Mission_Assassin%' THEN 'Assassination' WHEN Name LIKE 'Mission_Delivery%' THEN 'Delivery' WHEN Name LIKE 'Mission_Courier%' THEN 'Courier' WHEN Name LIKE 'Mission_Mining%' THEN 'Mining' WHEN Name LIKE 'Mission_Collect%' THEN 'Collection' WHEN Name LIKE 'Mission_Rescue%' THEN 'Rescue' WHEN Name LIKE 'Mission_Salvage%' THEN 'Salvage' WHEN Name LIKE 'Mission_Passenger%' THEN 'Passenger' WHEN Name LIKE 'Mission_Scan%' THEN 'Scan' ELSE 'Other' END AS label, COUNT(*) AS value FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{count} mission(s) accepted during the report period.",
+    "help": "Mission Name prefix is used to classify type. The top 5 types are shown; the rest roll up into Other."
+  },
+  "tagLines": [
+    "Mission category analysis completed. The Pilots Federation notes your operational specialisation.",
+    "Massacre-heavy? Delivery-dominant? This chart doesn't lie about what kind of pilot you are.",
+    "The types of work you chose say everything about the commander you chose to be."
+  ]
+}

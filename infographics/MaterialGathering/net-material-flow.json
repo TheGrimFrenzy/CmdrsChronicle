@@ -1,0 +1,16 @@
+{
+  "category": "MaterialGathering",
+  "title": "Net Material Flow",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE((SELECT SUM(Count) FROM MaterialCollected WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS collected, COALESCE((SELECT SUM(Count) FROM MaterialDiscarded WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS discarded",
+  "detailQuery": "",
+  "details": {
+    "text": "{collected} material unit(s) gathered vs. {discarded} discarded during the report period. Net flow shows whether your gathering is outpacing your consumption — a high discard total relative to collection means you hit your inventory cap repeatedly and may have left valuable materials behind.",
+    "help": "collected drives the title as the headline inflow. The discarded subquery provides the outflow for comparison."
+  },
+  "tagLines": [
+    "Material inventory flow balance compiled. Net accumulation rate noted in the engineering supply report.",
+    "In vs. out. Most commanders never check the balance. It tells you a lot about your gathering efficiency.",
+    "Materials accumulate until they hit the cap. What happens then shows your priorities."
+  ]
+}

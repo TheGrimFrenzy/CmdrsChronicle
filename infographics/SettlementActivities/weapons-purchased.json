@@ -1,0 +1,16 @@
+{
+  "category": "SettlementActivities",
+  "title": "Weapons Purchased",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total, COALESCE(SUM(Price), 0) AS spend FROM BuyWeapon WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, COUNT(*) AS value FROM BuyWeapon WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC",
+  "details": {
+    "text": "{total} on-foot weapon purchase(s) totalling {spend} Cr during the report period. Your weapons purchases are the armoury receipts of your Odyssey career — the distribution shows where your combat priorities lie and which weapon types you keep returning to upgrade as your engineering and credits allow.",
+    "help": "BuyWeapon Name_Localised is the weapon type. total drives the title as the purchase count."
+  },
+  "tagLines": [
+    "On-foot weapon purchase records compiled. Odyssey armoury acquisition log noted.",
+    "The weapons you keep buying are the ones you trust your life to. Usually that's a compliment.",
+    "Laser vs. plasma vs. kinetic. Your purchases reveal which side of that debate you landed on."
+  ]
+}

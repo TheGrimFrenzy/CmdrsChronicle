@@ -1,7 +1,0 @@
-{
-  "category": "CombatShip",
-  "title": "Kill Bonds by Faction",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM FactionKillBond WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT COALESCE(AwardingFaction, 'Unknown') AS label, COUNT(*) AS value FROM FactionKillBond WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY AwardingFaction ORDER BY value DESC"
-}

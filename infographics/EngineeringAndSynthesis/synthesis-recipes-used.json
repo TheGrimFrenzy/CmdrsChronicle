@@ -1,0 +1,16 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Synthesis Recipes Used",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS runs FROM Synthesis WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Name AS label, COUNT(*) AS value FROM Synthesis WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC",
+  "details": {
+    "text": "{runs} synthesis recipe(s) executed during the report period. Synthesis reveals your play habits more honestly than almost anything else — frequent SRV fuel synthesis means surface grinding, heatsink synthesis means deep neutron runs, and premium FSD injection synthesis means long-range boosting through explored space.",
+    "help": "Synthesis Name is the recipe identifier (e.g. 'Heatsink:Standard', 'FSDinjection:Premium'). runs drives the title as the total synthesis sessions count."
+  },
+  "tagLines": [
+    "Synthesis recipe execution log compiled. Material expenditure via synthesis noted in the crafting record.",
+    "Synthesis is what you do when the resupply point is too far away. It tells you where you were operating.",
+    "The recipes you burn most are a map of your sessions. SRV fuel means surface work. Heatsinks mean trouble."
+  ]
+}

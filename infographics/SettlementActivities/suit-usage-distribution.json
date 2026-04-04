@@ -1,0 +1,16 @@
+{
+  "category": "SettlementActivities",
+  "title": "Suit Usage Distribution",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS switches FROM SwitchSuitLoadout WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT SuitName AS label, COUNT(*) AS value FROM SwitchSuitLoadout WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY SuitName ORDER BY value DESC",
+  "details": {
+    "text": "{switches} suit loadout switch(es) during the report period. Your most-used suit tells your Odyssey story in a single bar — Dominator means soldier, Maverick means rogue operative, Artemis means scientist and explorer; most commanders are a mix and this shows the true balance of your on-foot identity.",
+    "help": "SwitchSuitLoadout SuitName is the base suit type. switches drives the title as the total deployment switches."
+  },
+  "tagLines": [
+    "Suit loadout usage distribution compiled. On-foot deployment class breakdown noted in the Odyssey record.",
+    "The suit you wear is the character you're playing. The distribution shows who you are on the ground.",
+    "Dominator, Maverick, Artemis. Three philosophies. The bar chart is your personality assessment."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "Mining",
+  "title": "Limpet Usage by Type",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS launches FROM LaunchDrone WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Type AS label, COUNT(*) AS value FROM LaunchDrone WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Type ORDER BY value DESC",
+  "details": {
+    "text": "{launches} limpet(s) launched during the report period. Collector limpets do the heavy lifting while prospector limpets do the intelligence work — the breakdown shows the operational mix of your mining workflow and how fast you burn through consumables.",
+    "help": "LaunchDrone Type values include 'Collection', 'Prospector', 'FuelTransfer', and others. launches is the total count. (In-game, these are called limpets.)"
+  },
+  "tagLines": [
+    "Limpet deployment telemetry compiled. Consumable expenditure rates noted in the mining operations log.",
+    "Limpets do the work you can't do while scanning the next rock. Mostly.",
+    "Collector limpets are the unsung crew of every mining run. They never complain about the shifts."
+  ]
+}

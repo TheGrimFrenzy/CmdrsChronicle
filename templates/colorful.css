@@ -22,15 +22,17 @@ body {
 }
 
 /* ── MASTHEAD ── */
+
 .masthead {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    /* Use a navy blue gradient for masthead, richer than grey */
+    background: linear-gradient(135deg, #192550 0%, #22336b 100%);
     color: #fff;
     text-align: center;
 }
 
 .mh-thick-rule {
     height: 8px;
-    background: linear-gradient(90deg, #f093fb 0%, #f5576c 50%, #667eea 100%);
+    background: linear-gradient(90deg, #192550 0%, #22336b 100%);
     margin: 0;
 }
 
@@ -125,7 +127,10 @@ body {
     height: 200px;
     text-align: center;
     line-height: 200px;
-    font-size: 2.4em;
+    font-size: 2.8em;
+    opacity: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
+    user-select: none;
 }
 
 .left-tile {
@@ -218,7 +223,7 @@ body {
 .tile-body-center {
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 .right-badge-section {
     display: table-cell;
@@ -254,7 +259,10 @@ body {
     height: 200px;
     text-align: center;
     line-height: 200px;
-    font-size: 2.4em;
+    font-size: 2.8em;
+    opacity: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
+    user-select: none;
 }
 
 /* Styles for renderer's tile classes (from ElegantReportRenderer) when using colorful theme */
@@ -282,7 +290,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 6px;
 }
 .tile-title {
     font-family: 'Segoe UI', sans-serif;
@@ -416,11 +424,11 @@ body {
 .infographic-tile.grad-travel::before      { background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%); }
 .infographic-tile.grad-combat::before      { background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%); }
 .infographic-tile.grad-exploration::before { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.infographic-tile.grad-exobiology::before  { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.infographic-tile.grad-exobiology::before  { background: linear-gradient(135deg, #0d6e47 0%, #1a9a3a 100%); }
 .infographic-tile.grad-trade::before       { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
 .infographic-tile.grad-powerplay::before   { background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%); }
 .infographic-tile.grad-fleetcarriers::before { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
-.infographic-tile.grad-colonisation::before  { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.infographic-tile.grad-colonisation::before  { background: linear-gradient(135deg, #8b5a3c 0%, #d4a574 100%); }
 .infographic-tile.grad-onfoot::before        { background: linear-gradient(135deg, #e96443 0%, #904e95 100%); }
 .infographic-tile.grad-mining::before        { background: linear-gradient(135deg, #373b44 0%, #4286f4 100%); }
 .infographic-tile.grad-engineering::before   { background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%); }
@@ -622,13 +630,14 @@ body {
 
 .chart-label {
     font-size: 0.78em;
-    color: rgba(255,255,255,0.85);
+    color: #fff;
     width: 110px;
     flex-shrink: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.55), 0 0 12px rgba(0,0,0,0.35);
 }
 
 .chart-bar-container {
@@ -660,35 +669,39 @@ body {
 
 .summary-text {
     font-size: 0.9em;
-    color: rgba(255,255,255,0.9);
+    color: #fff;
     line-height: 1.5;
     margin: 0;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.55), 0 0 12px rgba(0,0,0,0.35);
 }
 
 /* ── CATEGORY GRADIENTS ── */
 .grad-travel        { background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%); }
 .grad-combat        { background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%); }
-.grad-exploration   { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.grad-exobiology    { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.grad-trade         { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.grad-exploration   { background: linear-gradient(135deg, #11998e 0%, #1a7a42 100%); }
+.grad-exobiology    { background: linear-gradient(135deg, #0d6e47 0%, #1a9a3a 100%); }
+.grad-trade         { background: linear-gradient(135deg, #f7971e 0%, #c47a00 100%); }
 .grad-powerplay     { background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%); }
 .grad-fleetcarriers { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
-.grad-colonisation  { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.grad-colonisation  { background: linear-gradient(135deg, #8b5a3c 0%, #d4a574 100%); }
 .grad-onfoot        { background: linear-gradient(135deg, #e96443 0%, #904e95 100%); }
 .grad-mining        { background: linear-gradient(135deg, #373b44 0%, #4286f4 100%); }
 .grad-engineering   { background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%); }
 .grad-crew          { background: linear-gradient(135deg, #7f00ff 0%, #e100ff 100%); }
 
 /* Aliases to match renderer category slugs (auto-generated) */
-.grad-crimeandsecurity           { background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%); }
+.grad-crimeandsecurity           { background: linear-gradient(135deg, #3d3d7a 0%, #6b4fa8 100%); }
 .grad-fleetcarrieroperations     { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
 .grad-materialgathering          { background: linear-gradient(135deg, #373b44 0%, #4286f4 100%); }
 .grad-missions                   { background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%); }
-.grad-passengertransport         { background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%); }
-.grad-salvageandrecovery         { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-.grad-settlementactivities       { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.grad-passengertransport         { background: linear-gradient(135deg, #2d5a6c 0%, #4a9fd8 100%); }
+.grad-salvageandrecovery         { background: linear-gradient(135deg, #11998e 0%, #1a7a42 100%); }
+.grad-settlementactivities       { background: linear-gradient(135deg, #f7971e 0%, #c47a00 100%); }
 .grad-shipmanagementandoutfitting{ background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%); }
-.grad-thargoidax                 { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.grad-thargoidax                 { background: linear-gradient(135deg, #1a3949 0%, #0d6e50 100%); }
+.grad-economyandmarket           { background: linear-gradient(135deg, #155724 0%, #1d6a3a 100%); }
+.grad-administrivia              { background: linear-gradient(135deg, #3d5a80 0%, #293241 100%); }
+.grad-codexanddiscoveries        { background: linear-gradient(135deg, #5c258d 0%, #4389a2 100%); }
 /* ── EMPTY STATE: GALNET ARTICLE ── */
 .galnet-wrap {
     width: 700px;

@@ -1,7 +1,0 @@
-{
-  "category": "Missions",
-  "title": "Missions by Type",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT CASE WHEN Name LIKE 'Mission_Courier%' THEN 'Courier' WHEN Name LIKE 'Mission_Delivery%' THEN 'Delivery' WHEN Name LIKE 'Mission_Massacre%' THEN 'Massacre' WHEN Name LIKE 'Mission_Passenger%' THEN 'Passenger' WHEN Name LIKE 'Mission_Mining%' THEN 'Mining' WHEN Name LIKE 'Mission_Salvage%' THEN 'Salvage' WHEN Name LIKE 'Mission_Scan%' THEN 'Scan' WHEN Name LIKE 'Mission_Hack%' THEN 'Hack' ELSE 'Other' END AS label, COUNT(*) AS value FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC"
-}

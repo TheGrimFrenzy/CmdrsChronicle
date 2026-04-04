@@ -1,0 +1,15 @@
+{
+  "category": "Missions",
+  "title": "Wing Missions Taken",
+  "chartType": "summary-tile",
+  "query": "SELECT SUM(CASE WHEN Wing = 1 THEN 1 ELSE 0 END) AS wingCount, COUNT(*) AS total FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{wingCount} wing mission(s) accepted out of {total} total missions during the report period. Wing missions are shared contracts where each participating pilot receives the full credit reward independently — the same objective, paid out in full to every member of the wing.",
+    "help": "Wing = 1 (true) on MissionAccepted indicates a wing mission. wingCount is listed first so it drives the tile title."
+  },
+  "tagLines": [
+    "Wing mission participation data logged. Coordinated contractor activity noted by the Pilots Federation.",
+    "You didn't fly those alone. Good. Wing missions pay better for a reason.",
+    "Every wing mission is a pact — you and your crew, against the galaxy, on the clock."
+  ]
+}

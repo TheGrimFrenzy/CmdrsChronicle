@@ -1,0 +1,16 @@
+{
+  "category": "CrimeAndSecurity",
+  "title": "Crime Revenue vs. Penalty Cost",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(TotalReward), 0) AS earned FROM Bounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(SUM(Amount), 0) AS penalties FROM PayBounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate UNION ALL SELECT COALESCE(SUM(Amount), 0) FROM PayFines WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{earned} Cr earned from bounty activity against a penalty spend during the report period. Did crime actually pay? This comparison answers it directly — and might reveal that your law-breaking career is costing significantly more than it generates.",
+    "help": "earned is bounty rewards; penalties subquery sums PayBounty + PayFines expenditure. earned drives the title as the gross crime revenue."
+  },
+  "tagLines": [
+    "Crime profitability analysis compiled. Gross criminal income vs. total legal remediation costs noted.",
+    "The math is honest. Whether the result is flattering is between you and your accountant.",
+    "Criminal careers are subject to market forces. The penalty column is the overhead no one talks about."
+  ]
+}

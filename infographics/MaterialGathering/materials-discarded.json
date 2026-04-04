@@ -1,0 +1,16 @@
+{
+  "category": "MaterialGathering",
+  "title": "Materials Discarded",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM MaterialDiscarded WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, SUM(Count) AS value FROM MaterialDiscarded WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} material unit(s) discarded during the report period. Discards reveal the hidden friction of material gathering — constantly jettisoning the same material means your inventory cap is perpetually full of lower-value items while you're trying to make room for the G5s you actually need.",
+    "help": "MaterialDiscarded fires when materials are manually discarded to free inventory space. total drives the title as the cumulative discard volume."
+  },
+  "tagLines": [
+    "Material discard log compiled. Inventory culling activity noted in the gathering record.",
+    "You found more than your inventory could hold. Something had to go. This is what you let go.",
+    "Discarding materials isn't waste — it's a deliberate choice about what your time is worth. Usually."
+  ]
+}

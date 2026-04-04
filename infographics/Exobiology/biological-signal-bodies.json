@@ -1,0 +1,16 @@
+{
+  "category": "Exobiology",
+  "title": "Biological Signal Bodies",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(DISTINCT BodyName) AS bodies FROM FSSBodySignals WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND Type_Localised LIKE '%Biological%'",
+  "detailQuery": "SELECT BodyName AS label, SUM(Count) AS value FROM FSSBodySignals WHERE Type_Localised LIKE '%Biological%' AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY BodyName ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{bodies} planet(s) with biological signals identified during the report period. This chart shows which worlds you found most inhabited — high signal counts can also indicate Stratum or multi-genus worlds where a single visit yields multiple paycheques.",
+    "help": "FSSBodySignals with Type_Localised containing Biological. bodies is the distinct planet count as the headline scope indicator."
+  },
+  "tagLines": [
+    "FSSBodySignal biological detections compiled. The biological signal distribution map has been updated.",
+    "The scanner doesn't lie. Blue dots mean life. You chased a lot of blue dots.",
+    "High signal counts on a single world are a gift. A multi-genus planet is practically a career decision."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Shipyard Net Spend",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE((SELECT SUM(ShipPrice) FROM ShipyardBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS bought, COALESCE((SELECT SUM(ShipPrice) FROM ShipyardSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS sold",
+  "detailQuery": "",
+  "details": {
+    "text": "{bought} Cr spent acquiring ships vs. {sold} Cr recovered selling them during the report period. Net ship spend is the true cost of your fleet evolution — the gap between buy and sell totals shows how much you've permanently sunk into hulls you've moved on from, which is almost always significantly more than you'd expect.",
+    "help": "ShipyardBuy ShipPrice vs. ShipyardSell ShipPrice. bought drives the title as the gross acquisition spend."
+  },
+  "tagLines": [
+    "Shipyard transaction reconciliation compiled. Fleet hull acquisition vs. disposal financials noted.",
+    "Ships depreciate. You paid market price for them and sold them for what you could get. The gap is real.",
+    "Net fleet spend is the honest number behind every new ship announcement. Someone paid the old ship's exit cost."
+  ]
+}

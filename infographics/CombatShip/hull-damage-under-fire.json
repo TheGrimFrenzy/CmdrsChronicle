@@ -1,0 +1,15 @@
+{
+  "category": "CombatShip",
+  "title": "Hull Damage Under Fire",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM HullDamage WHERE Health < 0.5 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} hull damage event(s) with structural integrity below 50% recorded during the report period. Below 50% hull health, module damage from penetrating hits becomes increasingly likely, and at 0% the ship is destroyed and trigger the insurance rebuy process.",
+    "help": "HullDamage.Health is a fraction (0.0–1.0). Health < 0.5 means the hull dropped below half — a genuinely dangerous threshold."
+  },
+  "tagLines": [
+    "Structural integrity breach events below 50% threshold logged. Insurance actuaries have been notified.",
+    "Below 50% hull health. That's the part where most pilots start reconsidering their choices.",
+    "Hull dropping below half is the galaxy's reminder that your ship is not immortal. Neither are you."
+  ]
+}

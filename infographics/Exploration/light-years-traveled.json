@@ -1,0 +1,16 @@
+{
+  "category": "Exploration",
+  "title": "Light Years Traveled",
+  "chartType": "summary-tile",
+  "summaryOnly": true,
+  "query": "SELECT CAST(COALESCE(SUM(JumpDist), 0) AS INTEGER) AS total, COUNT(*) AS jumps FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{jumps} hyperspace jump(s) through folded space covering {total} ly during the report period. For context, the Milky Way is approximately 100,000 ly across and Sagittarius A* sits roughly 26,000 ly from the bubble.",
+    "help": "JumpDist is in light years per jump. Cast to integer for display. summaryOnly: in a by-system report this would trivially return 1 jump."
+  },
+  "tagLines": [
+    "Long-range displacement metrics updated. Pilots Federation travel registry amended accordingly.",
+    "That's a lot of hyperspace jumps. You'll never get those seconds back.",
+    "The galaxy is 100,000 light years wide. You are closing the distance, one jump at a time."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "CombatOnFoot",
+  "title": "Crimes Committed On-Foot",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS crimes FROM CommitCrime WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT CrimeType AS label, COUNT(*) AS value FROM CommitCrime WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY CrimeType ORDER BY value DESC",
+  "details": {
+    "text": "{crimes} on-foot crime(s) logged during the report period. The crime type breakdown is a confessional — murder, theft, and trespass each paint a different picture of what kind of operative you are in the settlements.",
+    "help": "CommitCrime captures all criminal acts. Bar chart groups by CrimeType to show the distribution of offences."
+  },
+  "tagLines": [
+    "Criminal activity log updated. The relevant security services have been notified. Assume they are already en route.",
+    "Some commanders fight for glory. Some fight for credits. This chart suggests a third motivation.",
+    "The galaxy has laws. You have opinions about them. This is where those opinions are documented."
+  ]
+}

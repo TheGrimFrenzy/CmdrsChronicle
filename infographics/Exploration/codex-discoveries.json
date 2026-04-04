@@ -1,0 +1,16 @@
+{
+  "category": "Exploration",
+  "title": "Codex Discoveries",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS count FROM CodexEntry WHERE IsNewEntry = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Category AS label, COUNT(*) AS value FROM CodexEntry WHERE IsNewEntry = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Category ORDER BY value DESC",
+  "details": {
+    "text": "{count} new codex entr(y/ies) recorded during the report period.",
+    "help": "IsNewEntry = 1 filters to entries that were genuinely new discoveries for this commander. Category is the high-level codex grouping (e.g. Biology, Stellar, Thargoid, Guardian)."
+  },
+  "tagLines": [
+    "New codex entries submitted to the Pilots Federation knowledge database. Catalogue updated.",
+    "First time anyone — or at least the first time you — officially noticed that.",
+    "Every entry is a page added to humanity's catalogue of the unknown."
+  ]
+}

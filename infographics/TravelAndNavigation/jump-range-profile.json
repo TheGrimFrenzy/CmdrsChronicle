@@ -1,7 +1,0 @@
-{
-  "category": "TravelAndNavigation",
-  "title": "Jump Range Profile",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT CASE WHEN JumpDist < 10 THEN '< 10 ly' WHEN JumpDist < 20 THEN '10–20 ly' WHEN JumpDist < 30 THEN '20–30 ly' WHEN JumpDist < 40 THEN '30–40 ly' WHEN JumpDist < 50 THEN '40–50 ly' ELSE '50+ ly' END AS label, COUNT(*) AS value FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY MIN(JumpDist)"
-}

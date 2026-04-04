@@ -1,0 +1,16 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Blueprints Applied",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS crafts FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT BlueprintName AS label, COUNT(*) AS value FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY BlueprintName ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{crafts} engineer blueprint application(s) during the report period. Your most-crafted blueprints are the foundation of your build identity — a commander hammering Frame Shift Drive range mods is building an explorer, while someone repeatedly crafting Charge Enhanced Power Plants is optimising for deep combat.",
+    "help": "EngineerCraft fires for each blueprint application at an engineer's workshop. crafts drives the title as the total crafting session count."
+  },
+  "tagLines": [
+    "Engineer blueprint application log compiled. Module upgrade activity archived in the engineering record.",
+    "Every craft was a roll of the dice. You kept rolling until the module said what you needed.",
+    "The most-crafted blueprint is the one you needed most. That's more honest than you might expect."
+  ]
+}

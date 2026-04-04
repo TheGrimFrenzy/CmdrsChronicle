@@ -1,0 +1,15 @@
+{
+  "category": "Exploration",
+  "title": "Cartographic Earnings",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(TotalEarnings), 0) AS total, COUNT(*) AS count, COALESCE(SUM(Bonus), 0) AS bonus FROM MultiSellExplorationData WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} cartographic data submission(s) to Universal Cartographics totalling {total} Cr during the report period, including {bonus} Cr in first-discovery bonuses — premium payouts awarded when you are the first commander ever to chart a given star system or body.",
+    "help": "MultiSellExplorationData fires when selling exploration data at Universal Cartographics. TotalEarnings includes both base value and bonus."
+  },
+  "tagLines": [
+    "Universal Cartographics acknowledges receipt of your survey data. Processing fees withheld as applicable.",
+    "The mapping agencies didn't know those systems existed. They do now. You're welcome.",
+    "Every credit here is a star system that humanity now knows exists."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "category": "CombatShip",
+  "title": "Interdiction Outcomes",
+  "chartType": "summary-tile",
+  "query": "SELECT (SELECT COUNT(*) FROM Interdicted WHERE Submitted = 0 AND event_timestamp >= :startDate AND event_timestamp < :endDate) AS escaped, (SELECT COUNT(*) FROM Interdicted WHERE Submitted = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate) AS submitted, (SELECT COUNT(*) FROM EscapeInterdiction WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS count",
+  "details": {
+    "text": "{count} interdiction(s) evaded before the mass-lock completed, {escaped} fought off after refusing submission, and {submitted} conceded to during the report period. Interdictions are forced frame shift disengagements used by hostile ships to pull commanders out of supercruise into normal space.",
+    "help": "count = EscapeInterdiction events (evaded before being pulled); escaped = Interdicted WHERE Submitted=false (fought the pull and won); submitted = Interdicted WHERE Submitted=true. count drives the title as the positive survival metric."
+  },
+  "tagLines": [
+    "Interdiction event log reviewed. Evasion and submission ratios noted in your flight operational record.",
+    "Some you dodged, some you fought, some you just let happen. This is that story.",
+    "The interdiction pull is the galaxy's way of asking: how badly do you want to get away?"
+  ]
+}

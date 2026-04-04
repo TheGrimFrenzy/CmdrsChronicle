@@ -1,0 +1,15 @@
+{
+  "category": "Exploration",
+  "title": "Surface Probe Efficiency",
+  "chartType": "summary-tile",
+  "query": "SELECT SUM(CASE WHEN ProbesUsed <= EfficiencyTarget THEN 1 ELSE 0 END) AS count, COUNT(*) AS total FROM SAAScanComplete WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} of {total} detailed surface mapping run(s) completed at or under the efficiency probe target during the report period. Staying within the probe target earns a first-mapped bonus on top of the base cartographic payout; probes beyond the target still complete the scan but forfeit the bonus.",
+    "help": "ProbesUsed <= EfficiencyTarget qualifies for the efficiency bonus on the mapping payout. Efficient runs earn significantly more credits. count = efficient runs; total = all runs."
+  },
+  "tagLines": [
+    "Probe deployment efficiency metrics logged. The cartographic efficiency division notes compliance.",
+    "Every probe over the target is credits left floating in orbit.",
+    "Precision mapping — because the first to chart a world should do it properly."
+  ]
+}

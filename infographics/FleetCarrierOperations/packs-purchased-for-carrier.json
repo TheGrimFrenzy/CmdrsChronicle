@@ -1,0 +1,16 @@
+{
+  "category": "FleetCarrierOperations",
+  "title": "Packs Purchased for Carrier",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM CarrierModulePack WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT PackTheme AS label, COUNT(*) AS value FROM CarrierModulePack WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY PackTheme UNION ALL SELECT PackTheme AS label, COUNT(*) AS value FROM CarrierShipPack WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY PackTheme ORDER BY value DESC",
+  "details": {
+    "text": "{total} module/ship pack(s) purchased for the carrier during the report period. What you stock defines what your carrier offers the galaxy — a module-heavy carrier caters to engineers passing through while a ship-focused carrier is a mobile shipyard serving commanders who need a new hull in the field.",
+    "help": "CarrierModulePack and CarrierShipPack each track outfitting inventory additions. total drives the title as the combined pack acquisition count."
+  },
+  "tagLines": [
+    "Fleet carrier inventory pack acquisition log compiled. Carrier outfitting catalogue updated.",
+    "Every pack stocked is a service offered to whoever docks at your carrier. You decided what that looks like.",
+    "A well-stocked carrier attracts visitors. The pack list is your service menu for the exploring masses."
+  ]
+}

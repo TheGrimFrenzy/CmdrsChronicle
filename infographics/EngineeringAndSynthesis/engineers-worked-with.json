@@ -1,0 +1,16 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Engineers Worked With",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS crafts FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Engineer AS label, COUNT(*) AS value FROM EngineerCraft WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Engineer ORDER BY value DESC",
+  "details": {
+    "text": "{crafts} engineering session(s) across all workshops during the report period. Each engineer is a unique character with their own unlock story — the visit distribution reveals your specialist focus and how far along the engineering tree you've progressed.",
+    "help": "EngineerCraft Engineer field names the workshop where the craft happened. crafts is the total crafting volume driving the title."
+  },
+  "tagLines": [
+    "Engineer workshop visit log compiled. Blueprint application counts per engineer noted in the record.",
+    "Some engineers you visit once. Others become permanent stops on your circuit. This shows which are which.",
+    "Every engineer relationship started with an unlock quest. Some turned into a career-long working arrangement."
+  ]
+}

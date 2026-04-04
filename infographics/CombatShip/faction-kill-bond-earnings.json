@@ -1,0 +1,16 @@
+{
+  "category": "CombatShip",
+  "title": "Faction Kill Bond Earnings",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(Reward), 0) AS total FROM FactionKillBond WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT AwardingFaction AS label, COALESCE(SUM(Reward), 0) AS value FROM FactionKillBond WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY AwardingFaction ORDER BY value DESC",
+  "details": {
+    "text": "{total} Cr earned in conflict zone kill bonds during the report period.",
+    "help": "FactionKillBond.Reward per kill; AwardingFaction identifies which side of the conflict paid the bond. total drives the title."
+  },
+  "tagLines": [
+    "Conflict zone combat bond disbursements processed. The relevant factions express their appreciation.",
+    "You chose a side. Multiple times. The credits confirm it.",
+    "Kill bonds are the price factions pay for soldiers willing to bleed in their conflict zones."
+  ]
+}

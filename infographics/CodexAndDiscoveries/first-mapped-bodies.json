@@ -1,0 +1,15 @@
+{
+  "category": "CodexAndDiscoveries",
+  "title": "First Mapped Bodies",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total FROM SAAScanComplete WHERE WasFirstMappedBy = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} body(ies) mapped for the first time during the report period. Being first to map a world means your name is in the game's database permanently — first-mapped worlds are the explorer's equivalent of planting a flag, and this count shows how many planets and moons now carry your name in the galaxy's cartographic record.",
+    "help": "SAAScanComplete WasFirstMappedBy = 1 (or FirstMappedBy matching the current commander) flags first-mapping events. total drives the title."
+  },
+  "tagLines": [
+    "First cartographic mapping events compiled. Bodies added to the galaxy map under your commander designation.",
+    "Your name is on those worlds now. Permanently. The Pilots Federation keeps those records.",
+    "Every first-mapped body is a mark you left on the galaxy. Some commander in a thousand years might look it up."
+  ]
+}

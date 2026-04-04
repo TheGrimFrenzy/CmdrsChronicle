@@ -1,0 +1,16 @@
+{
+  "category": "SettlementActivities",
+  "title": "Equipment Spend",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE((SELECT SUM(Price) FROM BuySuit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS suitSpend, COALESCE((SELECT SUM(Price) FROM BuyWeapon WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS weaponSpend, COALESCE((SELECT SUM(Price) FROM BuySuit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) + COALESCE((SELECT SUM(Price) FROM BuyWeapon WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS total",
+  "detailQuery": "",
+  "details": {
+    "text": "{suitSpend} Cr spent on suits and {weaponSpend} Cr on weapons during the report period. On-foot gear is a significant credit sink that's easy to lose track of — the combined total validates the grind that funded those upgrades and measures how seriously you've invested in the Odyssey side of the game.",
+    "help": "suitSpend + weaponSpend = total Odyssey gear investment. suitSpend drives the title as the larger category spend."
+  },
+  "tagLines": [
+    "On-foot equipment expenditure compiled. Odyssey gear investment totals noted in the outfitting record.",
+    "The suits and weapons cost credits. The effectiveness of the build is the return on that investment.",
+    "Odyssey gear is expensive to build properly. This is what you decided was worth spending on."
+  ]
+}

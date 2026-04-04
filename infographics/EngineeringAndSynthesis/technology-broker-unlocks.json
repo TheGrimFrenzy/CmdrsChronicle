@@ -1,0 +1,16 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Technology Broker Unlocks",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS unlocks FROM TechnologyBroker WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT ItemsUnlocked AS label, 1 AS value FROM TechnologyBroker WHERE event_timestamp >= :startDate AND event_timestamp < :endDate ORDER BY event_timestamp DESC LIMIT 20",
+  "details": {
+    "text": "{unlocks} technology broker unlock(s) completed during the report period. Tech broker unlocks are major one-time progression milestones — Guardian modules and meta-alloy reinforcements represent access to some of the most powerful non-engineered equipment available to any Pilots Federation member.",
+    "help": "TechnologyBroker fires per unlock transaction. ItemsUnlocked contains the unlocked item name. unlocks drives the title as the total milestone count."
+  },
+  "tagLines": [
+    "Technology broker unlock records compiled. Pilots Federation technology access grants confirmed.",
+    "Each unlock was a grind to reach. The materials don't accumulate easily, and the broker doesn't offer refunds.",
+    "Guardian tech. Human innovation. The brokers sit between both. You paid into both queues."
+  ]
+}

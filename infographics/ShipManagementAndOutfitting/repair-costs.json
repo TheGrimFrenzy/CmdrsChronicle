@@ -1,0 +1,15 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Repair Costs",
+  "chartType": "summary-tile",
+  "query": "SELECT ((SELECT COALESCE(SUM(Cost), 0) FROM Repair WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) + (SELECT COALESCE(SUM(Cost), 0) FROM RepairAll WHERE event_timestamp >= :startDate AND event_timestamp < :endDate)) AS total",
+  "details": {
+    "text": "{total} credits spent on ship repairs during the report period. How much you spend on repairs tells the true cost of your adventures — a high repair bill means you were pushing the limits, taking punishment, and living on the edge rather than maintaining safe distance from danger.",
+    "help": "Repair fires for individual module repairs with Cost per event; RepairAll fires for full ship repairs with Cost. total drives the title as the combined repair expenditure."
+  },
+  "tagLines": [
+    "Repair expenditure compiled from maintenance records. Total credits spent on hull and module restoration noted.",
+    "Every credit on this chart is a battle you fought, a mistake you made, or a risk you took.",
+    "An expensive repair log is the price of an interesting life in the galaxy."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Supercruise Exit Targets",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM SupercruiseExit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Body AS label, COUNT(*) AS value FROM SupercruiseExit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} supercruise exit(s) recorded during the report period. Drop destinations tell your daily routine at fine granularity — frequent drops at Compromise Beacons or Hazardous Resource Extraction Sites signal bounty hunting or mining; Tourist Beacons hint at exploration side trips; stations suggest trading or mission running.",
+    "help": "SupercruiseExit Body is the destination body or station name. total drives the title."
+  },
+  "tagLines": [
+    "Supercruise exit destination log compiled. Drop location frequency distribution noted in the flight record.",
+    "Where you drop out of supercruise is where the work is. The chart shows what work that was.",
+    "Every drop has a purpose. The most frequent ones reveal what you actually spend your time doing."
+  ]
+}

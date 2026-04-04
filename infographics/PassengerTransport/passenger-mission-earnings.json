@@ -1,0 +1,15 @@
+{
+  "category": "PassengerTransport",
+  "title": "Passenger Mission Earnings",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(Reward), 0) AS total, COUNT(*) AS missions FROM MissionCompleted WHERE Name LIKE 'Mission_Passenger%' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} Cr earned across {missions} completed passenger transport mission(s) during the report period. Passenger running in a well-fitted Beluga or Python is one of the steadiest credit generators available — a hefty earnings total validates the cabin outfitting investment and rewards the patience of serving the galaxy's demanding travellers.",
+    "help": "MissionCompleted filtered to passenger mission name patterns. total drives the title as the total transport earnings."
+  },
+  "tagLines": [
+    "Passenger transport earnings compiled. Mission reward totals confirmed with the Pilots Federation mission board.",
+    "You flew them where they needed to go. Most of them kept their complaints to themselves.",
+    "A full passenger manifest and a long route is where the real earnings happen. You knew that."
+  ]
+}

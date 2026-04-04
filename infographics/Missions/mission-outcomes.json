@@ -1,0 +1,15 @@
+{
+  "category": "Missions",
+  "title": "Mission Outcomes",
+  "chartType": "summary-tile",
+  "query": "SELECT (SELECT COUNT(*) FROM MissionCompleted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS count, (SELECT COUNT(*) FROM MissionFailed WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS failed, (SELECT COUNT(*) FROM MissionAbandoned WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS abandoned",
+  "details": {
+    "text": "{count} contract(s) completed, {failed} failed before the deadline or target was lost, and {abandoned} abandoned mid-flight during the report period. Failed and abandoned missions incur a reputation penalty with the issuing minor faction, which can affect future mission availability and payouts.",
+    "help": "count = completions (drives title as the most positive headline metric). failed and abandoned are supporting detail."
+  },
+  "tagLines": [
+    "Mission outcome statistics compiled. Contractors with high failure rates are advised to review contract selection criteria.",
+    "Mostly completed. Mostly. The failures have been noted.",
+    "Completions, failures, and the quiet shameful ones you abandoned and hope no one asks about."
+  ]
+}

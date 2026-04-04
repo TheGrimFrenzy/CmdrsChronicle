@@ -1,0 +1,16 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Module Sell Revenue",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(SellPrice), 0) AS total FROM ModuleSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(SellItem_Localised, SellItem) AS label, COALESCE(SUM(SellPrice), 0) AS value FROM ModuleSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY SellItem ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} Cr recovered selling modules during the report period. A large sell revenue alongside a diverse module list tells the story of a significant refit — either a purposeful build overhaul or the financial aftermath of a major change in how you play.",
+    "help": "ModuleSell SellPrice is the credit return. total drives the title as the module disposal revenue."
+  },
+  "tagLines": [
+    "Module sell transaction records compiled. Outfitting disposal revenue noted in the fleet management record.",
+    "Every module you sold was one you no longer needed. Or could no longer afford to need. Either way.",
+    "The refit revenue covers some of the new build cost. How much depends on what you were replacing."
+  ]
+}

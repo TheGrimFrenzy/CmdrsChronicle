@@ -1,0 +1,15 @@
+{
+  "category": "CombatShip",
+  "title": "Bounty Vouchers Earned",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(TotalReward), 0) AS total, COUNT(*) AS kills FROM Bounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{kills} wanted target(s) destroyed and bounty vouchers submitted to station security, earning {total} Cr during the report period. Bounty payouts stack across all issuing factions for each kill — a ship wanted across multiple jurisdictions pays out from each faction simultaneously.",
+    "help": "Bounty.TotalReward sums all rewards across all factions for each kill. total drives the title."
+  },
+  "tagLines": [
+    "Bounty voucher submission totals updated. The relevant security services acknowledge your contribution.",
+    "Wanted ships reduced to debris. The insurance companies are not happy. You are.",
+    "Every credit here had a body — specifically, the body of a ship that had it coming."
+  ]
+}

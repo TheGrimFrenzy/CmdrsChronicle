@@ -1,0 +1,16 @@
+{
+  "category": "Exobiology",
+  "title": "Scan Completion Funnel",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS scans FROM ScanOrganic WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT ScanType AS label, COUNT(*) AS value FROM ScanOrganic WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY ScanType ORDER BY CASE ScanType WHEN 'Log' THEN 1 WHEN 'Sample' THEN 2 WHEN 'Analyse' THEN 3 ELSE 4 END",
+  "details": {
+    "text": "{scans} organic scan event(s) recorded during the report period. The funnel from Log → Sample → Analyse shows your completion discipline — a perfect 1:1:1 ratio means you finished every biological you started; divergence means you walked away from some. The credit only pays on Analyse.",
+    "help": "ScanOrganic ScanType values are Log (first contact), Sample (second), and Analyse (third and final). scans drives the title as the total scan event volume."
+  },
+  "tagLines": [
+    "Organic scan stage data compiled. Sample completion ratio noted in the xenobiology field report.",
+    "The first scan is free. The second one costs time. The third one pays. That's the deal.",
+    "Incomplete biologicals don't pay. Yours mostly complete. The funnel shows you're disciplined about it."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "SocialMulticrew",
+  "title": "Crew Sessions Hosted",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS sessions, COALESCE(SUM(OnCrewCount), 0) AS crewSlots FROM EndCrewSession WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "",
+  "details": {
+    "text": "{sessions} multicrew session(s) hosted with {crewSlots} total crew-slot(s) served during the report period. Hosting multicrew is an act of community — every session is a shared adventure where someone trusted you with their time, and you provided the ship.",
+    "help": "EndCrewSession fires at the end of a hosted session. OnCrewCount is the number of crew members who participated. sessions drives the title."
+  },
+  "tagLines": [
+    "Multicrew hosting activity compiled. Sessions captained and crew member participation noted.",
+    "You opened the airlock and let them aboard. Every session is someone else's memory of your ship.",
+    "Hosting is the captain's burden and privilege. Everyone who flew with you felt what you built."
+  ]
+}

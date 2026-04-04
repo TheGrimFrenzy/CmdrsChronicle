@@ -56,10 +56,16 @@ namespace CmdrsChronicle.Core
         public string? Subtitle { get; set; }
 
         /// <summary>
-        /// Optional list of flavour captions for the galnet panel-caption area.
+        /// When true, this tile is excluded from per-system reports where a single-system
+        /// scope would make the metric trivial or nonsensical (e.g. light-years travelled).
+        /// </summary>
+        public bool SummaryOnly { get; set; }
+
+        /// <summary>
+        /// Three flavour strings for the galnet panel-caption area (GalNet-formal / snarky / lore-evocative).
         /// One is chosen at random at render time. If absent, no caption is rendered.
         /// </summary>
-        public string[]? Captions { get; set; }
+        public string[]? TagLines { get; set; }
 
         /// <summary>Source file path set by InfographicLoader; not read from JSON.</summary>
         [JsonIgnore]

@@ -1,0 +1,16 @@
+{
+  "category": "Powerplay",
+  "title": "Votes Cast",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS votes FROM PowerplayVote WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Faction AS label, COUNT(*) AS value FROM PowerplayVote WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Faction ORDER BY value DESC",
+  "details": {
+    "text": "{votes} powerplay vote(s) cast during the report period. Voting is the most passive form of political participation available — each vote contributes to the weekly system preparation tally and, for dedicated voters, can influence which systems your Power targets next.",
+    "help": "PowerplayVote Faction is the system target being voted for. votes drives the title as the total civic engagement count."
+  },
+  "tagLines": [
+    "Powerplay voting records compiled. Civic participation contribution noted by the Power's systems office.",
+    "You voted. Not everyone does. The tally only works if people show up.",
+    "Voting in Powerplay is quiet work. No medals, no rank. Just influence, one tick at a time."
+  ]
+}

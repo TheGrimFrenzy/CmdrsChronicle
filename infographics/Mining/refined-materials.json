@@ -1,0 +1,16 @@
+{
+  "category": "Mining",
+  "title": "Refined Materials",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM MiningRefined WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Type_Localised, Type) AS label, COUNT(*) AS value FROM MiningRefined WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{total} unit(s) refined from asteroids during the report period. Your refined output is your mining resume — LTDs and Void Opals dominate lucrative hauls while plain iron suggests a very different ring session.",
+    "help": "MiningRefined fires for each refining cycle. Count is the units extracted per cycle. total drives the title as the volume metric."
+  },
+  "tagLines": [
+    "Refined material inventory updated. The relevant commodities exchanges acknowledge the output volume.",
+    "Every unit on this chart started as raw rock. You changed that. The market did the rest.",
+    "The rings gave up these materials reluctantly. Laser cutters and patience did the negotiating."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "SalvageAndRecovery",
+  "title": "Recovery vs. Jettison Ratio",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE((SELECT SUM(Count) FROM CollectCargo WHERE MissionID IS NULL AND event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS collected, COALESCE((SELECT SUM(Count) FROM EjectCargo WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS ejected",
+  "detailQuery": "",
+  "details": {
+    "text": "{collected} unit(s) collected vs. {ejected} ejected during the report period. Net haul efficiency shows whether your salvage operations resulted in a net positive — a high jettison ratio relative to collection suggests indiscriminate scooping followed by painful hold-management decisions.",
+    "help": "collected = free-scooped cargo; ejected = all EjectCargo events. collected drives the title as the recovery volume."
+  },
+  "tagLines": [
+    "Cargo recovery efficiency ratio compiled. Net haul volume vs. jettison loss calculated.",
+    "Some of what you scooped didn't make it to market. This is the gap between ambition and cargo capacity.",
+    "Efficient salvage means deciding what to keep before you scoop it. Experience teaches that lesson eventually."
+  ]
+}

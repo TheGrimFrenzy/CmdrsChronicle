@@ -2,8 +2,15 @@
   "category": "FleetCarrierOperations",
   "title": "Carrier Jump Destinations",
   "chartType": "table",
-  "query": "SELECT COUNT(DISTINCT StarSystem) FROM CarrierJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT StarSystem AS label, COUNT(*) AS value FROM CarrierJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY StarSystem ORDER BY value DESC",
-  "tableColumns": ["System", "Visits"],
-  "inaraSearchBase": "https://inara.cz/elite/starsystem/?search="
+  "query": "SELECT COUNT(*) AS total FROM CarrierJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT StarSystem AS label, COUNT(*) AS value FROM CarrierJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY StarSystem ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} carrier jump(s) completed during the report period. Your carrier's itinerary is a travel diary writ large — the destination breakdown tells the story of expeditions, mining operations, and the grand tours your floating city has made across the galaxy.",
+    "help": "CarrierJump fires when a fleet carrier completes a jump. StarSystem is the destination. total drives the title as the jump count headline."
+  },
+  "tagLines": [
+    "Fleet carrier jump telemetry archived. Destination system catalogue updated in the carrier operations log.",
+    "Moving a carrier is a commitment. Each destination was a decision. The log shows the itinerary.",
+    "Every jump costs tritium. Every destination had a reason. Sometimes the reason was just 'somewhere new'."
+  ]
 }

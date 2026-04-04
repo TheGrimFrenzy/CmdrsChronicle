@@ -1,7 +1,0 @@
-{
-  "category": "CombatOnFoot",
-  "title": "Consumables Used",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM UseConsumable WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, COUNT(*) AS value FROM UseConsumable WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC"
-}

@@ -1,0 +1,16 @@
+{
+  "category": "SalvageAndRecovery",
+  "title": "Cargo Ejected by Type",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM EjectCargo WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Type_Localised, Type) AS label, SUM(Count) AS value FROM EjectCargo WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Type ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} unit(s) of cargo ejected during the report period. Jettisoned cargo is either a tactical sacrifice — dumping contraband before a police scan — or operational waste from an overfull hold. The types tell you whether you were running hot legally or disposing of something the authorities definitely would have noticed.",
+    "help": "EjectCargo Type_Localised is the commodity type ejected. total drives the title as the jettison volume headline."
+  },
+  "tagLines": [
+    "Cargo jettison log compiled. Ejected commodity types noted in the flight record.",
+    "You threw it out. The void has it now. Most of the time there was a very good reason.",
+    "Jettisoning cargo is a decision made in seconds. The reasons for it vary enormously. The log just records the result."
+  ]
+}

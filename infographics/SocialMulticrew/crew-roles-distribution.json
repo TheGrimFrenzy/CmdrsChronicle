@@ -1,0 +1,16 @@
+{
+  "category": "SocialMulticrew",
+  "title": "Crew Roles Distribution",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM CrewMemberRoleChange WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Role AS label, COUNT(*) AS value FROM CrewMemberRoleChange WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Role UNION ALL SELECT Role AS label, COUNT(*) AS value FROM ChangeCrewRole WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Role ORDER BY value DESC",
+  "details": {
+    "text": "{total} crew role assignment(s) during the report period. Role distribution reveals what kind of multicrew experience you create and seek — a Gunner-heavy chart means combat-focused multicrew; Fighter Con dominance means you run fighter wing operations; Helm time means you've been trusted with direct ship control.",
+    "help": "CrewMemberRoleChange tracks crew role changes on your ship; ChangeCrewRole your own role changes. total drives the title."
+  },
+  "tagLines": [
+    "Multicrew role distribution log compiled. Role assignment frequency noted in the crew operations record.",
+    "Every role was filled by someone who chose it. The distribution shows what your sessions were designed for.",
+    "Gunner, fighter controller, helm. Three very different jobs. The chart shows which was in demand."
+  ]
+}

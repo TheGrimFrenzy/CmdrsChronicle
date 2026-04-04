@@ -1,0 +1,16 @@
+{
+  "category": "SalvageAndRecovery",
+  "title": "Salvage Collected by Commodity",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM CollectCargo WHERE MissionID IS NULL AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Type_Localised, Type) AS label, SUM(Count) AS value FROM CollectCargo WHERE MissionID IS NULL AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Type ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} unit(s) of salvage scooped from signal sources and debris fields during the report period. The haul reveals the nature of the wrecks you've been picking over — cargo containers, technical blueprints, or personal effects each paint a different picture of the disasters you've visited.",
+    "help": "CollectCargo with no MissionID indicates free-scooped salvage rather than mission cargo. total drives the title."
+  },
+  "tagLines": [
+    "Salvage collection log compiled. Free-scooped commodity breakdown noted in the recovery record.",
+    "Someone lost this. You found it. The market decides if that makes you a rescuer or a scavenger.",
+    "Debris fields are catalogues of catastrophe. Your hold is the index of what you were willing to pick up."
+  ]
+}

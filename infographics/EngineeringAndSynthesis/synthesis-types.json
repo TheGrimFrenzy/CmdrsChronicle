@@ -1,7 +1,0 @@
-{
-  "category": "EngineeringAndSynthesis",
-  "title": "Synthesis Types",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM Synthesis WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT Name AS label, COUNT(*) AS value FROM Synthesis WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC"
-}

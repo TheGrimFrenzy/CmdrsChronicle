@@ -1,0 +1,16 @@
+{
+  "category": "Exploration",
+  "title": "Systems Fully Honked",
+  "chartType": "summary-tile",
+  "summaryOnly": true,
+  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(BodyCount), 0) AS totalBodies FROM FSSDiscoveryScan WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} star system(s) fully surveyed with the Full Spectrum Scanner during the report period, revealing {totalBodies} bodies across all those systems. An FSS sweep — colloquially a 'honk' — detects every body in a system and is required before detailed scanning or probe mapping can begin.",
+    "help": "FSSDiscoveryScan fires once per FSS honk. BodyCount is the total bodies detected in the system. summaryOnly: in a by-system report this would always return 1."
+  },
+  "tagLines": [
+    "Full Spectrum Scanner utilisation data submitted to the cartographic bureau.",
+    "You honked it. You honked every single one of them. You honk-completionist.",
+    "A honk is how you announce yourself to a new system. This is how many times you said hello."
+  ]
+}

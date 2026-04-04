@@ -1,11 +1,16 @@
 {
   "category": "CombatOnFoot",
   "title": "Weapons Purchased",
-  "chartType": "summary-tile",
-  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Price), 0) AS totalReward FROM BuyWeapon WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(Price), 0) AS total, COUNT(*) AS purchases FROM BuyWeapon WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, COUNT(*) AS value FROM BuyWeapon WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
   "details": {
-    "text": "{count} weapon(s) purchased · {totalReward} Cr spent",
-    "help": "On-foot personal weapons bought from outfitting"
-  }
+    "text": "{purchases} on-foot weapon(s) purchased for {total} Cr during the report period. Each weapon purchase marks a deliberate upgrade to your loadout — the distribution reveals which combat roles you've been investing in.",
+    "help": "BuyWeapon fires on each on-foot weapon purchase. total drives the title as the spend amount is the headline metric."
+  },
+  "tagLines": [
+    "Weapon procurement records updated. Pilots Federation armourers note the volume of recent acquisitions.",
+    "The Manticore catalogue doesn't restock itself. Someone has to be buying all this.",
+    "Every weapon purchased is a theory about how the next engagement will go. The galaxy has opinions."
+  ]
 }
-

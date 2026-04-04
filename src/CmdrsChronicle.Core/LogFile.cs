@@ -10,9 +10,9 @@ namespace CmdrsChronicle.Core
     public class LogFile
     {
         /// <summary>Full path to the log file.</summary>
-        public string Path { get; set; }
+        public string Path { get; set; } = string.Empty;
         /// <summary>Filename (matches pattern Journal.YYYY-MM-DDThhmmss.nn.log).</summary>
-        public string Filename { get; set; }
+        public string Filename { get; set; } = string.Empty;
         /// <summary>Last modified timestamp.</summary>
         public DateTime ModifiedAt { get; set; }
         /// <summary>File size in bytes.</summary>

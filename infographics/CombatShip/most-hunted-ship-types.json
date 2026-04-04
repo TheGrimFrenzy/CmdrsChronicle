@@ -1,0 +1,16 @@
+{
+  "category": "CombatShip",
+  "title": "Most Hunted Ship Types",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS count FROM Bounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Target, 'Unknown') AS label, COUNT(*) AS value FROM Bounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Target ORDER BY value DESC",
+  "details": {
+    "text": "{count} bounty kill(s) recorded during the report period.",
+    "help": "Target on Bounty is the ship type destroyed. Top 5 shown; remainder rolled into Other."
+  },
+  "tagLines": [
+    "Target vessel classification data archived. Ship type frequency analysis complete.",
+    "Sidewinders, Cobras, Anacondas — the chart doesn't judge. It just counts.",
+    "The ships you've destroyed most are the ones that kept crossing your path. Or your gunsights."
+  ]
+}

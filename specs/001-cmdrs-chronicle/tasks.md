@@ -292,30 +292,28 @@
 
 
 ## 6. Final Phase: Polish & Cross-Cutting
-1. [ ] T601 Add installer project and build pipeline for MSIX/MSI
+1. [x] T601 Add installer project and build pipeline for ZIP packaging
    - **Acceptance Criteria:**
      - Installer project created
-     - Build produces MSIX or MSI
+     - Build produces a ZIP package containing all required files
      - Installer instructions in README
-  - Steps:
-    - Write clear, step-by-step instructions for end users explaining how to install, configure, and use the application
-    - Include details on customizing infographics and taglines
-    - Note: The 'no data' messages are embedded and intentionally left as a surprise/mystery for the user
-    - Add usage examples and troubleshooting tips
-    - Place instructions in USAGE.md and link from README
+   - Steps:
+     - Create installer project for ZIP output only (no MSIX/MSI)
+     - Document how to extract and run the CLI from the ZIP
+     - Include details on customizing infographics and taglines
+     - Add usage examples and troubleshooting tips
+     - Place instructions in USAGE.md and link from README
 
-2. [ ] T602 Generate end-user instructions and usage guide
+2. [x] T602 Generate end-user instructions and usage guide
    - **Acceptance Criteria:**
      - USAGE.md and README include clear end-user instructions
      - Infographics directory packaged and customizable
-     - Tests for installer build
-  - Steps:
-    - Create Installer/ project for packaging
-    - Package the /infographics directory and all category subdirectories so they are delivered with the app
-    - Ensure the application reads infographics from the installed directory, allowing end users to add or modify their own
-    - Configure build to produce MSIX or MSI
-    - Add installer instructions to README
-    - Write tests for installer build
+     - Tests for ZIP installer build
+   - Steps:
+     - Package the /infographics directory and all category subdirectories so they are delivered with the app
+     - Ensure the application reads infographics from the extracted directory, allowing end users to add or modify their own
+     - Add installer instructions to README
+     - Write tests for ZIP installer build
 
 3. [ ] T603 Add end-to-end test scenarios and documentation
    - **Acceptance Criteria:**

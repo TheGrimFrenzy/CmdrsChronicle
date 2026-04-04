@@ -1,0 +1,15 @@
+{
+  "category": "Missions",
+  "title": "Mission Rewards Earned",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(Reward), 0) AS total, COUNT(*) AS missions FROM MissionCompleted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{missions} contract(s) fulfilled earning {total} Cr in combined mission rewards during the report period. Mission payouts range from a few thousand credits for simple courier runs to hundreds of millions for high-risk assassination or wing massacre contracts.",
+    "help": "MissionCompleted.Reward is the credit payout at completion. total drives the title metric."
+  },
+  "tagLines": [
+    "Mission completion data logged. The Pilots Federation updates your contractor rating accordingly.",
+    "That's a lot of contracts fulfilled. Someone out there is very grateful. Probably.",
+    "Every credit here is a promise kept — to a faction, a station, or a stranger who needed a pilot."
+  ]
+}

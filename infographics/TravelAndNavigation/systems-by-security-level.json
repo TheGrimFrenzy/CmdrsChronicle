@@ -1,0 +1,17 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Systems by Security Level",
+  "summaryOnly": true,
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(SystemSecurity_Localised, SystemSecurity, 'Unknown') AS label, COUNT(*) AS value FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{total} FSD jump(s) across systems of all security levels during the report period. Your security distribution is an honest operational map — a low-security-heavy chart marks a frontier trader, bounty hunter, or someone comfortable with risk; high-security dominance suggests core world work.",
+    "help": "FSDJump SystemSecurity_Localised is the security level of the destination. total drives the title."
+  },
+  "tagLines": [
+    "System security profile compiled from FSD jump telemetry. Operational zone security distribution noted.",
+    "Where you jump is where you operate. The security levels tell you what kind of spaces you chose.",
+    "High security means protection. Low security means opportunity. Most commanders visit both kinds."
+  ]
+}

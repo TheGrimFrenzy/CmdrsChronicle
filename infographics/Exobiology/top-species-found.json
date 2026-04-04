@@ -1,7 +1,0 @@
-{
-  "category": "Exobiology",
-  "title": "Top Species Found",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(DISTINCT Species_Localised) FROM ScanOrganic WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND ScanType = 'Analyse' AND Species_Localised IS NOT NULL",
-  "detailQuery": "SELECT Species_Localised AS label, COUNT(*) AS value FROM ScanOrganic WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND ScanType = 'Analyse' AND Species_Localised IS NOT NULL GROUP BY Species_Localised ORDER BY value DESC"
-}

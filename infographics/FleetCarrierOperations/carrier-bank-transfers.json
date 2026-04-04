@@ -2,10 +2,14 @@
   "category": "FleetCarrierOperations",
   "title": "Carrier Bank Transfers",
   "chartType": "summary-tile",
-  "query": "SELECT COALESCE(SUM(Deposit), 0) AS total, COALESCE(SUM(Deposit), 0) AS totalReward FROM CarrierBankTransfer WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "query": "SELECT COALESCE(SUM(CASE WHEN Deposit > 0 THEN Deposit ELSE 0 END), 0) AS totalDeposited, COALESCE(SUM(CASE WHEN Withdraw > 0 THEN Withdraw ELSE 0 END), 0) AS totalWithdrawn FROM CarrierFinance WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
   "details": {
-    "text": "{totalReward} Cr deposited to carrier bank",
-    "help": "Total credits deposited to fleet carrier bank account"
-  }
+    "text": "{totalDeposited} Cr deposited vs. {totalWithdrawn} Cr withdrawn from the carrier bank during the report period. The carrier bank is where fleet finances live — the balance between deposits and withdrawals reveals whether your carrier is self-sustaining through trade operations or quietly bleeding maintenance credits every week.",
+    "help": "CarrierFinance tracks carrier account movements. totalDeposited drives the title as the inflow headline. The difference from withdrawals shows net financial health."
+  },
+  "tagLines": [
+    "Fleet carrier bank transaction log compiled. Carrier account net position calculated for the report period.",
+    "The carrier maintenance bill arrives every week. What you deposited either covered it or it didn't.",
+    "Carrier finances are different from personal finances. The overheads are enormous. The margin can still be positive."
+  ]
 }
-

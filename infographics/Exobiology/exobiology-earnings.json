@@ -2,9 +2,14 @@
   "category": "Exobiology",
   "title": "Exobiology Earnings",
   "chartType": "summary-tile",
-  "query": "SELECT COUNT(*) AS count, COALESCE(SUM(Value + Bonus), 0) AS totalReward FROM SellOrganicData_BioData bod JOIN SellOrganicData sod ON sod.event_id = bod.SellOrganicData_event_id WHERE sod.event_timestamp >= :startDate AND sod.event_timestamp < :endDate",
+  "query": "SELECT COALESCE(SUM(Value), 0) AS total, COALESCE(SUM(Bonus), 0) AS bonus FROM SellOrganicData WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
   "details": {
-    "text": "{count} sample(s) sold · {totalReward} Cr total",
-    "help": "Value + first-discovery bonus from SellOrganicData transactions"
-  }
+    "text": "{total} Cr earned from selling organic data during the report period, including {bonus} Cr in first-discovery bonuses. Exobiology is one of the highest-value per-sample activities in the galaxy — and the first-discovery bonus makes being early to a species genuinely lucrative.",
+    "help": "SellOrganicData Value is the base payment; Bonus is the extra first-discovery credit. total drives the title as the total payout."
+  },
+  "tagLines": [
+    "Organic data sale revenue compiled. Universal Cartographics has processed the biological submissions.",
+    "Every sample on this receipt was growing on a planet before you found it. Now it's credits.",
+    "First discovery bonuses are how the galaxy rewards the curious. You collected a few of those."
+  ]
 }

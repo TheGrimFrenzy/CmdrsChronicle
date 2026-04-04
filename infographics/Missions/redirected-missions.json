@@ -1,0 +1,15 @@
+{
+  "category": "Missions",
+  "title": "Redirected Missions",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS count FROM MissionRedirected WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{count} mission(s) had their destination station changed mid-flight during the report period. Redirects occur when the issuing faction loses control of the target station due to conflict or expansion — a direct sign that the background simulation shifted around you while you were already en route.",
+    "help": "MissionRedirected fires when a mission's target station changes, typically due to faction conflict state changes. A non-zero count indicates BGS activity affected your missions."
+  },
+  "tagLines": [
+    "Mid-flight mission redirection events recorded. Destination instability attributed to minor faction conflict activity.",
+    "Your destination changed while you were flying there. The galaxy didn't ask permission.",
+    "Redirected missions are the galaxy's reminder that politics don't wait for your flight plan."
+  ]
+}

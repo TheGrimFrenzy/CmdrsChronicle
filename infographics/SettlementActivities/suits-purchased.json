@@ -1,0 +1,16 @@
+{
+  "category": "SettlementActivities",
+  "title": "Suits Purchased",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total, COALESCE(SUM(Price), 0) AS spend FROM BuySuit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, COUNT(*) AS value FROM BuySuit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC",
+  "details": {
+    "text": "{total} suit purchase(s) totalling {spend} Cr during the report period. Suit purchases mark the milestones of on-foot progression — each one represents a new capability unlocked or a major loadout upgrade, and the cumulative spend shows the scale of your Odyssey investment in equipment.",
+    "help": "BuySuit Name_Localised is the suit type. total drives the title as the purchase count; spend is secondary context."
+  },
+  "tagLines": [
+    "Suit purchase records compiled. On-foot equipment acquisition log noted in the Odyssey record.",
+    "Every suit purchase was a capability decision. What you bought says what you planned to do with it.",
+    "Outfitting for Odyssey is expensive. The suits are the foundation of everything that follows on the ground."
+  ]
+}

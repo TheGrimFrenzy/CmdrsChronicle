@@ -1,0 +1,15 @@
+{
+  "category": "ThargoidAX",
+  "title": "Thargoid Ships Destroyed",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total, COALESCE(SUM(TotalReward), 0) AS totalReward FROM Bounty WHERE VictimFaction = 'Thargoid' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} confirmed Thargoid kill(s) earning {totalReward} Cr in AX bounties during the report period. Killing Thargoids is the most dangerous thing most commanders will attempt — a confirmed kill count represents real skill, proper preparation with Guardian weaponry, and the courage to face enemies that can neutralise an entire ship in moments.",
+    "help": "Bounty VictimFaction = 'Thargoid' identifies AX kills. total drives the title as the confirmed kill count."
+  },
+  "tagLines": [
+    "Anti-xeno combat record compiled. Thargoid destruction events and associated bounty rewards noted.",
+    "They didn't go quietly. Killing a Thargoid requires preparation that most pilots never undertake.",
+    "Every Thargoid kill was a fight against something that was not designed to lose. You disagreed."
+  ]
+}

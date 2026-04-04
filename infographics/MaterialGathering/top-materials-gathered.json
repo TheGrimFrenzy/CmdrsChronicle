@@ -1,0 +1,16 @@
+{
+  "category": "MaterialGathering",
+  "title": "Top Materials Gathered",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM MaterialCollected WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, SUM(Count) AS value FROM MaterialCollected WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} materials gathered in total during the report period. Your top individual materials are a map of where you've been spending time — certain materials only come from specific sources like wake scanning, combat, or particular planet compositions, so the list tells the story of your activities.",
+    "help": "MaterialCollected Name_Localised is the display name. total drives the title as the overall volume headline."
+  },
+  "tagLines": [
+    "Material inventory acquisition log compiled. Top gathered materials by unit volume noted.",
+    "The rarest materials are always at the bottom of the chart. The grind for them shows somewhere else.",
+    "Whatever you gathered most is what you needed most. The inventory doesn't lie about your priorities."
+  ]
+}

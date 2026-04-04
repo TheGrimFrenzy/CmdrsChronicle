@@ -1,0 +1,15 @@
+{
+  "category": "CombatOnFoot",
+  "title": "On-Foot Deaths",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS deaths FROM Died WHERE KillerName IS NOT NULL AND KillerShip IS NULL AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{deaths} on-foot death(s) recorded during the report period. Unlike ship loss, there is no rebuy screen — just a respawn point and the quiet indignity of having been outshot by a security guard.",
+    "help": "Died events where KillerShip IS NULL indicate on-foot deaths. KillerName identifies the attacker."
+  },
+  "tagLines": [
+    "Pilot fatality incidents logged. Medical bay usage noted. The Pilots Federation advises a review of tactical approach.",
+    "You died on your feet. That's almost poetic. Almost.",
+    "The body bag count is a honest ledger of every plan that didn't survive contact with the enemy."
+  ]
+}

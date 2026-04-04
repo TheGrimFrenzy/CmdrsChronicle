@@ -1,0 +1,16 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Supercruise Exit Types",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM SupercruiseExit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT CASE WHEN BodyType = 'Station' THEN 'Station' WHEN BodyType = 'Planet' THEN 'Planet' WHEN BodyType = 'PlanetaryRing' THEN 'Planetary Ring' WHEN BodyType = 'Star' THEN 'Star' WHEN BodyType = 'Null' THEN 'Nav Point / Other' ELSE BodyType END AS label, COUNT(*) AS value FROM SupercruiseExit WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} supercruise exit(s) recorded during the report period. The breakdown by body type tells you what kinds of places you are flying to — frequent station drops mean trading or mission running, planet drops suggest surface exploration or planetary ports, nav points and null-type drops cover megaships, resource extraction sites, and space-based points of interest.",
+    "help": "SupercruiseExit BodyType classifies the destination as Station, Planet, PlanetaryRing, Star, or Null (nav beacons, megaships, combat zones, etc.). total drives the title."
+  },
+  "tagLines": [
+    "Supercruise exit type breakdown compiled from journal records. Destination classification noted.",
+    "Stations, planets, nav beacons — the type distribution shows what kind of spacer you are.",
+    "Every drop point has a category. The spread reveals your operational habits at a glance."
+  ]
+}

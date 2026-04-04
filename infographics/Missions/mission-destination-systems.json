@@ -1,0 +1,19 @@
+{
+  "category": "Missions",
+  "title": "Mission Destination Systems",
+  "chartType": "table",
+  "summaryOnly": true,
+  "query": "SELECT COUNT(*) AS count FROM MissionAccepted WHERE DestinationSystem IS NOT NULL AND DestinationSystem != '' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT DestinationSystem AS label, COUNT(*) AS value FROM MissionAccepted WHERE DestinationSystem IS NOT NULL AND DestinationSystem != '' AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY DestinationSystem ORDER BY value DESC",
+  "tableColumns": ["System", "Missions"],
+  "inaraSearchBase": "https://inara.cz/elite/starsystem/?search=",
+  "details": {
+    "text": "{count} mission(s) with a named destination system accepted during the report period.",
+    "help": "DestinationSystem on MissionAccepted. summaryOnly: in a by-system report the destination would trivially always match the current system."
+  },
+  "tagLines": [
+    "Destination system frequency analysis submitted to navigational records. No irregularities noted.",
+    "You kept going back to the same systems. The locals have noticed.",
+    "Your busiest destinations are the lanes you carved through the galaxy with your engines."
+  ]
+}

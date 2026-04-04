@@ -1,0 +1,17 @@
+{
+  "category": "Exploration",
+  "title": "Stellar Remnants Encountered",
+  "chartType": "bar-chart",
+  "summaryOnly": true,
+  "query": "SELECT COUNT(*) AS count FROM Scan WHERE StarType IN ('N', 'H', 'D', 'DA', 'DAB', 'DAO', 'DAZ', 'DAV', 'DB', 'DBZ', 'DBV', 'DO', 'DOV', 'DQ', 'DC', 'DCV', 'DX') AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT CASE WHEN StarType = 'N' THEN 'Neutron Star' WHEN StarType = 'H' THEN 'Black Hole' ELSE 'White Dwarf' END AS label, COUNT(*) AS value FROM Scan WHERE StarType IN ('N', 'H', 'D', 'DA', 'DAB', 'DAO', 'DAZ', 'DAV', 'DB', 'DBZ', 'DBV', 'DO', 'DOV', 'DQ', 'DC', 'DCV', 'DX') AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{count} stellar remnant(s) scanned during the report period.",
+    "help": "StarType codes: N=Neutron Star, H=Black Hole, D/DA/DB/DC etc.=White Dwarf variants. summaryOnly: bar chart reduces to a single entry per system."
+  },
+  "tagLines": [
+    "Exotic stellar phenomena survey data archived. The astrophysics division acknowledges your contribution.",
+    "Neutron stars, black holes, white dwarfs — the universe's most dramatic last acts.",
+    "These are the embers of dead suns. Each one a graveyard that still has its own gravity."
+  ]
+}

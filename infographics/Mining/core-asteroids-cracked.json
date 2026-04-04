@@ -1,0 +1,15 @@
+{
+  "category": "Mining",
+  "title": "Core Asteroids Cracked",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS cracks FROM AsteroidCracked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{cracks} core asteroid(s) cracked during the report period. Core mining demands precision — each crack is a correctly placed seismic charge detonation that splits open a rock to reveal the gems inside. A large crack count is a genuine badge of mining expertise.",
+    "help": "AsteroidCracked fires when a core asteroid is successfully detonated with seismic charges. Each event is a successful core-mining split."
+  },
+  "tagLines": [
+    "Core detonation events logged. Seismic charge consumption noted in the mining operations record.",
+    "Some commanders shoot ships. You shoot asteroids. With charges. From the inside.",
+    "A good crack sounds different from a bad one. You know the difference. That's the skill."
+  ]
+}

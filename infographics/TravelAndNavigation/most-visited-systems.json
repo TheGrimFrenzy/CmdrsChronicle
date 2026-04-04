@@ -1,9 +1,0 @@
-{
-  "category": "TravelAndNavigation",
-  "title": "Most Visited Systems",
-  "chartType": "table",
-  "query": "SELECT COUNT(DISTINCT StarSystem) FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT StarSystem AS label, COUNT(*) AS value FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY StarSystem ORDER BY value DESC",
-  "tableColumns": ["System", "Jumps"],
-  "inaraSearchBase": "https://inara.cz/elite/starsystem/?search="
-}

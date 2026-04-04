@@ -51,7 +51,10 @@ namespace CmdrsChronicle.Core
                         {
                             using var doc = JsonDocument.Parse(line);
                             var root = doc.RootElement;
-                            if (root.TryGetProperty("StarSystem", out var s) && s.ValueKind == JsonValueKind.String)
+
+                            // Pick up the most recent StarSystem (reading in reverse, so first hit is latest)
+                            if (lastSystem == "Unknown System" &&
+                                root.TryGetProperty("StarSystem", out var s) && s.ValueKind == JsonValueKind.String)
                             {
                                 var foundSystem = s.GetString();
                                 if (!string.IsNullOrEmpty(foundSystem))
@@ -70,17 +73,32 @@ namespace CmdrsChronicle.Core
                                                 lastDate = tsStr[..10];
                                         }
                                     }
-                                    if (root.TryGetProperty("Commander", out var c) && c.ValueKind == JsonValueKind.String)
-                                        cmdrName = c.GetString() ?? cmdrName;
-
-                                    return (lastSystem, lastDate, cmdrName);
                                 }
                             }
+
+                            // Commander only appears on LoadGame events (at session start, so near the
+                            // beginning of the file — which means near the end when reading in reverse).
+                            if (cmdrName == "Unknown Commander" &&
+                                root.TryGetProperty("event", out var evtProp) &&
+                                evtProp.GetString() == "LoadGame" &&
+                                root.TryGetProperty("Commander", out var c) && c.ValueKind == JsonValueKind.String)
+                            {
+                                var found = c.GetString();
+                                if (!string.IsNullOrWhiteSpace(found))
+                                    cmdrName = found;
+                            }
+
+                            if (lastSystem != "Unknown System" && cmdrName != "Unknown Commander")
+                                return (lastSystem, lastDate, cmdrName);
                         }
                         catch { }
                     }
                 }
                 catch { }
+
+                // Found the system in this file; no need to search older files unless cmdrName is still unknown
+                if (lastSystem != "Unknown System" && cmdrName != "Unknown Commander")
+                    return (lastSystem, lastDate, cmdrName);
             }
 
             return (lastSystem, lastDate, cmdrName);

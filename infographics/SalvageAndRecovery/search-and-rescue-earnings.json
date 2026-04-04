@@ -1,0 +1,15 @@
+{
+  "category": "SalvageAndRecovery",
+  "title": "Search and Rescue Earnings",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(Reward), 0) AS total, COUNT(*) AS deliveries FROM SearchAndRescue WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} Cr earned from {deliveries} search and rescue delivery(ies) during the report period. S&R work is among the most honourable activities in Elite Dangerous — delivering escape pods, black boxes, and personal effects recovered from disaster sites contributes directly to the Pilots Federation's humanitarian mission.",
+    "help": "SearchAndRescue fires on each delivery to a rescue megaship. total drives the title as the earnings headline."
+  },
+  "tagLines": [
+    "Search and rescue earnings compiled. Humanitarian delivery rewards reconciled with the Pilots Federation.",
+    "You found things that were lost and brought them somewhere that could use them. That's not nothing.",
+    "Some rescues pay well. Others barely cover the fuel. You did them anyway. The record is here."
+  ]
+}

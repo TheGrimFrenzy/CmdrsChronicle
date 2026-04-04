@@ -1,0 +1,15 @@
+{
+  "category": "FleetCarrierOperations",
+  "title": "Tritium Fuel Deposited",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(Amount), 0) AS total, COUNT(*) AS deposits FROM CarrierDepositFuel WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} unit(s) of tritium deposited across {deposits} fuelling event(s) during the report period. Tritium is the lifeblood of carrier mobility — the cumulative amount deposited represents an enormous investment of either your own mining time at a tritium hotspot or serious credit spending at market prices.",
+    "help": "CarrierDepositFuel fires when tritium is loaded into a fleet carrier's fuel reserve. total drives the title as the fuel volume headline."
+  },
+  "tagLines": [
+    "Fleet carrier tritium fuel logs compiled. Fuel reserve replenishment activity noted in the operations record.",
+    "Tritium doesn't find itself. Every unit in this total was either mined or bought.",
+    "A carrier without fuel doesn't jump. You kept yours moving. That took effort and credits."
+  ]
+}

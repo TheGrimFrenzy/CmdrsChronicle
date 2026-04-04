@@ -1,0 +1,18 @@
+{
+  "category": "CombatShip",
+  "title": "PVP Kills Recorded",
+  "chartType": "table",
+  "query": "SELECT COUNT(*) AS count FROM PVPKill WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Victim AS label, COUNT(*) AS value FROM PVPKill WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Victim ORDER BY value DESC",
+  "tableColumns": ["Commander", "Kills"],
+  "inaraSearchBase": "https://inara.cz/elite/cmdr/?search=",
+  "details": {
+    "text": "{count} player ship(s) destroyed during the report period.",
+    "help": "PVPKill.Victim is the destroyed commander's name. Inara links allow looking up the victim's profile."
+  },
+  "tagLines": [
+    "Player-versus-player engagement outcomes logged. The Pilots Federation notes the incidents without comment.",
+    "These weren't NPCs. Someone's evening got considerably worse.",
+    "Each name here is a pilot who met you in the void and didn't fly home."
+  ]
+}

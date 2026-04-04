@@ -1,0 +1,15 @@
+{
+  "category": "Powerplay",
+  "title": "Powerplay Salary Income",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(Amount), 0) AS total, COUNT(*) AS payments FROM PowerplaySalary WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} Cr accumulated over {payments} weekly salary payment(s) during the report period. Powerplay salary is passive income that most commanders overlook — it scales with your rank within your chosen Power and rewards sustained political engagement even when you're not actively running merits.",
+    "help": "PowerplaySalary fires each week a rank-based payment is made. total drives the title as the cumulative passive income figure."
+  },
+  "tagLines": [
+    "Powerplay salary payments reconciled. The Pilots Federation confirms weekly stipend disbursements per rank.",
+    "It arrived in your account every week whether you flew or not. That's the benefit of rank.",
+    "The Power pays a salary. You earned enough rank to get a decent one. That investment compounds."
+  ]
+}

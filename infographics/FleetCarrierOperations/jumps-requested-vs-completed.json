@@ -1,0 +1,16 @@
+{
+  "category": "FleetCarrierOperations",
+  "title": "Jumps Requested vs. Completed",
+  "chartType": "summary-tile",
+  "query": "SELECT (SELECT COUNT(*) FROM CarrierJumpRequest WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS requested, (SELECT COUNT(*) FROM CarrierJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS completed",
+  "detailQuery": "",
+  "details": {
+    "text": "{requested} jump(s) requested and {completed} completed during the report period. Cancelled jumps are the fingerprints of changed plans — too many cancellations compared to completions suggests persistent obstacles to your fleet mobility or an indecisive period of carrier operations.",
+    "help": "CarrierJumpRequest fires at request time; CarrierJump at completion. requested drives the title as the total mobilisation count."
+  },
+  "tagLines": [
+    "Carrier jump request audit compiled. Request-to-completion ratio calculated for the operations review.",
+    "Planning a carrier jump is the easy part. Following through is where the preparation actually mattered.",
+    "Cancelled jumps happen. Plans change, targets close, the price of tritium spikes. The log remembers all of it."
+  ]
+}

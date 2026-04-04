@@ -1,0 +1,15 @@
+{
+  "category": "Mining",
+  "title": "Motherlode Strike Rate",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total, SUM(CASE WHEN MotherlodeIndicator IS NOT NULL AND MotherlodeIndicator != '' THEN 1 ELSE 0 END) AS motherlodes FROM ProspectedAsteroid WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{motherlodes} motherlode asteroid(s) identified out of {total} prospected during the report period. Motherlode rocks are the jackpots of core mining — a healthy strike rate means your ring-type selection and scanning technique are consistently finding the premium rocks.",
+    "help": "MotherlodeIndicator is non-null when the prospector flags a core asteroid as a motherlode. motherlodes is the primary metric as the headline find count."
+  },
+  "tagLines": [
+    "Motherlode identification rate calculated. Core mining operational efficiency noted.",
+    "Most rocks are empty promises. Motherlodes are the exceptions that make the grind worthwhile.",
+    "The prospector limpet called it. You cracked it open. It was worth it. Those are the good sessions."
+  ]
+}

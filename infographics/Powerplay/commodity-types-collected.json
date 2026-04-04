@@ -1,7 +1,0 @@
-{
-  "category": "Powerplay",
-  "title": "Commodity Types Collected",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT COALESCE(Type_Localised, Type) AS label, COUNT(*) AS value FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Type ORDER BY value DESC"
-}

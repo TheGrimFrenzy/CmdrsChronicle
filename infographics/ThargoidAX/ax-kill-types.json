@@ -1,0 +1,16 @@
+{
+  "category": "ThargoidAX",
+  "title": "AX Kill Types",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM Bounty WHERE VictimFaction = 'Thargoid' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Target AS label, COUNT(*) AS value FROM Bounty WHERE VictimFaction = 'Thargoid' AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Target ORDER BY value DESC",
+  "details": {
+    "text": "{total} Thargoid vessel(s) destroyed during the report period. The difference between a Cyclops and a Hydra is the difference between a challenging fight and a career-defining engagement — this chart shows how far up the interceptor threat scale you've climbed and whether scouts or interceptors dominate your kill board.",
+    "help": "Bounty Target is the Thargoid vessel type (e.g., Cyclops, Basilisk, Medusa, Hydra, Scout). total drives the title."
+  },
+  "tagLines": [
+    "AX kill classification breakdown compiled. Thargoid vessel type engagement data archived.",
+    "Scouts die in seconds. A Hydra can take half an hour and kill you three times. The chart shows how brave you were.",
+    "Each interceptor variant is a step up in danger. The ones at the top of this chart cost you."
+  ]
+}

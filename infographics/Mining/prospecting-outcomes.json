@@ -1,0 +1,16 @@
+{
+  "category": "Mining",
+  "title": "Prospecting Outcomes",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS probes FROM ProspectedAsteroid WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Content, 'Unknown') AS label, COUNT(*) AS value FROM ProspectedAsteroid WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Content ORDER BY value DESC",
+  "details": {
+    "text": "{probes} asteroid(s) prospected during the report period. Prospecting is the intelligence-gathering phase of mining — the content distribution reveals what the rings were yielding and whether your ring-type choices were paying off.",
+    "help": "ProspectedAsteroid fires when a prospector limpet returns results. Content indicates the asteroid's primary material category."
+  },
+  "tagLines": [
+    "Prospecting limpet returns archived. Asteroid content distribution noted for operational review.",
+    "The probe tells you what's inside before you commit. The results tell you if the rings were lying.",
+    "Most rocks are disappointments. The ones that aren't — those are why you keep prospecting."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "category": "PassengerTransport",
+  "title": "VIP vs. Bulk Passenger Ratio",
+  "chartType": "summary-tile",
+  "query": "SELECT SUM(CASE WHEN PassengerType IN ('VIP', 'Tourist') THEN PassengerCount ELSE 0 END) AS vip, SUM(CASE WHEN PassengerType NOT IN ('VIP', 'Tourist') THEN PassengerCount ELSE 0 END) AS bulk FROM MissionAccepted WHERE PassengerMission = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{vip} VIP/luxury passenger(s) vs. {bulk} bulk/economy passenger(s) transported during the report period. This split shows whether you're running a boutique charter operation or a mass-transit service — the two require different ships, different routes, and a completely different relationship with your clientele.",
+    "help": "PassengerType VIP and Tourist are grouped as premium; others as bulk. vip drives the title as the prestige passenger count."
+  },
+  "tagLines": [
+    "Passenger class distribution analysis compiled. VIP vs. bulk transport ratio noted in the mission record.",
+    "Luxury passengers pay more and demand more. Bulk passengers fill the hold and keep quiet. Usually.",
+    "There's a version of this career that's all champagne and gowns. Then there's the actual route economics."
+  ]
+}

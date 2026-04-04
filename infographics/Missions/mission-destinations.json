@@ -1,9 +1,0 @@
-{
-  "category": "Missions",
-  "title": "Mission Destinations",
-  "chartType": "table",
-  "query": "SELECT COUNT(DISTINCT DestinationSystem) FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND DestinationSystem IS NOT NULL",
-  "detailQuery": "SELECT DestinationSystem AS label, COUNT(*) AS value FROM MissionAccepted WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND DestinationSystem IS NOT NULL GROUP BY DestinationSystem ORDER BY value DESC",
-  "tableColumns": ["System", "Missions"],
-  "inaraSearchBase": "https://inara.cz/elite/starsystem/?search="
-}

@@ -1,0 +1,15 @@
+{
+  "category": "EconomyAndMarket",
+  "title": "Total Market Volume",
+  "chartType": "summary-tile",
+  "query": "SELECT (COALESCE(SUM(Count), 0) + (SELECT COALESCE(SUM(Count), 0) FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate)) AS total, COALESCE(SUM(Count), 0) AS bought FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} unit(s) bought and sold through market transactions during the report period. Raw volume tells the story of a trading operation's true scale — a commander moving enormous tonnages of cargo is participating in the galaxy's economy at an entirely different level from someone who dabbles between combat sessions.",
+    "help": "MarketBuy/Sell Count is units per transaction. total drives the title as the combined throughput (buy + sell)."
+  },
+  "tagLines": [
+    "Total commodity market throughput compiled. Buy and sell volumes noted in the economic activity record.",
+    "Volume is how the galaxy measures commitment to trade. This period, you moved a lot of cargo.",
+    "The tonnage doesn't care about the commodity type. The scale is the story here."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "SocialMulticrew",
+  "title": "Crew Stability",
+  "chartType": "summary-tile",
+  "query": "SELECT (SELECT COUNT(*) FROM CrewMemberQuits WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS quits, (SELECT COUNT(*) FROM KickCrewMember WHERE event_timestamp >= :startDate AND event_timestamp < :endDate) AS kicks",
+  "detailQuery": "",
+  "details": {
+    "text": "{quits} voluntary crew departure(s) and {kicks} kick(s) from hosted sessions during the report period. A captain with clean numbers runs enjoyable sessions — a high kick count might indicate strict discipline or repeated encounters with crew who weren't performing. A high quit count suggests something was driving people out.",
+    "help": "CrewMemberQuits is voluntary departures; KickCrewMember is captain-initiated removals. quits drives the title as the turnover indicator."
+  },
+  "tagLines": [
+    "Crew session stability metrics compiled. Voluntary departures and removal actions noted.",
+    "Good crews stay put. The ones who left — some quit, some were asked to go. Both are recorded.",
+    "Crew stability is a captain's performance review. The numbers speak plainly."
+  ]
+}

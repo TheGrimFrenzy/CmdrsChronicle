@@ -52,6 +52,71 @@ namespace CmdrsChronicle.Core
             return " grad-" + chosen;
         }
 
+        private static readonly Dictionary<string, string> _categoryDisplayNames = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Exploration",                  "Exploration" },
+            { "Missions",                     "Missions" },
+            { "CombatShip",                   "Ship Combat" },
+            { "CombatOnFoot",                 "On-Foot Combat" },
+            { "Trade",                        "Trade" },
+            { "Mining",                       "Mining" },
+            { "Exobiology",                   "Exobiology" },
+            { "Powerplay",                    "Power Play" },
+            { "FleetCarrierOperations",       "Fleet Carrier Operations" },
+            { "EngineeringAndSynthesis",      "Engineering & Synthesis" },
+            { "MaterialGathering",            "Material Gathering" },
+            { "PassengerTransport",           "Passenger Transport" },
+            { "CrimeAndSecurity",             "Crime & Security" },
+            { "SalvageAndRecovery",           "Salvage & Recovery" },
+            { "SocialMulticrew",              "Social & Multicrew" },
+            { "SettlementActivities",         "Settlement Activities" },
+            { "ShipManagementAndOutfitting",  "Ship Management & Outfitting" },
+            { "TravelAndNavigation",          "Travel & Navigation" },
+            { "ThargoidAX",                   "Thargoid & AX Combat" },
+            { "Administrivia",                "Administrivia" },
+            { "CodexAndDiscoveries",          "Codex & Discoveries" },
+            { "EconomyAndMarket",             "Economy & Market" },
+        };
+
+        /// <summary>Returns a human-readable display name for a category (e.g. "CombatShip" → "Ship Combat").</summary>
+        internal static string CategoryDisplayName(string? category)
+        {
+            if (string.IsNullOrWhiteSpace(category)) return string.Empty;
+            if (_categoryDisplayNames.TryGetValue(category, out var name)) return name;
+            // Fallback: insert spaces at PascalCase boundaries
+            return Regex.Replace(category, @"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", " ");
+        }
+
+        /// <summary>Returns an emoji icon character for the given category.</summary>
+        internal static string CategoryIcon(string? category)        {
+            if (string.IsNullOrWhiteSpace(category)) return "✦";
+            var slug = NormalizeCategory(category);
+            if (slug.Contains("exobiology"))             return "🧬";
+            if (slug.Contains("exploration"))            return "🔭";
+            if (slug.Contains("thargoid") || slug.Contains("ax")) return "🛡";
+            if (slug.Contains("combat") && slug.Contains("ship")) return "⚔";
+            if (slug.Contains("combat") && slug.Contains("foot")) return "🔫";
+            if (slug.Contains("crime") || slug.Contains("security")) return "⚖";
+            if (slug.Contains("mining"))                 return "⛏";
+            if (slug.Contains("engineering"))            return "🔧";
+            if (slug.Contains("material"))               return "🧪";
+            if (slug.Contains("economy") || slug.Contains("market")) return "💹";
+            if (slug.Contains("trade"))                  return "📦";
+            if (slug.Contains("mission"))                return "📋";
+            if (slug.Contains("passenger"))              return "🧑";
+            if (slug.Contains("salvage") || slug.Contains("recovery")) return "🆘";
+            if (slug.Contains("settlement") || slug.Contains("foot") || slug.Contains("onfoot")) return "🪖";
+            if (slug.Contains("fleet") || slug.Contains("carrier")) return "⚓";
+            if (slug.Contains("colonis"))                return "🏗";
+            if (slug.Contains("power"))                  return "👑";
+            if (slug.Contains("social") || slug.Contains("crew") || slug.Contains("multicrew")) return "👥";
+            if (slug.Contains("ship") || slug.Contains("outfitting")) return "🔩";
+            if (slug.Contains("travel") || slug.Contains("navigation")) return "🚀";
+            if (slug.Contains("codex") || slug.Contains("discover")) return "📖";
+            if (slug.Contains("admin") || slug.Contains("administrivia")) return "📊";
+            return "✦";
+        }
+
         // ── Primary metric selection ─────────────────────────────────────────────
 
         internal static long PrimaryValue(InfographicQueryResult result)
@@ -128,14 +193,14 @@ namespace CmdrsChronicle.Core
                         truncated = floored1dp.ToString("0.#", CultureInfo.CurrentCulture);
                         exact = value == (long)(floored1dp * Div);
                     }
-                    return truncated + Suffix + (exact ? string.Empty : "+");
+                    return truncated + Suffix;
                 }
             }
             return value.ToString(CultureInfo.CurrentCulture);
         }
 
         internal static string FormatFullNumber(long value) =>
-            value.ToString("N0", CultureInfo.InvariantCulture);
+            value.ToString("N0", CultureInfo.CurrentCulture);
 
         // ── HTML encoding ────────────────────────────────────────────────────────
 
@@ -248,7 +313,7 @@ namespace CmdrsChronicle.Core
                 {
                     labelCell = $"<td>{HtmlEncode(FormatLabel(label))}</td>";
                 }
-                sb.Append($"<tr>{labelCell}<td>{value}</td></tr>");
+                sb.Append($"<tr>{labelCell}<td>{FormatFullNumber(value)}</td></tr>");
             }
 
             sb.Append("</tbody></table>");
@@ -292,7 +357,7 @@ namespace CmdrsChronicle.Core
                 sb.AppendLine("                    <div class=\"chart-item\">");
                 sb.AppendLine($"                        <div class=\"chart-label\">{HtmlEncode(FormatLabel(label))}</div>");
                 sb.AppendLine($"                        <div class=\"chart-bar-container\"><div class=\"chart-bar-fill\" style=\"width:{pct}%\"></div></div>");
-                sb.AppendLine($"                        <div class=\"chart-value\">{value}</div>");
+                sb.AppendLine($"                        <div class=\"chart-value\">{FormatFullNumber(value)}</div>");
                 sb.AppendLine("                    </div>");
             }
             sb.Append("                </div>");

@@ -1,7 +1,0 @@
-{
-  "category": "TravelAndNavigation",
-  "title": "Systems by Economy",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND SystemEconomy_Localised IS NOT NULL",
-  "detailQuery": "SELECT SystemEconomy_Localised AS label, COUNT(*) AS value FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND SystemEconomy_Localised IS NOT NULL GROUP BY SystemEconomy_Localised ORDER BY value DESC"
-}

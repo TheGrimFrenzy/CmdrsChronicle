@@ -1,0 +1,16 @@
+{
+  "category": "CodexAndDiscoveries",
+  "title": "Codex Entries by Category",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM CodexEntry WHERE IsNewEntry = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Category_Localised, Category) AS label, COUNT(*) AS value FROM CodexEntry WHERE IsNewEntry = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Category ORDER BY value DESC",
+  "details": {
+    "text": "{total} new codex entry(ies) recorded during the report period. The Codex is humanity's collective knowledge of the galaxy — each new entry you add is genuinely your own, and the category breakdown reveals whether you're a biologist, stellar cartographer, xenologist, or a generalist explorer touching every knowledge domain.",
+    "help": "CodexEntry IsNewEntry = 1 marks genuine first-discovery codex additions. total drives the title."
+  },
+  "tagLines": [
+    "Codex entry acquisition log compiled. New knowledge domain additions noted in the discovery record.",
+    "The Codex grew because of what you found. Each entry is a page you personally added.",
+    "Some commanders scan the galaxy. You added to the record of it. That's a different kind of contribution."
+  ]
+}

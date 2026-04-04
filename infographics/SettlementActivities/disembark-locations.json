@@ -1,0 +1,16 @@
+{
+  "category": "SettlementActivities",
+  "title": "Disembark Locations",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM Disembark WHERE SRV = 0 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(NearestDestination_Localised, StationName, 'Unknown') AS label, COUNT(*) AS value FROM Disembark WHERE SRV = 0 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} on-foot disembark(s) recorded during the report period. Where you choose to go on foot is where the action is — frequent surface settlement disembarks mark a ground operative; lots of station disembarks suggest engineering visits, bar missions, or social stops at humanity's gathering points.",
+    "help": "Disembark SRV = 0 filters to on-foot exits (not SRV deployments). NearestDestination_Localised or StationName is the location. total drives the title."
+  },
+  "tagLines": [
+    "On-foot disembark location log compiled. Ground deployment destination breakdown noted.",
+    "Every disembark is a choice to put yourself somewhere with no ship beneath you. Those choices tell a story.",
+    "Surface settlements at the top means operative work. Station bars means something more comfortable."
+  ]
+}

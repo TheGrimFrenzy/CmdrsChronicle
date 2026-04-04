@@ -1,0 +1,15 @@
+{
+  "category": "Powerplay",
+  "title": "Fast-Track Spending",
+  "chartType": "summary-tile",
+  "query": "SELECT COALESCE(SUM(Cost), 0) AS total, COUNT(*) AS transactions FROM PowerplayFastTrack WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} Cr spent fast-tracking {transactions} powerplay delivery(ies) during the report period. Fast-tracking skips the delivery trip entirely in exchange for a significant credit cost — a large total here means you were willing to spend big to hit a deadline and drive your Power's agenda hard.",
+    "help": "PowerplayFastTrack fires when a merit delivery is completed instantly for credits rather than physically transporting cargo. total drives the title as the expenditure headline."
+  },
+  "tagLines": [
+    "Fast-track transaction log compiled. Credits paid in lieu of courier runs noted in the Powerplay record.",
+    "Credits instead of inconvenience. It's expensive. You decided the deadline was worth it.",
+    "Fast-tracking is the busy commander's political compromise. The Power got its merits. You kept your schedule."
+  ]
+}

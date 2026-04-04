@@ -1,0 +1,16 @@
+{
+  "category": "Exobiology",
+  "title": "Species Analysed by Genus",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS analyses FROM ScanOrganic WHERE ScanType = 'Analyse' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Genus_Localised, Genus) AS label, COUNT(*) AS value FROM ScanOrganic WHERE ScanType = 'Analyse' AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{analyses} organic sample(s) fully analysed during the report period. The genus breakdown reveals the diversity of life you encountered — some commanders find one genus and repeat it for credits; others seek out genera they haven't catalogued yet.",
+    "help": "ScanType = 'Analyse' is the final third scan of a biological. Genus_Localised is the biological family. analyses drives the title."
+  },
+  "tagLines": [
+    "Organic analysis submissions compiled. The xenobiology database has been updated with your contributions.",
+    "Three samples per species. No shortcuts. You followed the protocol every time.",
+    "Some of this life has never been seen by any commander. Today it has a genus label. You gave it that."
+  ]
+}

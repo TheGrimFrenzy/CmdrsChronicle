@@ -1,8 +1,0 @@
-{
-  "category": "SocialMulticrew",
-  "title": "Top Crew Members",
-  "chartType": "table",
-  "query": "SELECT COUNT(DISTINCT Crew) FROM CrewMemberJoins WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT Crew AS label, COUNT(*) AS value FROM CrewMemberJoins WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Crew ORDER BY value DESC",
-  "tableColumns": ["Crew Member", "Joins"]
-}

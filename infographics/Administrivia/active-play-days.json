@@ -1,0 +1,16 @@
+{
+  "category": "Administrivia",
+  "title": "Active Play Days",
+  "summaryOnly": true,
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(DISTINCT DATE(event_timestamp)) AS total FROM LoadGame WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} unique calendar day(s) with recorded journal activity during the report period. Days played is the simplest measure of dedication — even a handful of active days in a week shows real commitment to the galaxy, and a full run of consecutive sessions is worth acknowledging as the habit it is.",
+    "help": "LoadGame provides one entry per game session; distinct dates gives unique play days. total drives the title."
+  },
+  "tagLines": [
+    "Active play day count compiled from journal session records. Engagement calendar summarised.",
+    "Each day in this count was a day you chose to be out there. That adds up.",
+    "The galaxy waited. You showed up. More than once, apparently."
+  ]
+}

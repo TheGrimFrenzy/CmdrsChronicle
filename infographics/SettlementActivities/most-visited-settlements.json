@@ -1,8 +1,0 @@
-{
-  "category": "SettlementActivities",
-  "title": "Most Visited Settlements",
-  "chartType": "table",
-  "query": "SELECT COUNT(DISTINCT Name) FROM ApproachSettlement WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT COALESCE(Name_Localised, Name) AS label, COUNT(*) AS value FROM ApproachSettlement WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Name ORDER BY value DESC",
-  "tableColumns": ["Settlement", "Visits"]
-}

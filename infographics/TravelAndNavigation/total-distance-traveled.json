@@ -1,0 +1,16 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Total Distance Traveled",
+  "chartType": "summary-tile",
+  "summaryOnly": true,
+  "query": "SELECT COALESCE(SUM(JumpDist), 0) AS total, COUNT(*) AS jumps FROM FSDJump WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} light year(s) jumped across {jumps} FSD jump(s) during the report period. The cosmic odometer — total light years is the single most evocative number a pilot can show; a weekly total spanning hundreds or thousands of ly is a genuine testament to how much of the galaxy you've moved through.",
+    "help": "FSDJump JumpDist is the distance per jump in light years. total drives the title as the headline distance figure. summaryOnly = true because per-system reports always show 1 jump."
+  },
+  "tagLines": [
+    "FSD jump distance telemetry compiled. Total light years traveled archived in the navigation record.",
+    "Light years traveled. Not a metaphor. An actual distance, measured against the nearest star.",
+    "The galaxy is 100,000 light years across. This period you crossed a fraction of it. That fraction adds up."
+  ]
+}

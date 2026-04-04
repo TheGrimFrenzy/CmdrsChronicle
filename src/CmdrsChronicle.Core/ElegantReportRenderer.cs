@@ -74,8 +74,6 @@ namespace CmdrsChronicle.Core
             {
                 var qualifying = section.Results
                     .Where(r => r.MeetsThreshold)
-                    .OrderBy(r => r.Definition.Category)
-                    .ThenBy(r => r.Definition.Title)
                     .ToList();
 
                 if (section.SystemName != null)

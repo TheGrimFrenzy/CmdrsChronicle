@@ -1,0 +1,15 @@
+{
+  "category": "Exobiology",
+  "title": "Variant Diversity",
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(DISTINCT Variant_Localised) AS variants, COUNT(DISTINCT Species_Localised) AS species FROM ScanOrganic WHERE ScanType = 'Analyse' AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{variants} unique biological variant(s) fully analysed across {species} species during the report period. Variants are colour or environment-conditioned expressions of the same species and contribute to the diversity score that serious xenobiologists track.",
+    "help": "Variant_Localised includes colour/environment suffixes. variants drives the title as the diversity headline. species is secondary context."
+  },
+  "tagLines": [
+    "Biological variant catalogue updated. Xenobiology contribution diversity noted in the field report.",
+    "Same species, different planet, different colour. Each one counts. You found a lot of new combinations.",
+    "Variant hunting is the completionist's game. No map, no guide, just atmosphere tables and patience."
+  ]
+}

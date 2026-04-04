@@ -1,0 +1,16 @@
+{
+  "category": "Mining",
+  "title": "Refined Mineral Tonnage",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM MiningRefined WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Type_Localised, Type) AS label, SUM(Count) AS value FROM MiningRefined WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} tonnes of refined minerals extracted and processed during the report period. Platinum, Palladium, Gold, and other valuable cores represent the haul from laser mining; the volume tells the story of your time in the rings.",
+    "help": "MiningRefined fires after each refining cycle with the mineral type and quantity. Count is tonnes per refining event. total drives the title as the total tonnage extracted."
+  },
+  "tagLines": [
+    "Refined mineral tonnage log compiled. The rings have been thoroughly worked.",
+    "Every ton on this chart is laser time, collector limpet patience, and refinery cycles.",
+    "Platinum, Palladium, Gold — the commodity markers of a successful mining expedition."
+  ]
+}

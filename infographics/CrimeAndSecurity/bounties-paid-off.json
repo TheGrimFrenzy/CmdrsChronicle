@@ -1,0 +1,16 @@
+{
+  "category": "CrimeAndSecurity",
+  "title": "Bounties Paid Off",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(Amount), 0) AS total FROM PayBounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Faction AS label, COALESCE(SUM(Amount), 0) AS value FROM PayBounty WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Faction ORDER BY value DESC",
+  "details": {
+    "text": "{total} Cr spent clearing bounties during the report period. Paying off bounties is the cost of doing illegal business — large payouts represent real credits permanently spent to restore your standing, and the faction split shows which police forces were the most expensive to appease.",
+    "help": "PayBounty Amount is the credit cost paid. total drives the title as the total clearance spend."
+  },
+  "tagLines": [
+    "Bounty clearance payment records compiled. Faction criminal record clearance expenditure noted.",
+    "It cost you real credits to get your name off those lists. Whether it was worth it depends on what you earned first.",
+    "Paid in full. The charge was dropped. The incident remains in your journal forever."
+  ]
+}

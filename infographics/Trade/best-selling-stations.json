@@ -1,0 +1,17 @@
+{
+  "category": "Trade",
+  "title": "Best Selling Stations",
+  "chartType": "table",
+  "tableColumns": ["Station", "Revenue (Cr)"],
+  "query": "SELECT COUNT(DISTINCT StationName) AS stations, COALESCE(SUM(TotalSale), 0) AS total FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT StationName AS label, SUM(TotalSale) AS value FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY StationName ORDER BY value DESC",
+  "details": {
+    "text": "{total} Cr earned across {stations} station(s) during the report period. Your top selling ports are the anchors of your trade network — where the margins were best and the cargo hold emptied profitably.",
+    "help": "total drives the title. Table rows are stations ranked by revenue. inaraSearchBase could link to Inara station lookups."
+  },
+  "tagLines": [
+    "Sales venue performance data archived. Preferred trading ports identified by transaction volume.",
+    "Some stations pay better. You found them. The route is yours.",
+    "Behind every high-revenue dock is a price differential that someone else missed."
+  ]
+}

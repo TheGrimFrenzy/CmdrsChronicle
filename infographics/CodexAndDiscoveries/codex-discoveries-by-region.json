@@ -1,0 +1,16 @@
+{
+  "category": "CodexAndDiscoveries",
+  "title": "Codex Discoveries by Region",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM CodexEntry WHERE IsNewEntry = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Region, 'Unknown') AS label, COUNT(*) AS value FROM CodexEntry WHERE IsNewEntry = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Region ORDER BY value DESC",
+  "details": {
+    "text": "{total} new codex discovery(ies) recorded during the report period. The galactic region breakdown shows where your discoveries clustered — whether in the familiar Orion Spur, the distant Sagittarius-Carina arm, or the far reaches of the Outer Arm where few commanders have catalogued anything at all.",
+    "help": "CodexEntry Region is the galactic region of the discovery. total drives the title. Regions include Orion-Cygnus Arm, Sagittarius-Carina Arm, etc."
+  },
+  "tagLines": [
+    "Codex discovery galactic region distribution compiled. New entry origin map noted in the discovery record.",
+    "Different regions hide different things. The distribution shows which sectors you've been exploring.",
+    "The Codex gets thinner the further from the bubble you go. You pushed into the thin parts."
+  ]
+}

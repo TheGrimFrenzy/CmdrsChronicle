@@ -1,7 +1,0 @@
-{
-  "category": "SocialMulticrew",
-  "title": "Crew Roles",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) FROM CrewMemberRoleChange WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT Role AS label, COUNT(*) AS value FROM CrewMemberRoleChange WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Role ORDER BY value DESC"
-}

@@ -1,0 +1,16 @@
+{
+  "category": "ShipManagementAndOutfitting",
+  "title": "Remote Module Fetches",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS total FROM FetchRemoteModule WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Module_Localised, Module) AS label, COUNT(*) AS value FROM FetchRemoteModule WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Module ORDER BY value DESC LIMIT 20",
+  "details": {
+    "text": "{total} module(s) retrieved from remote storage during the report period. Fetching modules remotely saves a cross-bubble trip but adds a transfer surcharge — a high fetch count shows active multi-ship fleet management and suggests you're keeping several builds operational simultaneously across different locations.",
+    "help": "FetchRemoteModule Module_Localised is the module type retrieved. total drives the title."
+  },
+  "tagLines": [
+    "Remote module retrieval log compiled. Fleet storage access events noted in the outfitting record.",
+    "The module was in storage somewhere inconvenient. You paid to have it moved rather than fly for it.",
+    "Remote fetching is the lazy engineer's convenience fee. Lazy engineers keep more ships operational."
+  ]
+}

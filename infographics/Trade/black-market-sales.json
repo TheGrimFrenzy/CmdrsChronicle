@@ -1,0 +1,16 @@
+{
+  "category": "Trade",
+  "title": "Black Market Sales",
+  "chartType": "bar-chart",
+  "query": "SELECT COALESCE(SUM(TotalSale), 0) AS total, COUNT(*) AS sales FROM MarketSell WHERE IllegalGoods = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(Type_Localised, Type) AS label, SUM(TotalSale) AS value FROM MarketSell WHERE IllegalGoods = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "details": {
+    "text": "{sales} illegal commodity sale(s) totalling {total} Cr across black markets during the report period. Contraband runs are the dark side of trading — each sale required finding a station that didn't ask too many questions.",
+    "help": "IllegalGoods = 1 flags contraband sales. total drives the title. Bar chart shows which illegal commodities generated the most revenue."
+  },
+  "tagLines": [
+    "Contraband transaction records sealed. The relevant authorities are advised these logs are encrypted.",
+    "The black market doesn't advertise. You found it anyway. Repeatedly.",
+    "Not all cargo manifests bear scrutiny. These ones especially."
+  ]
+}

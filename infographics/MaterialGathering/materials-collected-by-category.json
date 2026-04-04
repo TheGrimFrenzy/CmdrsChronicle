@@ -1,0 +1,16 @@
+{
+  "category": "MaterialGathering",
+  "title": "Materials Collected by Category",
+  "chartType": "bar-chart",
+  "query": "SELECT SUM(Count) AS total FROM MaterialCollected WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Category AS label, SUM(Count) AS value FROM MaterialCollected WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Category ORDER BY value DESC",
+  "details": {
+    "text": "{total} units of materials gathered across all categories during the report period. The three material categories feed different engineering paths — a Manufactured-heavy chart signals combat engineering; lots of Encoded materials means data-scanning work; Raw dominance indicates surface SRV grinding.",
+    "help": "MaterialCollected Category values are Raw, Manufactured, and Encoded. total drives the title as the combined gathering volume."
+  },
+  "tagLines": [
+    "Material collection totals compiled. Category distribution noted in the engineering supply log.",
+    "Three categories. Three kinds of grind. The balance between them shows where you spent your time.",
+    "Materials don't gather themselves. Every unit here cost you time in the ring, the battlefield, or the surface."
+  ]
+}

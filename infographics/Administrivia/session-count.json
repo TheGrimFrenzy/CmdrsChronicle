@@ -1,0 +1,16 @@
+{
+  "category": "Administrivia",
+  "title": "Session Count",
+  "summaryOnly": true,
+  "chartType": "summary-tile",
+  "query": "SELECT COUNT(*) AS total FROM LoadGame WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "details": {
+    "text": "{total} game session(s) started during the report period. Session count puts scale on everything else in this report — a huge earnings total spread across a single session is a very different achievement from the same total built across thirty separate sessions over a full week.",
+    "help": "LoadGame fires at the start of each game session. total drives the title as the session count."
+  },
+  "tagLines": [
+    "Game session count compiled from LoadGame journal records.",
+    "Every session in this count was a decision to log in. That's the first step every time.",
+    "One long session or many short ones — the total count frames what everything else in this report means."
+  ]
+}
