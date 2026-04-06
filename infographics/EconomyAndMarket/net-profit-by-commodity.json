@@ -3,7 +3,7 @@
   "title": "Net Profit by Commodity",
   "chartType": "bar-chart",
   "query": "SELECT COALESCE(SUM(TotalSale), 0) - COALESCE((SELECT SUM(TotalCost) FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS total FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT COALESCE(s.Type_Localised, s.Type) AS label, (COALESCE(SUM(s.TotalSale), 0) - COALESCE(SUM(b.TotalCost), 0)) AS value FROM MarketSell s LEFT JOIN MarketBuy b ON s.Type = b.Type AND b.event_timestamp >= :startDate AND b.event_timestamp < :endDate WHERE s.event_timestamp >= :startDate AND s.event_timestamp < :endDate GROUP BY s.Type ORDER BY value DESC LIMIT 20",
+  "detailQuery": "SELECT s.label, COALESCE(s.sale, 0) - COALESCE(b.cost, 0) AS value FROM (SELECT COALESCE(Type_Localised, Type) AS label, SUM(TotalSale) AS sale FROM MarketSell WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label) s LEFT JOIN (SELECT COALESCE(Type_Localised, Type) AS label, SUM(TotalCost) AS cost FROM MarketBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label) b ON s.label = b.label ORDER BY value DESC",
   "details": {
     "text": "{total} Cr net profit generated across all commodities during the report period. Not all commodities are created equal — this chart shows where the real money came from and whether your instincts about which goods to haul are validated by the actual margin data.",
     "help": "Net profit per commodity = sell revenue minus buy cost. total drives the title as the overall net trading result."

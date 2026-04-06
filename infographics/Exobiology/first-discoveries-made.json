@@ -4,6 +4,7 @@
   "chartType": "table",
   "query": "SELECT COUNT(*) AS total FROM SellOrganicData WHERE Bonus > 0 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
   "detailQuery": "SELECT COALESCE(Species_Localised, Species) AS label, COALESCE(SUM(Bonus), 0) AS value FROM SellOrganicData WHERE Bonus > 0 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY label ORDER BY value DESC",
+  "tableColumns": ["Species", "Bonus (Cr)"],
   "details": {
     "text": "{total} first-discovery biological sample(s) registered during the report period. These are species that no commander had previously catalogued — among the rarest achievements in exploration. The bonus column reflects Universal Cartographics' appreciation for the exclusivity.",
     "help": "SellOrganicData with Bonus > 0 means Universal Cartographics paid a first-discovery premium. total is the headline count of unique first-discovery species."

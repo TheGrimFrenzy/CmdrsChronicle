@@ -1,3 +1,32 @@
+## Table Chart Column Headings
+
+- When creating an infographic with `"chartType": "table"`, always specify the `tableColumns` property in the JSON definition.
+- `tableColumns` should be an array of two strings: the first is the label column heading, the second is the value column heading (e.g., `["Faction", "Missions"]`).
+- If `tableColumns` is not provided, the default headings "Label" and "Value" will be used.
+- Example:
+  ```json
+  "tableColumns": ["Material", "Quantity"]
+  ```
+
+## Localized Column Naming
+
+- When a table contains both a column and a corresponding column with a `_localised` suffix (e.g., `Material` and `Material_localised`), always prefer the `_localised` column for display purposes.
+- When both columns exist, use `COALESCE(column_localised, column)` in your SQL queries to select the localized value if available, falling back to the non-localized value if not.
+- Example:
+  ```sql
+  SELECT COALESCE(r.Material_localised, r.Material) AS Material, SUM(r.Quantity) AS TimesReceived ...
+  ```
+
+## Main Query Requirements
+
+- The main `query` for each infographic **must return a numeric type as the first column** (e.g., `COUNT(*)`, `SUM(...)`, or similar). This value is used to determine whether the tile qualifies (meets the threshold) and is displayed in the report.
+- If the main query returns multiple columns, the first column must be numeric, or the tile may never qualify. Always ensure the first column is the intended metric for qualification.
+- Example:
+  ```json
+  "query": "SELECT COUNT(*) AS totalTrades FROM MaterialTrade WHERE ..."
+  ```
+
+See also: Primary metric selection rules above.
 # Infographics Spec
 
 ## Purpose

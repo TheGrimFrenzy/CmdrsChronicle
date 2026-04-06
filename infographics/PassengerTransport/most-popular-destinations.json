@@ -4,6 +4,7 @@
   "chartType": "table",
   "query": "SELECT COUNT(*) AS total FROM MissionAccepted WHERE PassengerMission = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
   "detailQuery": "SELECT DestinationSystem AS label, COUNT(*) AS value FROM MissionAccepted WHERE PassengerMission = 1 AND event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY DestinationSystem ORDER BY value DESC LIMIT 20",
+  "tableColumns": ["System", "Missions"],
   "details": {
     "text": "{total} passenger mission(s) accepted during the report period. The destination breakdown reveals the economic and political hot spots attracting the galaxy's travellers — conflict zones, tourist beacons, and permit-locked systems each draw distinct passenger types with very different risk profiles.",
     "help": "MissionAccepted DestinationSystem for passenger missions. total drives the title as the accepted mission volume."

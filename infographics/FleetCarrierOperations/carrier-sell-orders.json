@@ -1,0 +1,17 @@
+{
+  "category": "FleetCarrierOperations",
+  "title": "Carrier Sell Orders",
+  "chartType": "table",
+  "query": "SELECT COUNT(DISTINCT Commodity) AS orders FROM CarrierTradeOrder WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND SaleOrder > 0 AND (CancelTrade IS NULL OR CancelTrade = 0)",
+  "detailQuery": "SELECT COALESCE(Commodity_Localised, Commodity) AS Commodity, SUM(SaleOrder) AS Quantity, ROUND(AVG(Price), 2) AS 'Avg Price' FROM CarrierTradeOrder WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND SaleOrder > 0 AND (CancelTrade IS NULL OR CancelTrade = 0) GROUP BY Commodity, Commodity_Localised ORDER BY SUM(SaleOrder) DESC LIMIT 20",
+  "tableColumns": ["Commodity", "Quantity", "Avg Price"],
+  "details": {
+    "text": "{orders} commodities offered for sale on your carrier during the report period. Sell orders represent your inventory for visiting commanders to purchase, showcasing the diversity and scale of your trading operation.",
+    "help": "CarrierTradeOrder fires when a trade order is listed. This aggregates all active sell orders by commodity to show trading volume and pricing."
+  },
+  "tagLines": [
+    "Carrier sell orders catalogued. Your inventory attracted buyers from across the galaxy.",
+    "Your trading stock recorded. Commanders found profitable goods aboard your carrier.",
+    "Sale orders fulfilled and restocked. Your carrier's market reputation grew stronger."
+  ]
+}

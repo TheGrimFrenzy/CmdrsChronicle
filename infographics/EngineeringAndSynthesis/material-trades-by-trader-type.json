@@ -1,0 +1,16 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Material Trades by Trader Type",
+  "chartType": "bar-chart",
+  "query": "SELECT COUNT(*) AS TotalTrades FROM MaterialTrade WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT TraderType AS label, COUNT(*) AS value FROM MaterialTrade WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY TraderType ORDER BY value DESC",
+  "details": {
+    "text": "Number of material trades at each trader type during the report period.",
+    "help": "TraderType indicates the type of material trader (Raw, Manufactured, Encoded)."
+  },
+  "tagLines": [
+    "Material trader transaction log compiled.",
+    "Trading down to trade up.",
+    "Material traders exist for inventory flexibility."
+  ]
+}

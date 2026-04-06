@@ -266,10 +266,17 @@ internal static class InteractiveSetup
 
     private static List<string> LoadCategories(string? infographicsBasePath)
     {
-        if (string.IsNullOrWhiteSpace(infographicsBasePath) || !Directory.Exists(infographicsBasePath))
+        if (string.IsNullOrWhiteSpace(infographicsBasePath))
+        {
             return [];
+        }
+        if (!Directory.Exists(infographicsBasePath))
+        {
+            return [];
+        }
         try
         {
+            var files = Directory.GetFiles(infographicsBasePath, "*.json", SearchOption.AllDirectories);
             return InfographicLoader.LoadAll(infographicsBasePath)
                 .Select(d => d.Category)
                 .Where(c => !string.IsNullOrWhiteSpace(c))
@@ -277,7 +284,10 @@ internal static class InteractiveSetup
                 .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }
-        catch { return []; }
+        catch (Exception ex)
+        {
+            return [];
+        }
     }
 
     // ── Utilities ─────────────────────────────────────────────────────────────

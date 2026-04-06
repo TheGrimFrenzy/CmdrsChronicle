@@ -165,19 +165,31 @@ $@"      <article class=""panel"">
 
             if (rows.Count <= TileRenderer.MaxDetailRows)
             {
-                displayRows.AddRange(rows.Select(r => (r.Label, r.Value, false)));
+                foreach (var row in rows)
+                {
+                    var label = row.Length > 0 ? row[0] : "(unknown)";
+                    var value = row.Length > 1 && long.TryParse(row[1], out var v) ? v : 0L;
+                    displayRows.Add((label, value, false));
+                }
             }
             else
             {
                 for (int i = 0; i < TileRenderer.MaxDetailRows; i++)
-                    displayRows.Add((rows[i].Label, rows[i].Value, false));
+                {
+                    var row = rows[i];
+                    var label = row.Length > 0 ? row[0] : "(unknown)";
+                    var value = row.Length > 1 && long.TryParse(row[1], out var v) ? v : 0L;
+                    displayRows.Add((label, value, false));
+                }
 
                 var otherLabels = new List<string>();
                 long otherTotal = 0;
                 for (int i = TileRenderer.MaxDetailRows; i < rows.Count; i++)
                 {
-                    otherLabels.Add(rows[i].Label);
-                    otherTotal += rows[i].Value;
+                    var row = rows[i];
+                    otherLabels.Add(row.Length > 0 ? row[0] : "(unknown)");
+                    if (row.Length > 1 && long.TryParse(row[1], out var v))
+                        otherTotal += v;
                 }
                 if (otherTotal > 0)
                     displayRows.Add(($"(+{otherLabels.Count} more)", otherTotal, true));
@@ -219,16 +231,28 @@ $@"      <article class=""panel"">
 
             if (rows.Count <= TileRenderer.MaxDetailRows)
             {
-                displayRows.AddRange(rows);
+                foreach (var row in rows)
+                {
+                    var label = row.Length > 0 ? row[0] : "(unknown)";
+                    var value = row.Length > 1 && long.TryParse(row[1], out var v) ? v : 0L;
+                    displayRows.Add((label, value));
+                }
             }
             else
             {
                 for (int i = 0; i < TileRenderer.MaxDetailRows; i++)
-                    displayRows.Add(rows[i]);
+                {
+                    var row = rows[i];
+                    var label = row.Length > 0 ? row[0] : "(unknown)";
+                    var value = row.Length > 1 && long.TryParse(row[1], out var v) ? v : 0L;
+                    displayRows.Add((label, value));
+                }
                 for (int i = TileRenderer.MaxDetailRows; i < rows.Count; i++)
                 {
-                    otherLabels.Add(rows[i].Label);
-                    otherTotal += rows[i].Value;
+                    var row = rows[i];
+                    otherLabels.Add(row.Length > 0 ? row[0] : "(unknown)");
+                    if (row.Length > 1 && long.TryParse(row[1], out var v))
+                        otherTotal += v;
                 }
                 displayRows.Add(("Other", otherTotal));
             }

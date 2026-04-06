@@ -1,0 +1,17 @@
+{
+  "category": "FleetCarrierOperations",
+  "title": "Carrier Buy Orders",
+  "chartType": "table",
+  "query": "SELECT COUNT(DISTINCT Commodity) AS orders FROM CarrierTradeOrder WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND PurchaseOrder > 0 AND (CancelTrade IS NULL OR CancelTrade = 0)",
+  "detailQuery": "SELECT COALESCE(Commodity_Localised, Commodity) AS Commodity, SUM(PurchaseOrder) AS Quantity, ROUND(AVG(Price), 2) AS 'Avg Price' FROM CarrierTradeOrder WHERE event_timestamp >= :startDate AND event_timestamp < :endDate AND PurchaseOrder > 0 AND (CancelTrade IS NULL OR CancelTrade = 0) GROUP BY Commodity, Commodity_Localised ORDER BY SUM(PurchaseOrder) DESC LIMIT 20",
+  "tableColumns": ["Commodity", "Quantity", "Avg Price"],
+  "details": {
+    "text": "{orders} commodities available for purchase on your carrier during the report period. Buy orders represent opportunities for visiting commanders to sell their cargo, driving commerce through your trading post.",
+    "help": "CarrierTradeOrder fires when a trade order is listed. This aggregates all active buy orders by commodity to show trading volume and pricing."
+  },
+  "tagLines": [
+    "Carrier buy orders catalogued. Visiting traders brought their best commodities to sell.",
+    "Your carrier's shopping list compiled. Buyers found what they were looking for.",
+    "Purchase orders placed and fulfilled. Your carrier's economy thrived on commerce."
+  ]
+}

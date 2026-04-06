@@ -1,0 +1,18 @@
+{
+  "category": "TravelAndNavigation",
+  "title": "Denied Dockings by Reason",
+  "chartType": "bar",
+  "query": "SELECT COUNT(*) AS denied FROM DockingDenied WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT Reason, COUNT(*) AS Count FROM DockingDenied WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Reason ORDER BY Count DESC",
+  "barLabelColumn": "Reason",
+  "barValueColumn": "Count",
+  "details": {
+    "text": "{denied} denied docking attempts during the report period. The chart breaks down the reasons for denial, such as 'No Space' or 'Too Large', helping you understand the most common obstacles to docking.",
+    "help": "DockingDenied events are logged when a docking request is refused. Reasons are stored in CamelCase and will be converted to normal English for display."
+  },
+  "tagLines": [
+    "Denied dockings analyzed. Know why you couldn't land.",
+    "Docking refusals broken down by reason. Plan your next approach.",
+    "Every denied docking has a story. See which reasons are most common."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Top Materials Traded For",
+  "chartType": "table",
+  "query": "SELECT SUM(r.Quantity) AS TotalMaterialsReceived FROM MaterialTrade_Received r JOIN MaterialTrade t ON r.MaterialTrade_event_id = t.event_id WHERE t.event_timestamp >= :startDate AND t.event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(r.Material_localised, r.Material) AS Material, SUM(r.Quantity) AS TimesReceived FROM MaterialTrade_Received r JOIN MaterialTrade t ON r.MaterialTrade_event_id = t.event_id WHERE t.event_timestamp >= :startDate AND t.event_timestamp < :endDate GROUP BY Material ORDER BY TimesReceived DESC LIMIT 20",
+  "tableColumns": ["Material", "Quantity"],
+  "details": {
+    "text": "Top materials received from material traders during the report period.",
+    "help": "MaterialTrade_Received shows which materials were most frequently acquired in trades."
+  },
+  "tagLines": [
+    "Material grade conversion activity noted in the crafting record.",
+    "What you get is what you need.",
+    "Material traders exist for inventory flexibility."
+  ]
+}

@@ -48,7 +48,6 @@ CREATE TABLE IF NOT EXISTS ApproachSettlement (
     Latitude REAL,
     Longitude REAL,
     Name_Localised TEXT,
-    StationFaction TEXT,
     StationGovernment TEXT,
     StationGovernment_Localised TEXT,
     StationAllegiance TEXT,
@@ -57,6 +56,14 @@ CREATE TABLE IF NOT EXISTS ApproachSettlement (
     StationEconomy_Localised TEXT,
     event_timestamp TEXT NOT NULL
 );
+
+    CREATE TABLE IF NOT EXISTS ApproachSettlement_StationFaction (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ApproachSettlement_event_id INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        FactionState TEXT,
+        FOREIGN KEY(ApproachSettlement_event_id) REFERENCES ApproachSettlement(event_id)
+    );
 
     CREATE TABLE IF NOT EXISTS ApproachSettlement_StationEconomies (
         child_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -401,7 +408,6 @@ CREATE TABLE IF NOT EXISTS CarrierJump (
     StationName TEXT NOT NULL,
     StationType TEXT NOT NULL,
     MarketID INTEGER,
-    StationFaction TEXT,
     StationGovernment TEXT NOT NULL,
     StationGovernment_Localised TEXT,
     StationServices TEXT,
@@ -426,8 +432,6 @@ CREATE TABLE IF NOT EXISTS CarrierJump (
     Body TEXT NOT NULL,
     BodyID INTEGER NOT NULL,
     BodyType TEXT NOT NULL,
-    SystemFaction TEXT,
-    ThargoidWar TEXT,
     Powers TEXT,
     ControllingPower TEXT,
     PowerplayState TEXT,
@@ -436,6 +440,13 @@ CREATE TABLE IF NOT EXISTS CarrierJump (
     PowerplayStateUndermining INTEGER,
     event_timestamp TEXT NOT NULL
 );
+
+    CREATE TABLE IF NOT EXISTS CarrierJump_StationFaction (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CarrierJump_event_id INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        FOREIGN KEY(CarrierJump_event_id) REFERENCES CarrierJump(event_id)
+    );
 
     CREATE TABLE IF NOT EXISTS CarrierJump_StationEconomies (
         child_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -466,6 +477,14 @@ CREATE TABLE IF NOT EXISTS CarrierJump (
         FOREIGN KEY(CarrierJump_event_id) REFERENCES CarrierJump(event_id)
     );
 
+    CREATE TABLE IF NOT EXISTS CarrierJump_SystemFaction (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CarrierJump_event_id INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        FactionState TEXT,
+        FOREIGN KEY(CarrierJump_event_id) REFERENCES CarrierJump(event_id)
+    );
+
     CREATE TABLE IF NOT EXISTS CarrierJump_Conflicts (
         child_id INTEGER PRIMARY KEY AUTOINCREMENT,
         CarrierJump_event_id INTEGER NOT NULL,
@@ -473,6 +492,19 @@ CREATE TABLE IF NOT EXISTS CarrierJump (
         Status TEXT NOT NULL,
         Faction1 TEXT NOT NULL,
         Faction2 TEXT NOT NULL,
+        FOREIGN KEY(CarrierJump_event_id) REFERENCES CarrierJump(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS CarrierJump_ThargoidWar (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CarrierJump_event_id INTEGER NOT NULL,
+        CurrentState TEXT NOT NULL,
+        NextStateSuccess TEXT,
+        NextStateFailure TEXT,
+        SuccessStateReached INTEGER NOT NULL,
+        WarProgress REAL,
+        RemainingPorts INTEGER,
+        EstimatedRemainingTime TEXT,
         FOREIGN KEY(CarrierJump_event_id) REFERENCES CarrierJump(event_id)
     );
 
@@ -565,10 +597,38 @@ CREATE TABLE IF NOT EXISTS CarrierStats (
     JumpRangeCurr REAL NOT NULL,
     JumpRangeMax REAL NOT NULL,
     PendingDecommission INTEGER NOT NULL,
-    SpaceUsage TEXT NOT NULL,
-    Finance TEXT NOT NULL,
     event_timestamp TEXT NOT NULL
 );
+
+    CREATE TABLE IF NOT EXISTS CarrierStats_SpaceUsage (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CarrierStats_event_id INTEGER NOT NULL,
+        TotalCapacity INTEGER NOT NULL,
+        Crew INTEGER NOT NULL,
+        Cargo INTEGER NOT NULL,
+        CargoSpaceReserved INTEGER NOT NULL,
+        ShipPacks INTEGER NOT NULL,
+        ModulePacks INTEGER NOT NULL,
+        FreeSpace INTEGER NOT NULL,
+        FOREIGN KEY(CarrierStats_event_id) REFERENCES CarrierStats(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS CarrierStats_Finance (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CarrierStats_event_id INTEGER NOT NULL,
+        CarrierBalance INTEGER NOT NULL,
+        ReserveBalance INTEGER NOT NULL,
+        AvailableBalance INTEGER NOT NULL,
+        ReservePercent INTEGER,
+        TaxRate_shipyard INTEGER,
+        TaxRate_rearm INTEGER,
+        TaxRate_outfitting INTEGER,
+        TaxRate_refuel INTEGER,
+        TaxRate_repair INTEGER,
+        TaxRate_pioneersupplies INTEGER,
+        TaxRate INTEGER,
+        FOREIGN KEY(CarrierStats_event_id) REFERENCES CarrierStats(event_id)
+    );
 
     CREATE TABLE IF NOT EXISTS CarrierStats_Crew (
         child_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1047,14 +1107,12 @@ CREATE TABLE IF NOT EXISTS Docked (
     StarSystem TEXT,
     SystemAddress INTEGER,
     MarketID INTEGER,
-    StationFaction TEXT,
     StationGovernment TEXT,
     StationGovernment_Localised TEXT,
     StationServices TEXT,
     StationEconomy TEXT,
     StationEconomy_Localised TEXT,
     DistFromStarLS REAL NOT NULL,
-    LandingPads TEXT,
     Wanted INTEGER,
     ActiveFine INTEGER,
     StationAllegiance TEXT,
@@ -1063,12 +1121,29 @@ CREATE TABLE IF NOT EXISTS Docked (
     event_timestamp TEXT NOT NULL
 );
 
+    CREATE TABLE IF NOT EXISTS Docked_StationFaction (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Docked_event_id INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        FactionState TEXT,
+        FOREIGN KEY(Docked_event_id) REFERENCES Docked(event_id)
+    );
+
     CREATE TABLE IF NOT EXISTS Docked_StationEconomies (
         child_id INTEGER PRIMARY KEY AUTOINCREMENT,
         Docked_event_id INTEGER NOT NULL,
         Name TEXT NOT NULL,
         Name_Localised TEXT,
         Proportion REAL NOT NULL,
+        FOREIGN KEY(Docked_event_id) REFERENCES Docked(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Docked_LandingPads (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Docked_event_id INTEGER NOT NULL,
+        Small INTEGER NOT NULL,
+        Medium INTEGER NOT NULL,
+        Large INTEGER NOT NULL,
         FOREIGN KEY(Docked_event_id) REFERENCES Docked(event_id)
     );
 
@@ -1118,9 +1193,17 @@ CREATE TABLE IF NOT EXISTS DockingRequested (
     StationName TEXT NOT NULL,
     StationName_Localised TEXT,
     StationType TEXT NOT NULL,
-    LandingPads TEXT,
     event_timestamp TEXT NOT NULL
 );
+
+    CREATE TABLE IF NOT EXISTS DockingRequested_LandingPads (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        DockingRequested_event_id INTEGER NOT NULL,
+        Small INTEGER NOT NULL,
+        Medium INTEGER NOT NULL,
+        Large INTEGER NOT NULL,
+        FOREIGN KEY(DockingRequested_event_id) REFERENCES DockingRequested(event_id)
+    );
 
 
 CREATE TABLE IF NOT EXISTS DockingTimeout (
@@ -1427,14 +1510,12 @@ CREATE TABLE IF NOT EXISTS FSDJump (
     JumpDist REAL NOT NULL,
     FuelUsed REAL NOT NULL,
     FuelLevel REAL NOT NULL,
-    SystemFaction TEXT,
     Powers TEXT,
     ControllingPower TEXT,
     PowerplayState TEXT,
     PowerplayStateControlProgress REAL,
     PowerplayStateReinforcement INTEGER,
     PowerplayStateUndermining INTEGER,
-    ThargoidWar TEXT,
     BoostUsed INTEGER,
     event_timestamp TEXT NOT NULL
 );
@@ -1459,6 +1540,14 @@ CREATE TABLE IF NOT EXISTS FSDJump (
         FOREIGN KEY(FSDJump_event_id) REFERENCES FSDJump(event_id)
     );
 
+    CREATE TABLE IF NOT EXISTS FSDJump_SystemFaction (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        FSDJump_event_id INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        FactionState TEXT,
+        FOREIGN KEY(FSDJump_event_id) REFERENCES FSDJump(event_id)
+    );
+
     CREATE TABLE IF NOT EXISTS FSDJump_PowerplayConflictProgress (
         child_id INTEGER PRIMARY KEY AUTOINCREMENT,
         FSDJump_event_id INTEGER NOT NULL,
@@ -1474,6 +1563,19 @@ CREATE TABLE IF NOT EXISTS FSDJump (
         Status TEXT NOT NULL,
         Faction1 TEXT NOT NULL,
         Faction2 TEXT NOT NULL,
+        FOREIGN KEY(FSDJump_event_id) REFERENCES FSDJump(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS FSDJump_ThargoidWar (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        FSDJump_event_id INTEGER NOT NULL,
+        CurrentState TEXT NOT NULL,
+        NextStateSuccess TEXT,
+        NextStateFailure TEXT,
+        SuccessStateReached INTEGER NOT NULL,
+        WarProgress REAL,
+        RemainingPorts INTEGER,
+        EstimatedRemainingTime TEXT,
         FOREIGN KEY(FSDJump_event_id) REFERENCES FSDJump(event_id)
     );
 
@@ -1771,11 +1873,18 @@ CREATE TABLE IF NOT EXISTS Loadout (
     UnladenMass REAL NOT NULL,
     CargoCapacity INTEGER NOT NULL,
     MaxJumpRange REAL NOT NULL,
-    FuelCapacity TEXT NOT NULL,
     Rebuy INTEGER NOT NULL,
     Hot INTEGER,
     event_timestamp TEXT NOT NULL
 );
+
+    CREATE TABLE IF NOT EXISTS Loadout_FuelCapacity (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Loadout_event_id INTEGER NOT NULL,
+        Main REAL NOT NULL,
+        Reserve REAL NOT NULL,
+        FOREIGN KEY(Loadout_event_id) REFERENCES Loadout(event_id)
+    );
 
     CREATE TABLE IF NOT EXISTS Loadout_Modules (
         child_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1850,20 +1959,17 @@ CREATE TABLE IF NOT EXISTS Location (
     Body TEXT NOT NULL,
     BodyID INTEGER NOT NULL,
     BodyType TEXT NOT NULL,
-    SystemFaction TEXT,
     Powers TEXT,
     ControllingPower TEXT,
     PowerplayState TEXT,
     PowerplayStateControlProgress REAL,
     PowerplayStateReinforcement INTEGER,
     PowerplayStateUndermining INTEGER,
-    ThargoidWar TEXT,
     OnFoot INTEGER,
     StationName TEXT,
     StationName_Localised TEXT,
     StationType TEXT,
     MarketID INTEGER,
-    StationFaction TEXT,
     StationGovernment TEXT,
     StationGovernment_Localised TEXT,
     StationServices TEXT,
@@ -1896,6 +2002,14 @@ CREATE TABLE IF NOT EXISTS Location (
         FOREIGN KEY(Location_event_id) REFERENCES Location(event_id)
     );
 
+    CREATE TABLE IF NOT EXISTS Location_SystemFaction (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Location_event_id INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        FactionState TEXT,
+        FOREIGN KEY(Location_event_id) REFERENCES Location(event_id)
+    );
+
     CREATE TABLE IF NOT EXISTS Location_PowerplayConflictProgress (
         child_id INTEGER PRIMARY KEY AUTOINCREMENT,
         Location_event_id INTEGER NOT NULL,
@@ -1911,6 +2025,27 @@ CREATE TABLE IF NOT EXISTS Location (
         Status TEXT NOT NULL,
         Faction1 TEXT NOT NULL,
         Faction2 TEXT NOT NULL,
+        FOREIGN KEY(Location_event_id) REFERENCES Location(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Location_ThargoidWar (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Location_event_id INTEGER NOT NULL,
+        CurrentState TEXT NOT NULL,
+        NextStateSuccess TEXT,
+        NextStateFailure TEXT,
+        SuccessStateReached INTEGER NOT NULL,
+        WarProgress REAL,
+        RemainingPorts INTEGER,
+        EstimatedRemainingTime TEXT,
+        FOREIGN KEY(Location_event_id) REFERENCES Location(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Location_StationFaction (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Location_event_id INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        FactionState TEXT,
         FOREIGN KEY(Location_event_id) REFERENCES Location(event_id)
     );
 
@@ -2074,10 +2209,28 @@ CREATE TABLE IF NOT EXISTS MaterialTrade (
     event_id INTEGER PRIMARY KEY AUTOINCREMENT,
     MarketID INTEGER NOT NULL,
     TraderType TEXT NOT NULL,
-    Paid TEXT NOT NULL,
-    Received TEXT NOT NULL,
     event_timestamp TEXT NOT NULL
 );
+
+    CREATE TABLE IF NOT EXISTS MaterialTrade_Paid (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        MaterialTrade_event_id INTEGER NOT NULL,
+        Material TEXT NOT NULL,
+        Material_Localised TEXT,
+        Category TEXT NOT NULL,
+        Quantity INTEGER NOT NULL,
+        FOREIGN KEY(MaterialTrade_event_id) REFERENCES MaterialTrade(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS MaterialTrade_Received (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        MaterialTrade_event_id INTEGER NOT NULL,
+        Material TEXT NOT NULL,
+        Material_Localised TEXT,
+        Category TEXT NOT NULL,
+        Quantity INTEGER NOT NULL,
+        FOREIGN KEY(MaterialTrade_event_id) REFERENCES MaterialTrade(event_id)
+    );
 
 
 CREATE TABLE IF NOT EXISTS MiningRefined (
@@ -2914,7 +3067,6 @@ CREATE TABLE IF NOT EXISTS Scan (
     SurfaceTemperature REAL,
     SurfacePressure REAL,
     Landable INTEGER,
-    Composition TEXT,
     SemiMajorAxis REAL,
     Eccentricity REAL,
     OrbitalInclination REAL,
@@ -2952,6 +3104,15 @@ CREATE TABLE IF NOT EXISTS Scan (
         Scan_event_id INTEGER NOT NULL,
         Name TEXT NOT NULL,
         Percent REAL NOT NULL,
+        FOREIGN KEY(Scan_event_id) REFERENCES Scan(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Scan_Composition (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Scan_event_id INTEGER NOT NULL,
+        Ice REAL NOT NULL,
+        Rock REAL NOT NULL,
+        Metal REAL NOT NULL,
         FOREIGN KEY(Scan_event_id) REFERENCES Scan(event_id)
     );
 
@@ -3479,26 +3640,343 @@ CREATE TABLE IF NOT EXISTS StartJump (
 
 CREATE TABLE IF NOT EXISTS Statistics (
     event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    Bank_Account TEXT NOT NULL,
-    Combat TEXT NOT NULL,
-    Crime TEXT NOT NULL,
-    Smuggling TEXT NOT NULL,
-    Trading TEXT NOT NULL,
-    Mining TEXT NOT NULL,
-    Exploration TEXT NOT NULL,
-    Passengers TEXT NOT NULL,
-    Search_And_Rescue TEXT NOT NULL,
-    Crafting TEXT,
-    Crew TEXT,
-    Multicrew TEXT,
-    Material_Trader_Stats TEXT,
-    FLEETCARRIER TEXT,
-    Exobiology TEXT,
-    TG_ENCOUNTERS TEXT,
-    CQC TEXT,
-    Squadron TEXT,
     event_timestamp TEXT NOT NULL
 );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Bank_Account (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Current_Wealth INTEGER NOT NULL,
+        Spent_On_Ships INTEGER NOT NULL,
+        Spent_On_Outfitting INTEGER NOT NULL,
+        Spent_On_Repairs INTEGER NOT NULL,
+        Spent_On_Fuel INTEGER NOT NULL,
+        Spent_On_Ammo_Consumables INTEGER NOT NULL,
+        Insurance_Claims INTEGER NOT NULL,
+        Spent_On_Insurance INTEGER NOT NULL,
+        Owned_Ship_Count INTEGER,
+        Spent_On_Suits INTEGER,
+        Spent_On_Weapons INTEGER,
+        Spent_On_Suit_Consumables INTEGER,
+        Suits_Owned INTEGER,
+        Weapons_Owned INTEGER,
+        Spent_On_Premium_Stock INTEGER,
+        Premium_Stock_Bought INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Combat (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Bounties_Claimed INTEGER NOT NULL,
+        Bounty_Hunting_Profit REAL NOT NULL,
+        Combat_Bonds INTEGER NOT NULL,
+        Combat_Bond_Profits INTEGER NOT NULL,
+        Assassinations INTEGER NOT NULL,
+        Assassination_Profits INTEGER NOT NULL,
+        Highest_Single_Reward INTEGER NOT NULL,
+        Skimmers_Killed INTEGER,
+        OnFoot_Combat_Bonds INTEGER,
+        OnFoot_Combat_Bonds_Profits INTEGER,
+        OnFoot_Vehicles_Destroyed INTEGER,
+        OnFoot_Ships_Destroyed INTEGER,
+        Dropships_Taken INTEGER,
+        Dropships_Booked INTEGER,
+        Dropships_Cancelled INTEGER,
+        ConflictZone_High INTEGER,
+        ConflictZone_Medium INTEGER,
+        ConflictZone_Low INTEGER,
+        ConflictZone_Total INTEGER,
+        ConflictZone_High_Wins INTEGER,
+        ConflictZone_Medium_Wins INTEGER,
+        ConflictZone_Low_Wins INTEGER,
+        ConflictZone_Total_Wins INTEGER,
+        Settlement_Defended INTEGER,
+        Settlement_Conquered INTEGER,
+        OnFoot_Skimmers_Killed INTEGER,
+        OnFoot_Scavs_Killed INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Crime (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Notoriety INTEGER,
+        Fines INTEGER NOT NULL,
+        Total_Fines INTEGER NOT NULL,
+        Bounties_Received INTEGER NOT NULL,
+        Total_Bounties INTEGER NOT NULL,
+        Highest_Bounty INTEGER NOT NULL,
+        Malware_Uploaded INTEGER,
+        Settlements_State_Shutdown INTEGER,
+        Production_Sabotage INTEGER,
+        Production_Theft INTEGER,
+        Total_Murders INTEGER,
+        Citizens_Murdered INTEGER,
+        Omnipol_Murdered INTEGER,
+        Guards_Murdered INTEGER,
+        Data_Stolen INTEGER,
+        Goods_Stolen INTEGER,
+        Sample_Stolen INTEGER,
+        Total_Stolen INTEGER,
+        Turrets_Destroyed INTEGER,
+        Turrets_Overloaded INTEGER,
+        Turrets_Total INTEGER,
+        Value_Stolen_StateChange INTEGER,
+        Profiles_Cloned INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Smuggling (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Black_Markets_Traded_With INTEGER NOT NULL,
+        Black_Markets_Profits INTEGER NOT NULL,
+        Resources_Smuggled INTEGER NOT NULL,
+        Average_Profit REAL NOT NULL,
+        Highest_Single_Transaction INTEGER NOT NULL,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Trading (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Markets_Traded_With INTEGER NOT NULL,
+        Market_Profits INTEGER NOT NULL,
+        Resources_Traded INTEGER NOT NULL,
+        Average_Profit REAL NOT NULL,
+        Highest_Single_Transaction INTEGER NOT NULL,
+        Data_Sold INTEGER,
+        Goods_Sold INTEGER,
+        Assets_Sold INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Mining (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Mining_Profits INTEGER NOT NULL,
+        Quantity_Mined INTEGER NOT NULL,
+        Materials_Collected INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Exploration (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Systems_Visited INTEGER NOT NULL,
+        Exploration_Profits INTEGER NOT NULL,
+        Planets_Scanned_To_Level_2 INTEGER NOT NULL,
+        Planets_Scanned_To_Level_3 INTEGER NOT NULL,
+        Efficient_Scans INTEGER,
+        Highest_Payout INTEGER NOT NULL,
+        Total_Hyperspace_Distance INTEGER NOT NULL,
+        Total_Hyperspace_Jumps INTEGER NOT NULL,
+        Greatest_Distance_From_Start REAL NOT NULL,
+        Time_Played INTEGER NOT NULL,
+        OnFoot_Distance_Travelled INTEGER,
+        Shuttle_Journeys INTEGER,
+        Shuttle_Distance_Travelled REAL,
+        Spent_On_Shuttles INTEGER,
+        First_Footfalls INTEGER,
+        Planet_Footfalls INTEGER,
+        Settlements_Visited INTEGER,
+        Fuel_Scooped INTEGER,
+        Fuel_Purchased INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Passengers (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Passengers_Missions_Accepted INTEGER,
+        Passengers_Missions_Disgruntled INTEGER,
+        Passengers_Missions_Bulk INTEGER NOT NULL,
+        Passengers_Missions_VIP INTEGER NOT NULL,
+        Passengers_Missions_Delivered INTEGER NOT NULL,
+        Passengers_Missions_Ejected INTEGER NOT NULL,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Search_And_Rescue (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        SearchRescue_Traded INTEGER NOT NULL,
+        SearchRescue_Profit INTEGER NOT NULL,
+        SearchRescue_Count INTEGER NOT NULL,
+        Salvage_Legal_POI INTEGER,
+        Salvage_Legal_Settlements INTEGER,
+        Salvage_Illegal_POI INTEGER,
+        Salvage_Illegal_Settlements INTEGER,
+        Maglocks_Opened INTEGER,
+        Panels_Opened INTEGER,
+        Settlements_State_FireOut INTEGER,
+        Settlements_State_Reboot INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Crafting (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Count_Of_Used_Engineers INTEGER NOT NULL,
+        Recipes_Generated INTEGER NOT NULL,
+        Recipes_Generated_Rank_1 INTEGER NOT NULL,
+        Recipes_Generated_Rank_2 INTEGER NOT NULL,
+        Recipes_Generated_Rank_3 INTEGER NOT NULL,
+        Recipes_Generated_Rank_4 INTEGER NOT NULL,
+        Recipes_Generated_Rank_5 INTEGER NOT NULL,
+        Suit_Mods_Applied INTEGER,
+        Weapon_Mods_Applied INTEGER,
+        Suits_Upgraded INTEGER,
+        Weapons_Upgraded INTEGER,
+        Suits_Upgraded_Full INTEGER,
+        Weapons_Upgraded_Full INTEGER,
+        Suit_Mods_Applied_Full INTEGER,
+        Weapon_Mods_Applied_Full INTEGER,
+        Spent_On_Crafting INTEGER,
+        Recipes_Applied INTEGER,
+        Recipes_Applied_Rank_1 INTEGER,
+        Recipes_Applied_Rank_2 INTEGER,
+        Recipes_Applied_Rank_3 INTEGER,
+        Recipes_Applied_Rank_4 INTEGER,
+        Recipes_Applied_Rank_5 INTEGER,
+        Recipes_Applied_On_Previously_Modified_Modules INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Crew (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        NpcCrew_TotalWages INTEGER,
+        NpcCrew_Hired INTEGER,
+        NpcCrew_Fired INTEGER,
+        NpcCrew_Died INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Multicrew (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Multicrew_Time_Total INTEGER NOT NULL,
+        Multicrew_Gunner_Time_Total INTEGER NOT NULL,
+        Multicrew_Fighter_Time_Total INTEGER NOT NULL,
+        Multicrew_Credits_Total INTEGER NOT NULL,
+        Multicrew_Fines_Total INTEGER NOT NULL,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Material_Trader_Stats (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Trades_Completed INTEGER NOT NULL,
+        Materials_Traded INTEGER NOT NULL,
+        Encoded_Materials_Traded INTEGER,
+        Raw_Materials_Traded INTEGER,
+        Grade_1_Materials_Traded INTEGER,
+        Grade_2_Materials_Traded INTEGER,
+        Grade_3_Materials_Traded INTEGER,
+        Grade_4_Materials_Traded INTEGER,
+        Grade_5_Materials_Traded INTEGER,
+        Assets_Traded_In INTEGER,
+        Assets_Traded_Out INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_FLEETCARRIER (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        FLEETCARRIER_EXPORT_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_IMPORT_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_TRADEPROFIT_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_TRADESPEND_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_STOLENPROFIT_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_STOLENSPEND_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_DISTANCE_TRAVELLED TEXT NOT NULL,
+        FLEETCARRIER_TOTAL_JUMPS INTEGER NOT NULL,
+        FLEETCARRIER_SHIPYARD_SOLD INTEGER NOT NULL,
+        FLEETCARRIER_SHIPYARD_PROFIT INTEGER NOT NULL,
+        FLEETCARRIER_OUTFITTING_SOLD INTEGER NOT NULL,
+        FLEETCARRIER_OUTFITTING_PROFIT INTEGER NOT NULL,
+        FLEETCARRIER_REARM_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_REFUEL_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_REFUEL_PROFIT INTEGER NOT NULL,
+        FLEETCARRIER_REPAIRS_TOTAL INTEGER NOT NULL,
+        FLEETCARRIER_VOUCHERS_REDEEMED INTEGER NOT NULL,
+        FLEETCARRIER_VOUCHERS_PROFIT INTEGER NOT NULL,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Exobiology (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Organic_Genus_Encountered INTEGER NOT NULL,
+        Organic_Species_Encountered INTEGER NOT NULL,
+        Organic_Variant_Encountered INTEGER NOT NULL,
+        Organic_Data_Profits INTEGER NOT NULL,
+        Organic_Data INTEGER NOT NULL,
+        First_Logged_Profits INTEGER NOT NULL,
+        First_Logged INTEGER NOT NULL,
+        Organic_Systems INTEGER NOT NULL,
+        Organic_Planets INTEGER NOT NULL,
+        Organic_Genus INTEGER NOT NULL,
+        Organic_Species INTEGER NOT NULL,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_TG_ENCOUNTERS (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        TG_ENCOUNTER_IMPRINT INTEGER,
+        TG_ENCOUNTER_WAKES INTEGER,
+        TG_ENCOUNTER_KILLED INTEGER,
+        TG_ENCOUNTER_TOTAL INTEGER,
+        TG_ENCOUNTER_TOTAL_LAST_SYSTEM TEXT,
+        TG_ENCOUNTER_TOTAL_LAST_TIMESTAMP TEXT,
+        TG_ENCOUNTER_TOTAL_LAST_SHIP TEXT,
+        TG_SCOUT_COUNT INTEGER,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_CQC (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        CQC_Credits_Earned INTEGER,
+        CQC_Time_Played INTEGER NOT NULL,
+        CQC_KD REAL NOT NULL,
+        CQC_Kills INTEGER NOT NULL,
+        CQC_WL REAL NOT NULL,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Statistics_Squadron (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Statistics_event_id INTEGER NOT NULL,
+        Squadron_Bank_Credits_Deposited INTEGER NOT NULL,
+        Squadron_Bank_Credits_Withdrawn INTEGER NOT NULL,
+        Squadron_Bank_Commodities_Deposited_Num INTEGER NOT NULL,
+        Squadron_Bank_Commodities_Deposited_Value INTEGER NOT NULL,
+        Squadron_Bank_Commodities_Withdrawn_Num INTEGER NOT NULL,
+        Squadron_Bank_Commodities_Withdrawn_Value INTEGER NOT NULL,
+        Squadron_Bank_PersonalAssets_Deposited_Num INTEGER NOT NULL,
+        Squadron_Bank_PersonalAssets_Deposited_Value INTEGER NOT NULL,
+        Squadron_Bank_PersonalAssets_Withdrawn_Num INTEGER NOT NULL,
+        Squadron_Bank_PersonalAssets_Withdrawn_Value INTEGER NOT NULL,
+        Squadron_Bank_Ships_Deposited_Num INTEGER NOT NULL,
+        Squadron_Bank_Ships_Deposited_Value INTEGER NOT NULL,
+        Squadron_Leaderboard_aegis_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_bgs_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_bounty_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_colonisation_contribution_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_combat_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_cqc_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_exploration_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_mining_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_powerplay_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_trade_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_trade_illicit_highestcontribution INTEGER NOT NULL,
+        Squadron_Leaderboard_podiums INTEGER NOT NULL,
+        FOREIGN KEY(Statistics_event_id) REFERENCES Statistics(event_id)
+    );
 
 
 CREATE TABLE IF NOT EXISTS Status (
@@ -3506,7 +3984,6 @@ CREATE TABLE IF NOT EXISTS Status (
     Flags INTEGER NOT NULL,
     Pips TEXT,
     FireGroup INTEGER,
-    Fuel TEXT,
     GuiFocus INTEGER,
     Latitude REAL,
     Longitude REAL,
@@ -3521,12 +3998,29 @@ CREATE TABLE IF NOT EXISTS Status (
     Temperature REAL,
     SelectedWeapon TEXT,
     BodyName TEXT,
-    Destination TEXT,
     PlanetRadius REAL,
     SelectedWeapon_Localised TEXT,
     Gravity REAL,
     event_timestamp TEXT NOT NULL
 );
+
+    CREATE TABLE IF NOT EXISTS Status_Fuel (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Status_event_id INTEGER NOT NULL,
+        FuelMain REAL NOT NULL,
+        FuelReservoir REAL NOT NULL,
+        FOREIGN KEY(Status_event_id) REFERENCES Status(event_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS Status_Destination (
+        child_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Status_event_id INTEGER NOT NULL,
+        System INTEGER NOT NULL,
+        Body INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        Name_Localised TEXT,
+        FOREIGN KEY(Status_event_id) REFERENCES Status(event_id)
+    );
 
 
 CREATE TABLE IF NOT EXISTS StoredModules (

@@ -5,6 +5,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
@@ -78,4 +79,22 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ExcludeFromPublish Include="runtimes\linux**\*;runtimes\osx**\*;runtimes\freebsd**\*;runtimes\android**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="runtimes\**" />
+    <None Remove="runtimes\**" />
+  </ItemGroup>
+  <Target Name="RemoveExtraRuntimes" AfterTargets="Publish">
+    <RemoveDir Directories="$(PublishDir)runtimes\linux-x64" />
+    <RemoveDir Directories="$(PublishDir)runtimes\linux-*" />
+    <RemoveDir Directories="$(PublishDir)runtimes\osx-*" />
+    <RemoveDir Directories="$(PublishDir)runtimes\maccatalyst-*" />
+    <RemoveDir Directories="$(PublishDir)runtimes\browser-*" />
+    <RemoveDir Directories="$(PublishDir)runtimes\freebsd-*" />
+    <RemoveDir Directories="$(PublishDir)runtimes\android-*" />
+    <RemoveDir Directories="$(PublishDir)runtimes\win-arm*" />
+    <RemoveDir Directories="$(PublishDir)runtimes\win-x86" />
+  </Target>
 </Project>

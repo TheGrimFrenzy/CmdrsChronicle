@@ -2,14 +2,5 @@
   "category": "ThargoidAX",
   "title": "Hull Damage in AX Engagements",
   "chartType": "summary-tile",
-  "query": "SELECT COUNT(*) AS total FROM HullDamage WHERE Health < 0.5 AND event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "details": {
-    "text": "{total} critical hull damage event(s) below 50% integrity recorded during the report period. Getting hulled during an AX engagement carries a visceral danger that NPC combat rarely matches — caustic damage, lightning tendrils, or a direct interceptor strike that puts you firmly in the rebuy threat zone.",
-    "help": "HullDamage Health < 0.5 flags events where hull dropped into the critical red zone. total drives the title as the near-death encounter count."
-  },
-  "tagLines": [
-    "Critical hull damage events compiled. Sub-50% hull integrity incidents noted in the combat record.",
-    "Below 50% hull in Thargoid space is where the music changes and the decisions become expensive.",
-    "Every entry here was a moment where the outcome could have been a rebuy screen. You're still here."
-  ]
+    // Hull Damage in AX Engagements infographic removed due to unreliable data
 }

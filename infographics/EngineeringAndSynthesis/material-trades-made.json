@@ -1,16 +1,4 @@
-{
-  "category": "EngineeringAndSynthesis",
-  "title": "Material Trades Made",
-  "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) AS trades FROM MaterialTrade WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT (Paid_Category || ' → ' || Received_Category) AS label, COUNT(*) AS value FROM MaterialTrade WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Paid_Category, Received_Category ORDER BY value DESC LIMIT 20",
-  "details": {
-    "text": "{trades} material trade transaction(s) at material traders during the report period. Material trading is how you solve inventory gaps without grinding for specific items — the flow from cheaper to rarer grades is a key part of engineering pipeline optimisation for serious builders.",
-    "help": "MaterialTrade Paid_Category and Received_Category reflect the material categories exchanged. trades drives the title as the total transaction count."
-  },
-  "tagLines": [
-    "Material trader transaction log compiled. Material grade conversion activity noted in the crafting record.",
-    "Trading down to trade up. The inefficiency is the cost of not wanting to grind the specific node.",
-    "Material traders exist because the galaxy understands that you don't always have what you need in the grade you need it."
-  ]
-}
+// Deprecated: This infographic has been split into three independent files:
+// - material-trades-by-trader-type.json
+// - top-materials-traded-for.json
+// - top-materials-traded-with.json

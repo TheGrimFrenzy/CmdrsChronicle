@@ -1,0 +1,17 @@
+{
+  "category": "EngineeringAndSynthesis",
+  "title": "Top Materials Traded With",
+  "chartType": "table",
+  "query": "SELECT SUM(p.Quantity) AS TotalMaterialsPaid FROM MaterialTrade_Paid p JOIN MaterialTrade t ON p.MaterialTrade_event_id = t.event_id WHERE t.event_timestamp >= :startDate AND t.event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(p.Material_localised, p.Material) AS Material, SUM(p.Quantity) AS TimesPaid FROM MaterialTrade_Paid p JOIN MaterialTrade t ON p.MaterialTrade_event_id = t.event_id WHERE t.event_timestamp >= :startDate AND t.event_timestamp < :endDate GROUP BY Material ORDER BY TimesPaid DESC LIMIT 20",
+  "tableColumns": ["Material", "Quantity"],
+  "details": {
+    "text": "Top materials given to material traders during the report period.",
+    "help": "MaterialTrade_Paid shows which materials were most frequently used to pay for trades."
+  },
+  "tagLines": [
+    "The inefficiency is the cost of not wanting to grind the specific node.",
+    "What you give is what you have.",
+    "Material traders exist for inventory flexibility."
+  ]
+}

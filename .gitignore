@@ -12,6 +12,11 @@ obj/
 .vscode/
 # Installer output
 /Installer/output/
+# Installer project build artifacts
+Installer/bin/
+Installer/obj/
+Installer/AppFiles/
+Installer/*.zip
 # Test results
 /TestResults/
 # Others

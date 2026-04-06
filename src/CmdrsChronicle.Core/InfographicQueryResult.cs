@@ -22,12 +22,16 @@ namespace CmdrsChronicle.Core
         /// </summary>
         public IReadOnlyDictionary<string, long> Scalars { get; init; } = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 
+
         /// <summary>
-        /// Detail rows for chart rendering — (label, count) pairs returned by
-        /// <see cref="InfographicDefinition.DetailQuery"/>, in query-result order.
+        /// Detail rows for chart rendering — each row is an array of column values (as strings), in query-result order.
         /// </summary>
-        public IReadOnlyList<(string Label, long Value)> DetailRows { get; init; }
-            = Array.Empty<(string, long)>();
+        public IReadOnlyList<string[]> DetailRows { get; init; } = Array.Empty<string[]>();
+
+        /// <summary>
+        /// Column names for detail rows, in order. Used for multi-column table rendering.
+        /// </summary>
+        public IReadOnlyList<string>? DetailColumnNames { get; init; }
 
         /// <summary>True when <see cref="MainValue"/> meets or exceeds <see cref="InfographicDefinition.Threshold"/>.</summary>
         public bool MeetsThreshold => MainValue >= Definition.Threshold;

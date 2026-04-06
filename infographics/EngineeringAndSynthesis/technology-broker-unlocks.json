@@ -1,9 +1,10 @@
 {
   "category": "EngineeringAndSynthesis",
   "title": "Technology Broker Unlocks",
-  "chartType": "bar-chart",
+  "chartType": "table",
   "query": "SELECT COUNT(*) AS unlocks FROM TechnologyBroker WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT ItemsUnlocked AS label, 1 AS value FROM TechnologyBroker WHERE event_timestamp >= :startDate AND event_timestamp < :endDate ORDER BY event_timestamp DESC LIMIT 20",
+  "detailQuery": "SELECT ItemsUnlocked.Name_Localised AS label, COUNT(*) AS value FROM TechnologyBroker JOIN TechnologyBroker_ItemsUnlocked AS ItemsUnlocked ON ItemsUnlocked.TechnologyBroker_event_id = TechnologyBroker.event_id WHERE TechnologyBroker.event_timestamp >= :startDate AND TechnologyBroker.event_timestamp < :endDate GROUP BY ItemsUnlocked.Name_Localised ORDER BY value DESC",
+  "tableColumns": ["Item Unlocked", "Unlocks"],
   "details": {
     "text": "{unlocks} technology broker unlock(s) completed during the report period. Tech broker unlocks are major one-time progression milestones — Guardian modules and meta-alloy reinforcements represent access to some of the most powerful non-engineered equipment available to any Pilots Federation member.",
     "help": "TechnologyBroker fires per unlock transaction. ItemsUnlocked contains the unlocked item name. unlocks drives the title as the total milestone count."

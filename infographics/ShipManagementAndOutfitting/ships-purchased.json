@@ -2,8 +2,8 @@
   "category": "ShipManagementAndOutfitting",
   "title": "Ships Purchased",
   "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) AS total, COALESCE(SUM(ShipPrice), 0) AS spend FROM ShipyardBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT COALESCE(ShipType_Localised, ShipType) AS label, COUNT(*) AS value FROM ShipyardBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY ShipType ORDER BY value DESC",
+  "query": "SELECT COUNT(DISTINCT StoreShipID || '-' || MarketID) AS total, COALESCE(SUM(ShipPrice), 0) AS spend FROM ShipyardBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
+  "detailQuery": "SELECT COALESCE(ShipType_Localised, ShipType) AS label, COUNT(DISTINCT StoreShipID || '-' || MarketID) AS value FROM ShipyardBuy WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY ShipType ORDER BY value DESC",
   "details": {
     "text": "{total} ship(s) purchased totalling {spend} Cr during the report period. Every ship purchase is a career decision — an Anaconda says endgame multi-role operator, a Krait Phantom says dedicated explorer, a Vulture says committed bounty hunter. The purchase history reads like a commander progression arc.",
     "help": "ShipyardBuy ShipType_Localised is the ship class. total drives the title as the fleet acquisition count."

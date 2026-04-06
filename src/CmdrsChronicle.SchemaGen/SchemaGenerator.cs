@@ -83,6 +83,35 @@ namespace CmdrsChronicle.SchemaGen
                     // Do NOT add this property as a column in parent
                     continue;
                 }
+                // Detect singular object property for child table (1:1 relationship)
+                if (prop.Value.ValueKind == System.Text.Json.JsonValueKind.Object &&
+                    prop.Value.TryGetProperty("type", out var objTypeElem) &&
+                    objTypeElem.GetString() == "object" &&
+                    prop.Value.TryGetProperty("properties", out var objPropsElem) &&
+                    objPropsElem.ValueKind == System.Text.Json.JsonValueKind.Object)
+                {
+                    var childName = tableName + "_" + prop.Key;
+                    var childSchema = new EventSchema
+                    {
+                        title = childName,
+                        properties = new Dictionary<string, System.Text.Json.JsonElement>(),
+                        required = new List<string>()
+                    };
+                    foreach (var childProp in objPropsElem.EnumerateObject())
+                    {
+                        childSchema.properties[childProp.Name] = childProp.Value;
+                    }
+                    if (prop.Value.TryGetProperty("required", out var objReqElem) && objReqElem.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        foreach (var req in objReqElem.EnumerateArray())
+                        {
+                            if (req.ValueKind == System.Text.Json.JsonValueKind.String)
+                                childSchema.required.Add(req.GetString());
+                        }
+                    }
+                    childTables.Add((childName, childSchema));
+                    continue;
+                }
                 // Normal property
                 var colName = EscapeName(prop.Key, reservedWords);
                 if (colName == "event_timestamp") hasEventTimestamp = true;

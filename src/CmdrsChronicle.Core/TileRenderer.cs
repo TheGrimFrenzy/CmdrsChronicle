@@ -267,55 +267,33 @@ namespace CmdrsChronicle.Core
         {
             if (result.DetailRows.Count == 0) return string.Empty;
 
-            var def       = result.Definition;
-            var colLabel  = def.TableColumns?.Length >= 1 ? def.TableColumns[0] : "Label";
-            var colValue  = def.TableColumns?.Length >= 2 ? def.TableColumns[1] : "Value";
-            var inaraBase = def.InaraSearchBase;
-
-            var rows        = result.DetailRows;
-            var displayRows = new List<(string Label, long Value)>();
-            var otherLabels = new List<string>();
-            long otherTotal = 0;
-
-            if (rows.Count <= MaxDetailRows)
-            {
-                displayRows.AddRange(rows);
-            }
-            else
-            {
-                for (int i = 0; i < MaxDetailRows; i++)
-                    displayRows.Add(rows[i]);
-                for (int i = MaxDetailRows; i < rows.Count; i++)
-                {
-                    otherLabels.Add(rows[i].Label);
-                    otherTotal += rows[i].Value;
-                }
-                displayRows.Add(("Other", otherTotal));
-            }
+            var def = result.Definition;
+            var colNames = def.TableColumns ?? result.DetailColumnNames?.ToArray() ?? new[] { "Label", "Value" };
+            var rows = result.DetailRows;
 
             var sb = new StringBuilder();
-            sb.Append($"<table class=\"tile-table\"><thead><tr><th>{HtmlEncode(colLabel)}</th><th>{HtmlEncode(colValue)}</th></tr></thead><tbody>");
+            sb.Append("<table class=\"tile-table\"><thead><tr>");
+            foreach (var col in colNames)
+                sb.Append($"<th>{HtmlEncode(col)}</th>");
+            sb.Append("</tr></thead><tbody>");
 
-            foreach (var (label, value) in displayRows)
+            int maxRows = Math.Min(rows.Count, MaxDetailRows);
+            for (int i = 0; i < maxRows; i++)
             {
-                string labelCell;
-                if (label == "Other" && otherLabels.Count > 0)
+                var row = rows[i];
+                sb.Append("<tr>");
+                for (int j = 0; j < colNames.Length && j < row.Length; j++)
                 {
-                    var catchAllLabel = $"(+{otherLabels.Count} more)";
-                    labelCell = $"<td title=\"{HtmlEncode(string.Join(", ", otherLabels.Select(FormatLabel)))}\">{HtmlEncode(catchAllLabel)}</td>";
+                    sb.Append($"<td>{HtmlEncode(row[j])}</td>");
                 }
-                else if (inaraBase != null)
-                {
-                    var href = HtmlEncode(inaraBase + Uri.EscapeDataString(label));
-                    labelCell = $"<td><a href=\"{href}\" target=\"_blank\" class=\"inara-link\"><span class=\"inara-icon\"></span></a>{HtmlEncode(FormatLabel(label))}</td>";
-                }
-                else
-                {
-                    labelCell = $"<td>{HtmlEncode(FormatLabel(label))}</td>";
-                }
-                sb.Append($"<tr>{labelCell}<td>{FormatFullNumber(value)}</td></tr>");
+                sb.Append("</tr>");
             }
-
+            if (rows.Count > MaxDetailRows)
+            {
+                sb.Append("<tr>");
+                sb.Append($"<td colspan='{colNames.Length}'>(+{rows.Count - MaxDetailRows} more)</td>");
+                sb.Append("</tr>");
+            }
             sb.Append("</tbody></table>");
             return sb.ToString();
         }
@@ -328,19 +306,31 @@ namespace CmdrsChronicle.Core
             var displayRows = new List<(string Label, long Value)>();
             if (rows.Count <= MaxDetailRows)
             {
-                displayRows.AddRange(rows);
+                foreach (var row in rows)
+                {
+                    var label = row.Length > 0 ? row[0] : "(unknown)";
+                    var value = row.Length > 1 && long.TryParse(row[1], out var v) ? v : 0L;
+                    displayRows.Add((label, value));
+                }
             }
             else
             {
                 for (int i = 0; i < MaxDetailRows; i++)
-                    displayRows.Add(rows[i]);
+                {
+                    var row = rows[i];
+                    var label = row.Length > 0 ? row[0] : "(unknown)";
+                    var value = row.Length > 1 && long.TryParse(row[1], out var v) ? v : 0L;
+                    displayRows.Add((label, value));
+                }
 
                 var otherLabels = new List<string>();
                 long otherTotal = 0;
                 for (int i = MaxDetailRows; i < rows.Count; i++)
                 {
-                    otherLabels.Add(rows[i].Label);
-                    otherTotal += rows[i].Value;
+                    var row = rows[i];
+                    otherLabels.Add(row.Length > 0 ? row[0] : "(unknown)");
+                    if (row.Length > 1 && long.TryParse(row[1], out var v))
+                        otherTotal += v;
                 }
                 if (otherTotal > 0)
                     displayRows.Add(($"(+{otherLabels.Count} more)", otherTotal));

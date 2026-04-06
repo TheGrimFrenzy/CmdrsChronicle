@@ -11,6 +11,8 @@ namespace CmdrsChronicle.Core
     /// </summary>
     public static class ElegantReportRenderer
     {
+        private static readonly Random _rng = new Random();
+
         // ── Full report ──────────────────────────────────────────────────────────
 
         public static string Render(
@@ -113,8 +115,9 @@ namespace CmdrsChronicle.Core
             var def           = result.Definition;
             var categoryClass = TileRenderer.CategoryClass(def.Category);
             var metricValue   = TileRenderer.FormatMetric(TileRenderer.PrimaryValue(result));
-            var metricLabel   = string.Equals(def.ChartType, "table", StringComparison.OrdinalIgnoreCase) ? "Total" : string.Empty;
+            var metricLabel   = string.Empty;
             var bodyHtml      = TileRenderer.RenderTileBody(result);
+            var caption       = RenderCaption(def);
 
             return $@"        <div class='infographic-tile{categoryClass}'>
             <div class='tile-badge'></div>
@@ -122,14 +125,22 @@ namespace CmdrsChronicle.Core
                 <div class='tile-title'>{TileRenderer.HtmlEncode(def.Title)}</div>
                 <div class='tile-metric'>
                     <div class='tile-metric-value'>{TileRenderer.HtmlEncode(metricValue)}</div>
-                    <div class='tile-metric-label'>{TileRenderer.HtmlEncode(metricLabel)}</div>
                 </div>
             </div>
             <div class='tile-body'>
-                {bodyHtml}
+                {bodyHtml}{caption}
             </div>
         </div>
 ";
+        }
+
+        private static string RenderCaption(InfographicDefinition def)
+        {
+            if (def.TagLines == null || def.TagLines.Length == 0)
+                return string.Empty;
+
+            var caption = def.TagLines[_rng.Next(def.TagLines.Length)];
+            return $"\n            <div class=\"tile-caption\">{TileRenderer.HtmlEncode(caption)}</div>";
         }
     }
 }

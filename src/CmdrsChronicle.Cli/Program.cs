@@ -170,9 +170,12 @@ namespace CmdrsChronicle.Cli
 						else Console.Error.WriteLine($"[WARN] Could not parse --end date: {end}");
 					}
 
+				var swParse = Stopwatch.StartNew();
 				var journalFileCount = JournalFileDiscovery.DiscoverJournalFiles(input, startDate, endDate).Count;
-				Step($"Parsing {journalFileCount:N0} journal file{(journalFileCount == 1 ? "" : "s")}...");
+				Step($"Parsing {journalFileCount:N0} journal file{(journalFileCount == 1 ? "" : "s") }...");
 				var (events, errors) = JournalFileDiscovery.ParseJournalFilesParallel(input, effectiveParallelism, startDate, endDate);
+				   swParse.Stop();
+				   // ...existing code...
 				StepDone($"Parsed {events.Count:N0} events" + (errors.Count > 0 ? $" ({errors.Count} parse error{(errors.Count == 1 ? "" : "s")})" : ""));
 					var filteredEvents = new List<System.Text.Json.JsonElement>();
 					foreach (var evt in events)
@@ -183,7 +186,7 @@ namespace CmdrsChronicle.Cli
 						if (endDate.HasValue && ts > endDate.Value) continue;
 						filteredEvents.Add(evt);
 					}
-					Log($"Filtered to {filteredEvents.Count} events by date range.");
+					   // ...existing code...
 					var swPhase = Stopwatch.StartNew(); // measure from end of filtering until report written
 
 					// T303: Insert filtered events into in-memory SQLite DB
@@ -229,82 +232,85 @@ namespace CmdrsChronicle.Cli
 						pragmaCache[evtName] = info;
 					}
 
+						var swInsert = Stopwatch.StartNew();
 						Step($"Inserting {filteredEvents.Count:N0} events into database...");
-					int inserted = 0;
-					using (var tx = conn.BeginTransaction())
-					{
-					foreach (var evt in filteredEvents)
-					{
-						// Use 'event' property to select table, do not store it
-						if (!evt.TryGetProperty("event", out var eventTypeElem) || !evt.TryGetProperty("timestamp", out var timestampElem))
-							continue;
-						var eventType = eventTypeElem.GetString();
-						if (string.IsNullOrWhiteSpace(eventType)) continue;
-						var table = eventType;
-						// Retrieve cached column info for this table
-						if (!pragmaCache.TryGetValue(table, out var tableColumnsInfo))
-							continue; // table not in schema
-						// Build column/value lists, mapping reserved words, skip 'event' property
-						var columns = new List<string>();
-						var columnSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-						var values = new List<object>();
-						foreach (var prop in evt.EnumerateObject())
+						int inserted = 0;
+						using (var tx = conn.BeginTransaction())
 						{
-							if (prop.Name == "event") continue; // do not store event property
-							var col = ReservedWords.PrefixIfReserved(prop.Name);
-							if (!tableColumnsInfo.ContainsKey(col)) continue; // only insert valid columns
-							if (!columnSet.Add(col)) continue; // skip duplicate column names
-							columns.Add(col);
-							values.Add(prop.Value.ValueKind == System.Text.Json.JsonValueKind.String ? (object)prop.Value.GetString()! : prop.Value.ToString());
-						}
+						foreach (var evt in filteredEvents)
+						{
+							// ...existing code...
+							if (!evt.TryGetProperty("event", out var eventTypeElem) || !evt.TryGetProperty("timestamp", out var timestampElem))
+								continue;
+							var eventType = eventTypeElem.GetString();
+							if (string.IsNullOrWhiteSpace(eventType)) continue;
+							var table = eventType;
+							// ...existing code...
+							if (!pragmaCache.TryGetValue(table, out var tableColumnsInfo))
+								continue; // table not in schema
+							// ...existing code...
+							var columns = new List<string>();
+							var columnSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+							var values = new List<object>();
+							foreach (var prop in evt.EnumerateObject())
+							{
+								if (prop.Name == "event") continue; // do not store event property
+								var col = ReservedWords.PrefixIfReserved(prop.Name);
+								if (!tableColumnsInfo.ContainsKey(col)) continue; // only insert valid columns
+								if (!columnSet.Add(col)) continue; // skip duplicate column names
+								columns.Add(col);
+								values.Add(prop.Value.ValueKind == System.Text.Json.JsonValueKind.String ? (object)prop.Value.GetString()! : prop.Value.ToString());
+							}
 
-						// Auto-fill any missing NOT NULL columns with a sensible default
-						foreach (var kv in tableColumnsInfo)
-						{
-							var colName = kv.Key;
-							var colType = kv.Value.Type ?? "";
-							var notNull = kv.Value.NotNull;
-							if (!notNull) continue;
-							if (columnSet.Contains(colName)) continue;
-							// Skip primary key autoincrement column
-							if (string.Equals(colName, "event_id", StringComparison.OrdinalIgnoreCase)) continue;
-							// Provide defaults: integers -> 0, real -> 0.0, otherwise empty string
-							object defaultVal;
-							if (colType.IndexOf("INT", StringComparison.OrdinalIgnoreCase) >= 0)
-								defaultVal = 0;
-							else if (colType.IndexOf("REAL", StringComparison.OrdinalIgnoreCase) >= 0 || colType.IndexOf("FLOA", StringComparison.OrdinalIgnoreCase) >= 0 || colType.IndexOf("DOUB", StringComparison.OrdinalIgnoreCase) >= 0)
-								defaultVal = 0.0;
-							else
-								defaultVal = "";
-							columnSet.Add(colName);
-							columns.Add(colName);
-							values.Add(defaultVal);
+							// ...existing code...
+							foreach (var kv in tableColumnsInfo)
+							{
+								var colName = kv.Key;
+								var colType = kv.Value.Type ?? "";
+								var notNull = kv.Value.NotNull;
+								if (!notNull) continue;
+								if (columnSet.Contains(colName)) continue;
+								// Skip primary key autoincrement column
+								if (string.Equals(colName, "event_id", StringComparison.OrdinalIgnoreCase)) continue;
+								// Provide defaults: integers -> 0, real -> 0.0, otherwise empty string
+								object defaultVal;
+								if (colType.IndexOf("INT", StringComparison.OrdinalIgnoreCase) >= 0)
+									defaultVal = 0;
+								else if (colType.IndexOf("REAL", StringComparison.OrdinalIgnoreCase) >= 0 || colType.IndexOf("FLOA", StringComparison.OrdinalIgnoreCase) >= 0 || colType.IndexOf("DOUB", StringComparison.OrdinalIgnoreCase) >= 0)
+									defaultVal = 0.0;
+								else
+									defaultVal = "";
+								columnSet.Add(colName);
+								columns.Add(colName);
+								values.Add(defaultVal);
+							}
+							// ...existing code...
+							if (columns.Count == 0) continue; // nothing to insert
+							var colList = string.Join(", ", columns);
+							var paramList = string.Join(", ", columns.ConvertAll(c => "@" + c));
+							var sql = $"INSERT INTO [{table}] ({colList}) VALUES ({paramList});";
+							using var cmd = conn.CreateCommand();
+							cmd.CommandText = sql;
+							for (int i = 0; i < columns.Count; i++)
+								cmd.Parameters.AddWithValue("@" + columns[i], values[i] ?? DBNull.Value);
+							try
+							{
+								cmd.ExecuteNonQuery();
+								inserted++;
+								if (inserted % 500 == 0 || inserted == filteredEvents.Count)
+									DbProgress(inserted, filteredEvents.Count);
+							}
+							catch (Exception ex)
+							{
+								Log($"[DB ERROR] {ex.Message}");
+							}
 						}
-						// Compose SQL
-						if (columns.Count == 0) continue; // nothing to insert
-						var colList = string.Join(", ", columns);
-						var paramList = string.Join(", ", columns.ConvertAll(c => "@" + c));
-						var sql = $"INSERT INTO [{table}] ({colList}) VALUES ({paramList});";
-						using var cmd = conn.CreateCommand();
-						cmd.CommandText = sql;
-						for (int i = 0; i < columns.Count; i++)
-							cmd.Parameters.AddWithValue("@" + columns[i], values[i] ?? DBNull.Value);
-						try
-						{
-							cmd.ExecuteNonQuery();
-							inserted++;
-							if (inserted % 500 == 0 || inserted == filteredEvents.Count)
-								DbProgress(inserted, filteredEvents.Count);
-						}
-						catch (Exception ex)
-						{
-							Log($"[DB ERROR] {ex.Message}");
-						}
-					}
-					tx.Commit();
-					} // end transaction
-				if (!silent) Console.WriteLine(); // advance past \r progress line
-				StepDone($"Inserted {inserted:N0} events into database");
+						tx.Commit();
+						} // end transaction
+						swInsert.Stop();
+						Console.WriteLine($"[PERF] DB insertion: {swInsert.Elapsed.TotalSeconds:F2}s");
+					if (!silent) Console.WriteLine(); // advance past \r progress line
+					StepDone($"Inserted {inserted:N0} events into database");
 					string TemplateBase() => Directory.Exists(Path.Combine(AppContext.BaseDirectory, "templates"))
 						? Path.Combine(AppContext.BaseDirectory, "templates")
 						: Path.Combine(Directory.GetCurrentDirectory(), "templates");
@@ -491,6 +497,7 @@ namespace CmdrsChronicle.Cli
 						definitions, dbName, queryStartDate, queryEndDate, effectiveParallelism
 					).GetAwaiter().GetResult();
 					swAll.Stop();
+					Console.WriteLine($"[PERF] Infographic queries: {swAll.Elapsed.TotalSeconds:F2}s");
 					Log($"[T304] Infographic queries completed in {swAll.Elapsed.TotalSeconds:F2}s (wall clock).");
 
 					// Sort results by MainValue (the primary query metric) now that we have real values.
@@ -513,13 +520,11 @@ namespace CmdrsChronicle.Cli
 					}
 
 					// Print slowest tiles for diagnostics
-					StepDone($"{results.Count(r => r.MeetsThreshold)} qualifying tiles ready ({swAll.Elapsed.TotalSeconds:F1}s)");
-					foreach (var r in results.OrderByDescending(r => r.TotalQueryDuration).Take(10))
-					{
-						Log($"[PROFILE] {r.Definition.Title} - main:{r.MainQueryDuration.TotalMilliseconds:F0}ms detail:{r.DetailQueryDuration.TotalMilliseconds:F0}ms total:{r.TotalQueryDuration.TotalMilliseconds:F0}ms");
-					}
-
-					Log($"[T304] {results.Count(r => r.MeetsThreshold)} qualifying tile(s) from {results.Count} definition(s).");
+					var totalConsidered = results.Count;
+					var summaryOnlyCount = results.Count(r => r.Definition.SummaryOnly);
+					var qualifyingCount = results.Count(r => !r.Definition.SummaryOnly && r.MeetsThreshold);
+					var metricDisqualifiedCount = results.Count(r => !r.Definition.SummaryOnly && !r.MeetsThreshold);
+					   StepDone($"{qualifyingCount} qualifying (out of {totalConsidered}), {metricDisqualifiedCount} disqualified (metric threshold), {summaryOnlyCount} disqualified (summary-only)");
 
 					// Resolve CMDR name from DB (best-effort)
 					string reportCmdrName = "Unknown Commander";
@@ -590,6 +595,30 @@ namespace CmdrsChronicle.Cli
 								var toTime = i + 1 < jumps.Count ? jumps[i + 1].Timestamp : queryEndDate;
 								visits.Add((jumps[i].SystemName, jumps[i].Timestamp, toTime));
 							}
+						}
+						else
+						{
+							// No FSDJumps in window: look for prior system and create a visit for the whole window
+							   // ...existing code...
+							using (var priorCmd = conn.CreateCommand())
+							{
+								priorCmd.CommandText =
+									"SELECT StarSystem FROM FSDJump WHERE event_timestamp < @s " +
+									"ORDER BY event_timestamp DESC LIMIT 1";
+								priorCmd.Parameters.AddWithValue("@s", queryStartDate);
+								var priorVal = priorCmd.ExecuteScalar();
+								Console.WriteLine($"[DIAG] Prior system before window: '{priorVal}'");
+								if (priorVal != null && priorVal != DBNull.Value)
+								{
+									visits.Add((priorVal.ToString()!, queryStartDate, queryEndDate));
+									Console.WriteLine($"[DIAG] Added visit: SystemName={{priorVal}}, From={{queryStartDate}}, To={{queryEndDate}}");
+								}
+								else
+								{
+									Console.WriteLine("[DIAG] No prior system found before window.");
+								}
+							}
+							Console.WriteLine($"[DIAG] Visits list after construction: {string.Join(", ", visits.Select(v => $"SystemName={v.SystemName}, From={v.From}, To={v.To}"))}");
 						}
 
 						if (visits.Count > 0)
@@ -688,6 +717,7 @@ namespace CmdrsChronicle.Cli
 							reportCmdrName, reportFromStr, reportToStr,
 							sections);
 					swRender.Stop();
+					Console.WriteLine($"[PERF] HTML rendering: {swRender.Elapsed.TotalSeconds:F2}s");
 					Log($"[TIMING] Render time: {swRender.Elapsed.TotalSeconds:F2}s");
 
 					var reportOutputPath = string.IsNullOrWhiteSpace(output)
@@ -711,7 +741,8 @@ namespace CmdrsChronicle.Cli
 						try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(reportOutputPath) { UseShellExecute = true }); }
 						catch { /* Default browser may not be configured; report is still written to disk */ }
 					}
-			});
+					   // ...existing code...
+				});
 
 			return rootCommand;
 			}

@@ -2,8 +2,8 @@
   "category": "Powerplay",
   "title": "Merits by Power",
   "chartType": "bar-chart",
-  "query": "SELECT COUNT(*) AS total FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate",
-  "detailQuery": "SELECT Power AS label, SUM(Count) AS value FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Power UNION ALL SELECT Power AS label, SUM(Count) AS value FROM PowerplayDeliver WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Power ORDER BY value DESC",
+  "query": "SELECT COALESCE((SELECT SUM(Count) FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) + COALESCE((SELECT SUM(Count) FROM PowerplayDeliver WHERE event_timestamp >= :startDate AND event_timestamp < :endDate), 0) AS total",
+  "detailQuery": "SELECT label, SUM(value) AS value FROM (SELECT Power AS label, SUM(Count) AS value FROM PowerplayCollect WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Power UNION ALL SELECT Power AS label, SUM(Count) AS value FROM PowerplayDeliver WHERE event_timestamp >= :startDate AND event_timestamp < :endDate GROUP BY Power) GROUP BY label ORDER BY value DESC",
   "details": {
     "text": "{total} merit collection event(s) logged during the report period. For commanders who have served multiple Powers, this chart reveals the true distribution of political work — loyalty is easy to claim, but the merit data shows where the effort actually went.",
     "help": "Combines PowerplayCollect and PowerplayDeliver grouped by Power to show which Power received the most operational support. total is a secondary count for context."

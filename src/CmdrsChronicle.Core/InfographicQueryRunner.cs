@@ -98,7 +98,8 @@ namespace CmdrsChronicle.Core
             }
             catch { /* query error → mainValue stays 0, tile excluded by threshold */ }
 
-            var detailRows = new List<(string Label, long Value)>();
+            List<string[]> detailRows = new();
+            List<string>? detailColNames = null;
             if (!string.IsNullOrWhiteSpace(def.DetailQuery))
             {
                 try
@@ -111,11 +112,18 @@ namespace CmdrsChronicle.Core
                     using var reader = detailCmd.ExecuteReader();
                     sw2.Stop();
                     detailDuration = sw2.Elapsed;
+                    // Capture column names
+                    var colNames = new List<string>();
+                    for (int i = 0; i < reader.FieldCount; i++)
+                        colNames.Add(reader.GetName(i));
+                    detailColNames = colNames;
+                    // Capture all rows as string[]
                     while (reader.Read())
                     {
-                        var label = reader.IsDBNull(0) ? "(unknown)" : reader.GetString(0);
-                        var value = reader.IsDBNull(1) ? 0L : Convert.ToInt64(reader.GetValue(1));
-                        detailRows.Add((label, value));
+                        var row = new string[reader.FieldCount];
+                        for (int i = 0; i < reader.FieldCount; i++)
+                            row[i] = reader.IsDBNull(i) ? "" : reader.GetValue(i).ToString();
+                        detailRows.Add(row);
                     }
                 }
                 catch { /* detail query error → no chart data */ }
@@ -126,6 +134,7 @@ namespace CmdrsChronicle.Core
                 Definition = def,
                 MainValue  = mainValue,
                 DetailRows = detailRows,
+                DetailColumnNames = detailColNames,
                 Scalars    = scalars,
                 MainQueryDuration = mainDuration,
                 DetailQueryDuration = detailDuration
