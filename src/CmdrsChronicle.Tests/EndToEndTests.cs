@@ -22,7 +22,12 @@ namespace CmdrsChronicle.Tests
 
         private static string GetCliWorkingDir()
         {
-            return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CmdrsChronicle.Cli", "bin", "Debug", "net8.0"));
+            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CmdrsChronicle.Cli", "bin"));
+            var releaseDir = Path.Combine(baseDir, "Release", "net8.0");
+            var debugDir = Path.Combine(baseDir, "Debug", "net8.0");
+            if (Directory.Exists(releaseDir)) return releaseDir;
+            if (Directory.Exists(debugDir)) return debugDir;
+            throw new DirectoryNotFoundException($"Neither Release nor Debug CLI output found. Checked: {releaseDir} and {debugDir}");
         }
 
         private static async Task<(int exitCode, string stdout, string stderr)> RunCliAsync(string args)
