@@ -27,22 +27,22 @@ namespace CmdrsChronicle.Tests
         }
 
         [Fact]
-        public void GenerateCreateTableSql_GeneratesValidSql()
+        public void GeneratePrimaryTableSql_GeneratesValidSql()
         {
             var generator = new SchemaGenerator();
             var reserved = new HashSet<string> { "order", "group", "select" };
             var schema = new EventSchema
             {
-                title = "Order",
-                properties = new Dictionary<string, System.Text.Json.JsonElement>
+                Title = "Order",
+                Properties = new Dictionary<string, System.Text.Json.JsonElement>
                 {
                     { "timestamp", System.Text.Json.JsonDocument.Parse("{\"type\":\"string\"}").RootElement },
                     { "order", System.Text.Json.JsonDocument.Parse("{\"type\":\"integer\"}").RootElement },
                     { "value", System.Text.Json.JsonDocument.Parse("{\"type\":\"number\"}").RootElement }
                 },
-                required = new List<string> { "timestamp", "order" }
+                Required = new List<string> { "timestamp", "order" }
             };
-            var sql = generator.GenerateCreateTableSql(schema, reserved);
+            var sql = generator.GeneratePrimaryTableSql(schema, reserved);
             Assert.Contains("CREATE TABLE IF NOT EXISTS event_Order", sql);
             Assert.Contains("event_id INTEGER PRIMARY KEY AUTOINCREMENT", sql);
             Assert.Contains("timestamp TEXT NOT NULL", sql);

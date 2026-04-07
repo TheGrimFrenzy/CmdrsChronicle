@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -15,6 +13,19 @@ namespace CmdrsChronicle.Core
 
         // ── Full report ──────────────────────────────────────────────────────────
 
+        /// <summary>
+        /// Renders a full HTML report using the elegant template and CSS.
+        /// Placeholders in the template (<c>{TAGLINE}</c>, <c>{TILES}</c>, etc.)
+        /// are replaced with live content.
+        /// </summary>
+        /// <param name="templatePath">Absolute path to the <c>elegant-report.html</c> template file.</param>
+        /// <param name="cssPath">Absolute path to the <c>elegant.css</c> stylesheet.</param>
+        /// <param name="tagline">Flavour tagline displayed at the top of the report.</param>
+        /// <param name="cmdrName">Commander name shown in the report header.</param>
+        /// <param name="dateFrom">Start of the reporting period (formatted date string).</param>
+        /// <param name="dateTo">End of the reporting period (formatted date string).</param>
+        /// <param name="sections">Per-system (or single aggregate) sections containing infographic tiles.</param>
+        /// <returns>Self-contained HTML string ready to be written to a file.</returns>
         public static string Render(
             string templatePath,
             string cssPath,
@@ -24,21 +35,25 @@ namespace CmdrsChronicle.Core
             string dateTo,
             IReadOnlyList<SystemVisit> sections)
         {
-            var template = File.ReadAllText(templatePath);
-            var css      = File.ReadAllText(cssPath);
-
-            return template
-                .Replace("{CSS}",            css)
-                .Replace("{TAGLINE}",        tagline)
-                .Replace("{CMDR_NAME}",      cmdrName)
-                .Replace("{DATE_FROM}",      dateFrom)
-                .Replace("{DATE_TO}",        dateTo)
-                .Replace("{DATE_GENERATED}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm") + " UTC")
-                .Replace("{TILES}",          RenderAllSections(sections));
+            return TileRenderer.ApplyReportTemplate(
+                templatePath, cssPath, tagline, cmdrName, dateFrom, dateTo,
+                RenderAllSections(sections));
         }
 
         // ── Nothing-to-report page ───────────────────────────────────────────────
 
+        /// <summary>
+        /// Renders a "nothing to report" HTML page using the elegant nothing-to-report template.
+        /// Used when no infographic data exists for the requested date range.
+        /// </summary>
+        /// <param name="templatePath">Absolute path to the <c>elegant-nothing-to-report.html</c> template file.</param>
+        /// <param name="cssPath">Absolute path to the <c>elegant.css</c> stylesheet.</param>
+        /// <param name="tagline">Flavour tagline displayed on the page.</param>
+        /// <param name="cmdrName">Commander name shown in the page header.</param>
+        /// <param name="dateFrom">Start of the reporting period (formatted date string).</param>
+        /// <param name="dateTo">End of the reporting period (formatted date string).</param>
+        /// <param name="message">Randomly chosen flavour message explaining the lack of data.</param>
+        /// <returns>Self-contained HTML string ready to be written to a file.</returns>
         public static string RenderNothingToReport(
             string templatePath,
             string cssPath,
@@ -48,19 +63,8 @@ namespace CmdrsChronicle.Core
             string dateTo,
             NoDataMessage message)
         {
-            var template = File.ReadAllText(templatePath);
-            var css      = File.ReadAllText(cssPath);
-
-            return template
-                .Replace("{CSS}",                css)
-                .Replace("{TAGLINE}",            tagline)
-                .Replace("{CMDR_NAME}",          cmdrName)
-                .Replace("{DATE_FROM}",          dateFrom)
-                .Replace("{DATE_TO}",            dateTo)
-                .Replace("{GALNET_HEADLINE}",    message.Title)
-                .Replace("{GALNET_SUBHEAD}",     message.Summary)
-                .Replace("{GALNET_BODY}",        message.Body)
-                .Replace("{GALNET_CLOSING_NOTE}", message.ClosingNote);
+            return TileRenderer.ApplyNothingToReportTemplate(
+                templatePath, cssPath, tagline, cmdrName, dateFrom, dateTo, message);
         }
 
         // ── Grid tile rendering ──────────────────────────────────────────────────
@@ -94,13 +98,7 @@ namespace CmdrsChronicle.Core
         }
 
         private static string RenderSystemDivider(SystemVisit section)
-        {
-            var nameHtml = TileRenderer.HtmlEncode(section.SystemName!);
-            var dateHtml = section.ArrivalLore != null
-                ? $"<span class=\"sys-div-date\" title=\"{TileRenderer.HtmlEncode(section.ArrivalActual ?? string.Empty)}\">{TileRenderer.HtmlEncode(section.ArrivalLore)}</span>"
-                : string.Empty;
-            return $"        <div class=\"sys-div\"><span class=\"sys-div-name\">{nameHtml}</span>{dateHtml}</div>\n";
-        }
+            => TileRenderer.RenderSystemDivider(section, "        ");
 
         private static string RenderTiles(IReadOnlyList<InfographicQueryResult> results)
         {
@@ -115,7 +113,6 @@ namespace CmdrsChronicle.Core
             var def           = result.Definition;
             var categoryClass = TileRenderer.CategoryClass(def.Category);
             var metricValue   = TileRenderer.FormatMetric(TileRenderer.PrimaryValue(result));
-            var metricLabel   = string.Empty;
             var bodyHtml      = TileRenderer.RenderTileBody(result);
             var caption       = RenderCaption(def);
 

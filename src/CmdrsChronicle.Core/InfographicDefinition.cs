@@ -72,6 +72,10 @@ namespace CmdrsChronicle.Core
         public string? SourceFile { get; set; }
     }
 
+    /// <summary>
+    /// Supporting detail strings attached to an infographic tile definition.
+    /// Populated from the <c>"details"</c> object in each infographic JSON file.
+    /// </summary>
     public class InfographicDetails
     {
         /// <summary>Descriptive text supporting placeholders like {count} or {totalReward}.</summary>

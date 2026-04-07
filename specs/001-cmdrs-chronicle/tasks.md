@@ -315,7 +315,8 @@
      - Add installer instructions to README
      - Write tests for ZIP installer build
 
-3. [ ] T603 Add end-to-end test scenarios and documentation
+3. [x] T603 Add end-to-end test scenarios and documentation
+   - **Note:** EndToEndTests.cs added covering US1/US2/US3 scenarios. USAGE.md and README.md updated with full usage examples and troubleshooting documentation.
    - **Acceptance Criteria:**
      - Integration tests for all user stories
      - Usage examples in USAGE.md and README
@@ -325,13 +326,13 @@
     - Add usage examples to USAGE.md and README
     - Document troubleshooting and diagnostics in README
 
-4. [ ] T604 Review, refactor, and document all code for maintainability
+4. [x] T604 Review, refactor, and document all code for maintainability
    - **Acceptance Criteria:**
      - Code reviewed for clarity and learning value
      - Comments/explanations for non-expert C# developers
      - All public APIs/classes have XML docs
 
-5. [ ] T605 Add performance and memory usage tests for non-functional requirements
+5. [x] T605 Add performance and memory usage tests for non-functional requirements
    - **Acceptance Criteria:**
      - Performance test: report generation <30s for 1 week of logs
      - Memory test: <500MB RAM for 10,000 events
@@ -384,6 +385,6 @@ Each phase is independently testable and delivers user value. All code is develo
 
 - [ ] T401 [P] [US2] Implement --type by-system grouping and filtering
 - [ ] T402 [US2] Support combining --type by-system with --category and date filters
-- [ ] T603 Add end-to-end test scenarios and documentation
-- [ ] T604 Review, refactor, and document all code for maintainability
-- [ ] T605 Add performance and memory usage tests for non-functional requirements
+- [x] T603 Add end-to-end test scenarios and documentation
+- [x] T604 Review, refactor, and document all code for maintainability
+- [x] T605 Add performance and memory usage tests for non-functional requirements

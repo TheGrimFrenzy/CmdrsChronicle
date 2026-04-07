@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using CmdrsChronicle.Core;
 using Microsoft.Data.Sqlite;
 using Xunit;
@@ -24,7 +25,7 @@ namespace CmdrsChronicle.Core.Tests
         }
 
         [Fact]
-        public void RunAllAsync_ReturnsZeroMainValue_WhenTableIsEmpty()
+        public async Task RunAllAsync_ReturnsZeroMainValue_WhenTableIsEmpty()
         {
             var dbName = $"iqr_empty_{Guid.NewGuid():N}";
             using var keeper = SqliteSchemaInitializer.CreateSharedInMemoryDb(FindSchemaPath(), dbName);
@@ -37,8 +38,7 @@ namespace CmdrsChronicle.Core.Tests
                 }
             };
 
-            var results = InfographicQueryRunner.RunAllAsync(defs, dbName, "2026-01-01", "2026-12-31", 2)
-                .GetAwaiter().GetResult();
+            var results = await InfographicQueryRunner.RunAllAsync(defs, dbName, "2026-01-01", "2026-12-31", 2);
 
             Assert.Single(results);
             Assert.Equal(0, results[0].MainValue);
@@ -47,7 +47,7 @@ namespace CmdrsChronicle.Core.Tests
         }
 
         [Fact]
-        public void RunAllAsync_ReturnsCorrectMainValue_WhenDataExists()
+        public async Task RunAllAsync_ReturnsCorrectMainValue_WhenDataExists()
         {
             var dbName = $"iqr_data_{Guid.NewGuid():N}";
             using var keeper = SqliteSchemaInitializer.CreateSharedInMemoryDb(FindSchemaPath(), dbName);
@@ -75,8 +75,7 @@ namespace CmdrsChronicle.Core.Tests
                 }
             };
 
-            var results = InfographicQueryRunner.RunAllAsync(defs, dbName, "2026-03-05", "2026-03-06", 2)
-                .GetAwaiter().GetResult();
+            var results = await InfographicQueryRunner.RunAllAsync(defs, dbName, "2026-03-05", "2026-03-06", 2);
 
             Assert.Single(results);
             Assert.Equal(2, results[0].MainValue);
@@ -85,7 +84,7 @@ namespace CmdrsChronicle.Core.Tests
         }
 
         [Fact]
-        public void RunAllAsync_HandlesMultipleDefinitionsInParallel()
+        public async Task RunAllAsync_HandlesMultipleDefinitionsInParallel()
         {
             var dbName = $"iqr_parallel_{Guid.NewGuid():N}";
             using var keeper = SqliteSchemaInitializer.CreateSharedInMemoryDb(FindSchemaPath(), dbName);
@@ -97,22 +96,20 @@ namespace CmdrsChronicle.Core.Tests
                 new() { Category = "Mining", Title = "Cracked",    Enabled = true, Threshold = 1, Query = "SELECT COUNT(*) FROM AsteroidCracked WHERE event_timestamp >= :startDate AND event_timestamp < :endDate" },
             };
 
-            var results = InfographicQueryRunner.RunAllAsync(defs, dbName, "2026-01-01", "2026-12-31", 3)
-                .GetAwaiter().GetResult();
+            var results = await InfographicQueryRunner.RunAllAsync(defs, dbName, "2026-01-01", "2026-12-31", 3);
 
             Assert.Equal(3, results.Count);
             Assert.All(results, r => Assert.Equal(0, r.MainValue));
         }
 
         [Fact]
-        public void RunAllAsync_ReturnsEmpty_WhenNoDefinitions()
+        public async Task RunAllAsync_ReturnsEmpty_WhenNoDefinitions()
         {
             var dbName = $"iqr_nodefs_{Guid.NewGuid():N}";
             using var keeper = SqliteSchemaInitializer.CreateSharedInMemoryDb(FindSchemaPath(), dbName);
 
-            var results = InfographicQueryRunner.RunAllAsync(
-                new List<InfographicDefinition>(), dbName, "2026-01-01", "2026-12-31", 2)
-                .GetAwaiter().GetResult();
+            var results = await InfographicQueryRunner.RunAllAsync(
+                new List<InfographicDefinition>(), dbName, "2026-01-01", "2026-12-31", 2);
 
             Assert.Empty(results);
         }

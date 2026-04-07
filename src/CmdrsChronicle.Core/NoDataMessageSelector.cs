@@ -14,6 +14,7 @@ namespace CmdrsChronicle.Core
     /// </summary>
     public static class NoDataMessageSelector
     {
+        private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         /// <summary>
         /// Loads all messages from the specified JSON file.
         /// Returns an empty list if the file does not exist.
@@ -24,8 +25,7 @@ namespace CmdrsChronicle.Core
                 return new List<NoDataMessage>();
 
             var json = File.ReadAllText(jsonPath);
-            return JsonSerializer.Deserialize<List<NoDataMessage>>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+            return JsonSerializer.Deserialize<List<NoDataMessage>>(json, _jsonOptions)
                 ?? new List<NoDataMessage>();
         }
 

@@ -98,3 +98,38 @@ The `/infographics` directory contains a subdirectory for each infographic categ
 - Language version is set in `Directory.Build.props` for consistency.
 
 > To build and run this project, install the .NET 8 SDK (8.0.100 or later).
+
+## Quick Start
+
+1. Extract the ZIP release to a folder of your choice.
+2. Run the CLI from that folder:
+
+```
+CmdrsChronicle.Cli.exe --start 2026-03-29 --end 2026-04-05
+```
+
+The output HTML file path is printed to the console. Open it in any browser.
+
+For a full list of options and examples, see [USAGE.md](USAGE.md).
+
+## Common Options
+
+| Option | Description |
+|---|---|
+| `--input <path>` | Journal log directory (auto-detected if omitted) |
+| `--output <path>` | Output HTML file path |
+| `--start <yyyy-MM-dd>` | Start date for report |
+| `--end <yyyy-MM-dd>` | End date for report |
+| `--type by-system` | Group report by visited star system |
+| `--style colorful\|galnet` | Alternative visual styles |
+| `--category <name>` | Restrict infographics to a category |
+| `--silent` | Suppress all output except result path (for scripts) |
+
+## Troubleshooting
+
+- **Nothing-to-report page**: Check that `--start`/`--end` covers the dates you played, and that journals are in the `--input` directory.
+- **Missing events**: Parse errors are silently skipped and recorded as an HTML comment at the top of the output file. Open it in a text editor and search for `<!-- Parse errors`.
+- **Exit code 1**: An unrecoverable error occurred (missing input directory, schema, or templates). Ensure `templates/` and `infographics/` are present alongside the executable.
+- **Slow performance**: Use `--max-parallelism <n>` or set `CMDRSCHRONICLE_MAX_PARALLELISM` environment variable to tune parallel file parsing.
+
+See [USAGE.md](USAGE.md) for detailed usage examples and troubleshooting.

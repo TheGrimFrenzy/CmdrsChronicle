@@ -1,25 +1,35 @@
-// ...existing code...
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CmdrsChronicle.SchemaGen
 {
+    /// <summary>
+    /// Generates SQLite <c>CREATE TABLE</c> statements from Elite Dangerous event JSON schema files.
+    /// Handles nested objects and arrays by creating child tables with foreign-key references.
+    /// </summary>
     public class SchemaGenerator
     {
         /// <summary>
-        /// Generates a single CREATE TABLE SQL statement for the main event table (no children).
-        /// Provided for test compatibility.
+        /// Generates a single CREATE TABLE SQL statement for the primary event table only,
+        /// intentionally discarding any child-table statements that would result from nested
+        /// object/array properties. Use <see cref="GenerateCreateTableSqlWithChildren"/> when
+        /// you need the full set of tables.
         /// </summary>
-        public string GenerateCreateTableSql(EventSchema schema, HashSet<string> reservedWords)
+        public string GeneratePrimaryTableSql(EventSchema schema, HashSet<string> reservedWords)
         {
-            // Use the event schema title as the table name
-            var stmts = GenerateCreateTableSqlWithChildren(schema, reservedWords, schema.title);
-            // Return only the main table statement (first)
+            // Use the event schema title as the table name.
+            var stmts = GenerateCreateTableSqlWithChildren(schema, reservedWords, schema.Title);
             return stmts.Count > 0 ? stmts[0] : string.Empty;
         }
 
+        /// <summary>
+        /// Deserializes all <c>*.json</c> schema files in the given directory into
+        /// <see cref="EventSchema"/> objects.
+        /// </summary>
+        /// <param name="schemaDirectory">Directory containing Elite Dangerous event schema JSON files.</param>
+        /// <returns>List of deserialized schemas; files that fail to deserialize are silently skipped.</returns>
         public List<EventSchema> LoadSchemas(string schemaDirectory)
         {
             var schemas = new List<EventSchema>();
@@ -33,6 +43,16 @@ namespace CmdrsChronicle.SchemaGen
             return schemas;
         }
 
+        /// <summary>
+        /// Generates one or more SQLite <c>CREATE TABLE IF NOT EXISTS</c> statements for the given
+        /// schema: the first statement is for the primary event table, followed by statements for any
+        /// child tables derived from nested object or array-of-object properties.
+        /// Reserved SQL keywords are prefixed with <c>event_</c> to avoid conflicts.
+        /// </summary>
+        /// <param name="schema">The parsed event schema to convert.</param>
+        /// <param name="reservedWords">Set of lowercase SQLite reserved words used to escape column/table names.</param>
+        /// <param name="tableName">Desired SQL table name for the primary table.</param>
+        /// <returns>Ordered list of SQL statements: primary table first, child tables after.</returns>
         public List<string> GenerateCreateTableSqlWithChildren(EventSchema schema, HashSet<string> reservedWords, string tableName)
         {
             var sqlStatements = new List<string>();
@@ -58,16 +78,16 @@ namespace CmdrsChronicle.SchemaGen
                     // Build child schema from itemsElem
                     var childSchema = new EventSchema
                     {
-                        title = childName,
-                        properties = new Dictionary<string, System.Text.Json.JsonElement>(),
-                        required = new List<string>()
+                        Title = childName,
+                        Properties = new Dictionary<string, System.Text.Json.JsonElement>(),
+                        Required = new List<string>()
                     };
                     // Copy child properties
                     if (itemsElem.TryGetProperty("properties", out var childPropsElem) && childPropsElem.ValueKind == System.Text.Json.JsonValueKind.Object)
                     {
                         foreach (var childProp in childPropsElem.EnumerateObject())
                         {
-                            childSchema.properties[childProp.Name] = childProp.Value;
+                            childSchema.Properties[childProp.Name] = childProp.Value;
                         }
                     }
                     // Copy required
@@ -76,7 +96,7 @@ namespace CmdrsChronicle.SchemaGen
                         foreach (var req in childReqElem.EnumerateArray())
                         {
                             if (req.ValueKind == System.Text.Json.JsonValueKind.String)
-                                childSchema.required.Add(req.GetString());
+                                childSchema.Required.Add(req.GetString());
                         }
                     }
                     childTables.Add((childName, childSchema));
@@ -93,20 +113,20 @@ namespace CmdrsChronicle.SchemaGen
                     var childName = tableName + "_" + prop.Key;
                     var childSchema = new EventSchema
                     {
-                        title = childName,
-                        properties = new Dictionary<string, System.Text.Json.JsonElement>(),
-                        required = new List<string>()
+                        Title = childName,
+                        Properties = new Dictionary<string, System.Text.Json.JsonElement>(),
+                        Required = new List<string>()
                     };
                     foreach (var childProp in objPropsElem.EnumerateObject())
                     {
-                        childSchema.properties[childProp.Name] = childProp.Value;
+                        childSchema.Properties[childProp.Name] = childProp.Value;
                     }
                     if (prop.Value.TryGetProperty("required", out var objReqElem) && objReqElem.ValueKind == System.Text.Json.JsonValueKind.Array)
                     {
                         foreach (var req in objReqElem.EnumerateArray())
                         {
                             if (req.ValueKind == System.Text.Json.JsonValueKind.String)
-                                childSchema.required.Add(req.GetString());
+                                childSchema.Required.Add(req.GetString());
                         }
                     }
                     childTables.Add((childName, childSchema));
@@ -124,13 +144,13 @@ namespace CmdrsChronicle.SchemaGen
             {
                 columns.Add("event_timestamp TEXT NOT NULL");
             }
-            var safeTableName = EscapeName(tableName, reservedWords, forTable: true);
+            var safeTableName = EscapeName(tableName, reservedWords);
             sqlStatements.Add($"CREATE TABLE IF NOT EXISTS {safeTableName} (\n    {string.Join(",\n    ", columns)}\n);\n");
             // Generate child tables
             foreach (var (childName, childSchema) in childTables)
             {
-                var safeChildName = EscapeName(childName, reservedWords, forTable: true);
-                var safeParentName = EscapeName(tableName, reservedWords, forTable: true);
+                var safeChildName  = EscapeName(childName, reservedWords);
+                var safeParentName = EscapeName(tableName, reservedWords);
                 var childCols = new List<string>
                 {
                     "child_id INTEGER PRIMARY KEY AUTOINCREMENT",
@@ -155,9 +175,9 @@ namespace CmdrsChronicle.SchemaGen
             return sqlStatements;
         }
 
-        private string EscapeName(string name, HashSet<string> reservedWords, bool forTable = false)
+        // Prefix column/table names that collide with SQLite reserved words to avoid SQL syntax errors.
+        private string EscapeName(string name, HashSet<string> reservedWords)
         {
-            // Always prefix reserved words for both columns and tables
             var safe = name.Replace(" ", "_").Replace("-", "_");
             if (safe.StartsWith("event_"))
                 return safe;
@@ -186,16 +206,23 @@ namespace CmdrsChronicle.SchemaGen
         }
     }
 
+    /// <summary>
+    /// Data-transfer object representing one Elite Dangerous event JSON schema file.
+    /// <c>[JsonPropertyName]</c> attributes map the lowercase JSON keys to idiomatic
+    /// PascalCase C# properties so the class reads naturally in code.
+    /// </summary>
     public class EventSchema
     {
-        // Use property names matching JSON schema files (title, properties, required)
-        public string title { get; set; } = string.Empty;
-        public Dictionary<string, JsonElement> properties { get; set; } = new();
-        public List<string> required { get; set; } = new();
+        /// <summary>Event name / table name as declared in the JSON schema <c>"title"</c> field.</summary>
+        [JsonPropertyName("title")]
+        public string Title      { get; set; } = string.Empty;
 
-        // Convenience properties for code
-        public string Title => title;
-        public Dictionary<string, JsonElement> Properties => properties;
-        public List<string> Required => required;
+        /// <summary>Map of property name to its JSON schema descriptor element.</summary>
+        [JsonPropertyName("properties")]
+        public Dictionary<string, JsonElement> Properties { get; set; } = new();
+
+        /// <summary>List of property names that are marked as required in the schema.</summary>
+        [JsonPropertyName("required")]
+        public List<string> Required { get; set; } = new();
     }
 }

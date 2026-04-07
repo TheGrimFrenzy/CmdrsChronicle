@@ -64,7 +64,7 @@ namespace CmdrsChronicle.Core.Tests
                 var def = new InfographicDefinition { Category = "Mining", Title = "Minerals Refined", Query = "", Threshold = 1, Enabled = true };
                 var results = new List<InfographicQueryResult>
                 {
-                    new() { Definition = def, MainValue = 5, DetailRows = Array.Empty<(string, long)>() }
+                    new() { Definition = def, MainValue = 5, DetailRows = Array.Empty<string[]>() }
                 };
 
                 var html = ElegantReportRenderer.Render(tmpl, css, "t", "CMDR",
@@ -85,7 +85,7 @@ namespace CmdrsChronicle.Core.Tests
                 var def = new InfographicDefinition { Category = "Mining", Title = "Secret Tile", Query = "", Threshold = 10, Enabled = true };
                 var results = new List<InfographicQueryResult>
                 {
-                    new() { Definition = def, MainValue = 0, DetailRows = Array.Empty<(string, long)>() }
+                    new() { Definition = def, MainValue = 0, DetailRows = Array.Empty<string[]>() }
                 };
 
                 var html = ElegantReportRenderer.Render(tmpl, css, "t", "CMDR",
@@ -117,7 +117,7 @@ namespace CmdrsChronicle.Core.Tests
             try
             {
                 var def = new InfographicDefinition { Category = "Mining", Title = "Minerals", Query = "", Threshold = 1, ChartType = "bar-chart", Enabled = true };
-                var rows = new List<(string Label, long Value)> { ("Gold", 10L), ("Platinum", 5L) };
+                var rows = new List<string[]> { new[] { "Gold", "10" }, new[] { "Platinum", "5" } };
                 var results = new List<InfographicQueryResult>
                 {
                     new() { Definition = def, MainValue = 15, DetailRows = rows }
@@ -142,15 +142,15 @@ namespace CmdrsChronicle.Core.Tests
             try
             {
                 var def = new InfographicDefinition { Category = "Mining", Title = "Minerals", Query = "", Threshold = 1, ChartType = "bar-chart", Enabled = true };
-                var rows = new List<(string Label, long Value)>
+                var rows = new List<string[]>
                 {
-                    ("Gold",     100L),
-                    ("Platinum",  80L),
-                    ("Painite",   60L),
-                    ("Osmium",    40L),
-                    ("Lithium",   20L),
-                    ("Bertrandite", 10L), // → goes into Other
-                    ("Bromellite",   5L), // → goes into Other
+                    new[] { "Gold",        "100" },
+                    new[] { "Platinum",     "80" },
+                    new[] { "Painite",      "60" },
+                    new[] { "Osmium",       "40" },
+                    new[] { "Lithium",      "20" },
+                    new[] { "Bertrandite",  "10" },
+                    new[] { "Bromellite",    "5" },
                 };
                 var results = new List<InfographicQueryResult>
                 {
@@ -182,7 +182,7 @@ namespace CmdrsChronicle.Core.Tests
                 var def = new InfographicDefinition { Category = "Test & Demo", Title = "<Alert>", Query = "", Threshold = 1, Enabled = true };
                 var results = new List<InfographicQueryResult>
                 {
-                    new() { Definition = def, MainValue = 1, DetailRows = Array.Empty<(string, long)>() }
+                    new() { Definition = def, MainValue = 1, DetailRows = Array.Empty<string[]>() }
                 };
 
                 var html = ElegantReportRenderer.Render(tmpl, css, "t", "CMDR",

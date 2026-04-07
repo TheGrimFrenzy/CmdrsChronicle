@@ -41,7 +41,6 @@ namespace CmdrsChronicle.Core
             var tasks = new List<Task<InfographicQueryResult>>(definitions.Count);
             foreach (var def in definitions)
             {
-                var captured = def;
                 tasks.Add(Task.Run(async () =>
                 {
                     await semaphore.WaitAsync().ConfigureAwait(false);
@@ -49,7 +48,7 @@ namespace CmdrsChronicle.Core
                     {
                         using var conn = new SqliteConnection(connString);
                         conn.Open();
-                        return QueryTile(conn, captured, startDate, endDate);
+                        return QueryTile(conn, def, startDate, endDate);
                     }
                     finally { semaphore.Release(); }
                 }));
@@ -122,7 +121,7 @@ namespace CmdrsChronicle.Core
                     {
                         var row = new string[reader.FieldCount];
                         for (int i = 0; i < reader.FieldCount; i++)
-                            row[i] = reader.IsDBNull(i) ? "" : reader.GetValue(i).ToString();
+                            row[i] = reader.IsDBNull(i) ? "" : reader.GetValue(i).ToString() ?? "";
                         detailRows.Add(row);
                     }
                 }

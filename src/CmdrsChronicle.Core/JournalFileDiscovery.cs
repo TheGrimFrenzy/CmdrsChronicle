@@ -7,6 +7,10 @@ using System.Text.RegularExpressions;
 
 namespace CmdrsChronicle.Core
 {
+    /// <summary>
+    /// Discovers and parses Elite Dangerous journal log (<c>Journal.*.log</c>) files.
+    /// Provides date-range filtering by filename date and parallel parsing with a concurrency cap.
+    /// </summary>
     public static class JournalFileDiscovery
     {
         private static readonly Regex JournalPattern = new(
@@ -27,8 +31,7 @@ namespace CmdrsChronicle.Core
             if (!Directory.Exists(directoryPath))
                 throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
 
-            var files = Directory.EnumerateFiles(directoryPath, "Journal.*.log", SearchOption.TopDirectoryOnly)
-                .Where(f => JournalPattern.IsMatch(Path.GetFileName(f)));
+            var files = Directory.EnumerateFiles(directoryPath, "Journal.*.log", SearchOption.TopDirectoryOnly);
 
             if (startDate.HasValue || endDate.HasValue)
             {
@@ -42,6 +45,10 @@ namespace CmdrsChronicle.Core
                     if (endDate.HasValue   && fileDate > endDate.Value.Date) return false;
                     return true;
                 });
+            }
+            else
+            {
+                files = files.Where(f => JournalPattern.IsMatch(Path.GetFileName(f)));
             }
 
             return files.ToList();

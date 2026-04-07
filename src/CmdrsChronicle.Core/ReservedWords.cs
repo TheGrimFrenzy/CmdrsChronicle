@@ -19,7 +19,6 @@ namespace CmdrsChronicle.Core
         };
 
         /// <summary>
-        /// <summary>
         /// Returns the DB-safe column name, prefixing with 'event_' if the name is a reserved word.
         /// Per spec/plan, this must be applied to all event property names that are reserved SQL keywords (e.g., 'timestamp', 'order', 'group').
         /// </summary>

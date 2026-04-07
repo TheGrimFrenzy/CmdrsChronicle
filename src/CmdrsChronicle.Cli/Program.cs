@@ -7,6 +7,10 @@ using System.Linq;
 
 namespace CmdrsChronicle.Cli
 {
+		/// <summary>
+		/// CLI entry point. Defines and wires up all command-line options, then dispatches
+		/// to the report-generation pipeline via <see cref="BuildRootCommand"/>.
+		/// </summary>
 		public class Program
 		{
 			// Helper: Try parse environment variable
@@ -33,6 +37,12 @@ namespace CmdrsChronicle.Cli
 
 			// Date formatting now handled by Core helpers
 
+			/// <summary>
+			/// Constructs the <see cref="RootCommand"/> with all supported options wired up.
+			/// Exposed as a static method so it can be exercised in integration tests without
+			/// actually invoking the process entry point.
+			/// </summary>
+			/// <returns>A fully configured <see cref="RootCommand"/> ready to be invoked.</returns>
 			public static RootCommand BuildRootCommand()
 			{
 				var inputOpt = new Option<string>("--input", "Path to the directory containing journal log files.");
@@ -96,73 +106,26 @@ namespace CmdrsChronicle.Cli
 				void StepDone(string detail)   { if (!silent) InteractiveSetup.ShowStepDone(detail); }
 				void DbProgress(int n, int t)  { if (!silent) InteractiveSetup.ShowDbInsertProgress(n, t); }
 				void VisitProg(int n, int t)   { if (!silent) InteractiveSetup.ShowVisitProgress(n, t); }
-				void Log(string msg) { }
 
-				// T301: Tagline for the report masthead (set after startDate/endDate are initialized)
-			string? tagline = null;
-				DateTime? startDate = null, endDate = null;
-					// If input is not specified, use Elite Dangerous default journal directory
 					if (string.IsNullOrWhiteSpace(input))
 					{
 						var userProfile = Environment.GetEnvironmentVariable("USERPROFILE") ?? "";
 						input = Path.Combine(userProfile, "Saved Games", "Frontier Developments", "Elite Dangerous");
-					Log($"No --input specified. Using default journal directory: {input}");
-				}
-
-				Log($"Input: {input}");
-				Log($"Output: {output}");
-				Log($"Start: {start}");
-				Log($"End: {end}");
-				Log($"Type: {type}");
-				Log($"Category: {category}");
-				Log($"Style: {style}");
-				Log($"Sort: {sort}");
-				Log($"MaxParallelism (CLI): {maxParallelism}");
-
-
-
-				// T501: Parse --start / --end BEFORE file discovery so we can pre-filter by filename
-				if (!string.IsNullOrWhiteSpace(start))
-				{
-					if (DateTime.TryParse(start, out var dt)) startDate = dt.Date;
-					else Console.Error.WriteLine($"[WARN] Could not parse --start date: {start}");
-				}
-				if (!string.IsNullOrWhiteSpace(end))
-				{
-					if (DateTime.TryParse(end, out var dt)) endDate = dt.Date.AddDays(1).AddTicks(-1);
-					else Console.Error.WriteLine($"[WARN] Could not parse --end date: {end}");
-				}
-
-				// Now that startDate/endDate are initialized, select tagline if not by-system
-				if (!string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase) || !startDate.HasValue || !endDate.HasValue)
-				{
-					var taglinesPath = Path.Combine(AppContext.BaseDirectory, "templates", "taglines.txt");
-					if (!File.Exists(taglinesPath))
-					{
-						// Try repo root fallback
-						taglinesPath = Path.Combine(Directory.GetCurrentDirectory(), "templates", "taglines.txt");
-					}
-					tagline = Report.SelectRandomTagline(taglinesPath);
-					Log(!string.IsNullOrEmpty(tagline) ? $"[Tagline] {tagline}" : "[Tagline] (No tagline found)");
-				}
-
-				int effectiveParallelism = maxParallelism
-					?? TryParseEnvVar("CMDRSCHRONICLE_MAX_PARALLELISM")
-					?? TryParseConfig("maxParallelism")
-					?? Environment.ProcessorCount;
-				Log($"Effective MaxParallelism: {effectiveParallelism}");
-
-					if (!Directory.Exists(input))
-					{
-						Console.Error.WriteLine($"ERROR: Input directory does not exist: {input}");
-						Environment.Exit(1);
 					}
 
-					// T501: Parse --start / --end BEFORE file discovery so we can pre-filter by filename
+
+// Parse --start / --end BEFORE file discovery so we can pre-filter by filename date.
+					// endDate is bumped to end-of-day so events with timestamps up to 23:59:59 are included.
+					string? tagline = null;
+					DateTime? startDate = null, endDate = null;
 					if (!string.IsNullOrWhiteSpace(start))
 					{
 						if (DateTime.TryParse(start, out var dt)) startDate = dt.Date;
 						else Console.Error.WriteLine($"[WARN] Could not parse --start date: {start}");
+					}
+					else
+					{
+						startDate = DateTime.Today.AddDays(-7);
 					}
 					if (!string.IsNullOrWhiteSpace(end))
 					{
@@ -170,25 +133,41 @@ namespace CmdrsChronicle.Cli
 						else Console.Error.WriteLine($"[WARN] Could not parse --end date: {end}");
 					}
 
-				var swParse = Stopwatch.StartNew();
-				var journalFileCount = JournalFileDiscovery.DiscoverJournalFiles(input, startDate, endDate).Count;
-				Step($"Parsing {journalFileCount:N0} journal file{(journalFileCount == 1 ? "" : "s") }...");
-				var (events, errors) = JournalFileDiscovery.ParseJournalFilesParallel(input, effectiveParallelism, startDate, endDate);
-				   swParse.Stop();
-				   // ...existing code...
-				StepDone($"Parsed {events.Count:N0} events" + (errors.Count > 0 ? $" ({errors.Count} parse error{(errors.Count == 1 ? "" : "s")})" : ""));
-					var filteredEvents = new List<System.Text.Json.JsonElement>();
-					foreach (var evt in events)
+					// Now that startDate/endDate are known, select the report tagline.
+					// For by-system reports a dynamic tagline is generated later; for all other styles pick one now.
+					if (!string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase) || !startDate.HasValue || !endDate.HasValue)
 					{
-						if (!evt.TryGetProperty("timestamp", out var timestampElem)) continue;
-						if (!DateTime.TryParse(timestampElem.GetString(), out var ts)) continue;
-						if (startDate.HasValue && ts < startDate.Value) continue;
-						if (endDate.HasValue && ts > endDate.Value) continue;
-						filteredEvents.Add(evt);
+						var taglinesPath = Path.Combine(AppContext.BaseDirectory, "templates", "taglines.txt");
+						if (!File.Exists(taglinesPath))
+							taglinesPath = Path.Combine(Directory.GetCurrentDirectory(), "templates", "taglines.txt");
+						tagline = Report.SelectRandomTagline(taglinesPath);
 					}
-					   // ...existing code...
-					var swPhase = Stopwatch.StartNew(); // measure from end of filtering until report written
 
+					// ?? is the null-coalescing operator: use the first non-null value in priority order.
+					// Priority: explicit flag → environment variable → config file → CPU count.
+					int effectiveParallelism = maxParallelism
+						?? TryParseEnvVar("CMDRSCHRONICLE_MAX_PARALLELISM")
+						?? TryParseConfig("maxParallelism")
+						?? Environment.ProcessorCount;
+
+					if (!Directory.Exists(input))
+					{
+						Console.Error.WriteLine($"ERROR: Input directory does not exist: {input}");
+						Environment.Exit(1);
+					}
+
+					var journalFileCount = JournalFileDiscovery.DiscoverJournalFiles(input, startDate, endDate).Count;
+					Step($"Parsing {journalFileCount:N0} journal file{(journalFileCount == 1 ? "" : "s")}...");
+					var (events, errors) = JournalFileDiscovery.ParseJournalFilesParallel(input, effectiveParallelism, startDate, endDate);
+				StepDone($"Parsed {events.Count:N0} events" + (errors.Count > 0 ? $" ({errors.Count} parse error{(errors.Count == 1 ? "" : "s")})" : ""));
+					var filteredEvents = new List<System.Text.Json.JsonElement>();						foreach (var evt in events)
+						{
+							if (!evt.TryGetProperty("timestamp", out var timestampElem)) continue;
+							if (!DateTime.TryParse(timestampElem.GetString(), out var ts)) continue;
+							if (startDate.HasValue && ts < startDate.Value) continue;
+							if (endDate.HasValue && ts > endDate.Value) continue;
+							filteredEvents.Add(evt);
+						}
 					// T303: Insert filtered events into in-memory SQLite DB
 					// Prefer schema in app base, then in app base Schema subfolder, then repo root fallback
 					var schemaPath = Path.Combine(AppContext.BaseDirectory, "cmdrschronicle_schema.sql");
@@ -206,7 +185,13 @@ namespace CmdrsChronicle.Cli
 						Console.Error.WriteLine($"ERROR: Schema file not found: {schemaPath}");
 						Environment.Exit(1);
 					}
+					// ":N" format removes hyphens from the GUID, producing a plain alphanumeric identifier
+					// safe to use as a SQLite database name. Each run gets its own unique name so
+					// concurrent invocations don't share data.
 					var dbName = $"reportdb_{Guid.NewGuid():N}";
+					// SQLite "shared-cache URI" mode: every connection in this process that opens the
+					// same named in-memory DB sees the same data. This lets parallel query tasks open
+					// their own connections without going through a single locked connection.
 					using var conn = SqliteSchemaInitializer.CreateSharedInMemoryDb(schemaPath, dbName);
 
 					// Build PRAGMA cache once per unique event type (avoid repeating per-event)
@@ -232,23 +217,19 @@ namespace CmdrsChronicle.Cli
 						pragmaCache[evtName] = info;
 					}
 
-						var swInsert = Stopwatch.StartNew();
 						Step($"Inserting {filteredEvents.Count:N0} events into database...");
 						int inserted = 0;
 						using (var tx = conn.BeginTransaction())
 						{
 						foreach (var evt in filteredEvents)
 						{
-							// ...existing code...
 							if (!evt.TryGetProperty("event", out var eventTypeElem) || !evt.TryGetProperty("timestamp", out var timestampElem))
 								continue;
 							var eventType = eventTypeElem.GetString();
 							if (string.IsNullOrWhiteSpace(eventType)) continue;
 							var table = eventType;
-							// ...existing code...
 							if (!pragmaCache.TryGetValue(table, out var tableColumnsInfo))
 								continue; // table not in schema
-							// ...existing code...
 							var columns = new List<string>();
 							var columnSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 							var values = new List<object>();
@@ -262,7 +243,6 @@ namespace CmdrsChronicle.Cli
 								values.Add(prop.Value.ValueKind == System.Text.Json.JsonValueKind.String ? (object)prop.Value.GetString()! : prop.Value.ToString());
 							}
 
-							// ...existing code...
 							foreach (var kv in tableColumnsInfo)
 							{
 								var colName = kv.Key;
@@ -284,7 +264,6 @@ namespace CmdrsChronicle.Cli
 								columns.Add(colName);
 								values.Add(defaultVal);
 							}
-							// ...existing code...
 							if (columns.Count == 0) continue; // nothing to insert
 							var colList = string.Join(", ", columns);
 							var paramList = string.Join(", ", columns.ConvertAll(c => "@" + c));
@@ -302,13 +281,11 @@ namespace CmdrsChronicle.Cli
 							}
 							catch (Exception ex)
 							{
-								Log($"[DB ERROR] {ex.Message}");
+								Console.Error.WriteLine($"[DB ERROR] {ex.Message}");
 							}
 						}
 						tx.Commit();
 						} // end transaction
-						swInsert.Stop();
-						Console.WriteLine($"[PERF] DB insertion: {swInsert.Elapsed.TotalSeconds:F2}s");
 					if (!silent) Console.WriteLine(); // advance past \r progress line
 					StepDone($"Inserted {inserted:N0} events into database");
 					string TemplateBase() => Directory.Exists(Path.Combine(AppContext.BaseDirectory, "templates"))
@@ -382,15 +359,9 @@ namespace CmdrsChronicle.Cli
 										if (!r.IsDBNull(0)) cmdrName   = r.GetString(0);
 										if (!r.IsDBNull(1)) lastSystem = r.GetString(1);
 										if (!r.IsDBNull(2))
-										{
-											var tsFull = r.GetString(2);
-											if (DateTime.TryParse(tsFull, out var parsedTs))
-												lastDate = ReportHelpers.FormatLoreDate(parsedTs);
-											else if (!string.IsNullOrEmpty(tsFull) && tsFull.Length >= 10 && DateTime.TryParse(tsFull[..10], out var parsedShort))
-												lastDate = ReportHelpers.FormatLoreDate(parsedShort);
-											else
-												lastDate = tsFull is not null && tsFull.Length >= 10 ? tsFull[..10] : lastDate;
-										}
+											// ParseLoreDate returns null when the timestamp can't be
+											// parsed; ?? keeps the existing lastDate value in that case.
+											lastDate = ReportHelpers.ParseLoreDate(r.GetString(2)) ?? lastDate;
 									}
 								}
 								catch { /* LoadGame table may not exist or have these columns */ }
@@ -454,8 +425,6 @@ namespace CmdrsChronicle.Cli
 					}
 
 					// T304: Full report generation (qualifying events found)
-					Log("[T304] Qualifying events found. Generating full report.");
-
 					var definitions = InfographicLoader.LoadAll(InfographicsBase());
 
 					// Apply --category filter if provided
@@ -470,18 +439,22 @@ namespace CmdrsChronicle.Cli
 					// Apply --sort: pre-order definitions by category so parallel queries run in roughly
 					// the right bucket order; final sort by MainValue happens after queries complete.
 					List<string>? sortCatsList = null;
+					// Local function: maps a category string to its position in the user-supplied --sort list.
+					// Returns int.MaxValue for any category not present in the list, which LINQ's OrderBy
+					// uses to push those items to the end of the sorted sequence.
+					int CategorySortKey(string category)
+					{
+						if (sortCatsList is null) return 0; // no --sort: all categories are equivalent
+						var idx = sortCatsList.FindIndex(c => string.Equals(c, category, StringComparison.OrdinalIgnoreCase));
+						return idx >= 0 ? idx : int.MaxValue; // unlisted categories float to the very end
+					}
 					if (!string.IsNullOrWhiteSpace(sort))
 					{
 						sortCatsList = sort.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
 						definitions = definitions
-							.OrderBy(d => {
-								var idx = sortCatsList.FindIndex(c => string.Equals(c, d.Category, StringComparison.OrdinalIgnoreCase));
-								return idx >= 0 ? idx : int.MaxValue;
-							})
+							.OrderBy(d => CategorySortKey(d.Category))
 							.ToList();
 					}
-
-					Log($"[T304] Loaded {definitions.Count} infographic definition(s) after sorting.");
 
 					// Date strings for SQL: startDate inclusive, endDate exclusive (< comparison against ISO timestamps).
 					// When --end is omitted, use tomorrow so today's events are included.
@@ -492,13 +465,9 @@ namespace CmdrsChronicle.Cli
 
 					// Parallel query phase: gather all results before rendering
 					Step("Running infographic queries...");
-					var swAll = Stopwatch.StartNew();
 					var rawResults = InfographicQueryRunner.RunAllAsync(
 						definitions, dbName, queryStartDate, queryEndDate, effectiveParallelism
 					).GetAwaiter().GetResult();
-					swAll.Stop();
-					Console.WriteLine($"[PERF] Infographic queries: {swAll.Elapsed.TotalSeconds:F2}s");
-					Log($"[T304] Infographic queries completed in {swAll.Elapsed.TotalSeconds:F2}s (wall clock).");
 
 					// Sort results by MainValue (the primary query metric) now that we have real values.
 					// If --sort was given: category order first, then MainValue descending within each category.
@@ -507,10 +476,7 @@ namespace CmdrsChronicle.Cli
 					if (sortCatsList != null)
 					{
 						results = rawResults
-							.OrderBy(r => {
-								var idx = sortCatsList.FindIndex(c => string.Equals(c, r.Definition.Category, StringComparison.OrdinalIgnoreCase));
-								return idx >= 0 ? idx : int.MaxValue;
-							})
+							.OrderBy(r => CategorySortKey(r.Definition.Category))
 							.ThenByDescending(r => r.MainValue)
 							.ToList();
 					}
@@ -557,7 +523,6 @@ namespace CmdrsChronicle.Cli
 					{
 						// Exclude infographics that are only meaningful in a summary report.
 						definitions = definitions.Where(d => !d.SummaryOnly).ToList();
-						Log($"[BY-SYSTEM] Filtered to {definitions.Count} non-summary-only definition(s).");
 
 						// Walk FSD jumps chronologically to build per-visit windows
 						var jumps = new List<(string SystemName, string Timestamp)>();
@@ -573,7 +538,6 @@ namespace CmdrsChronicle.Cli
 							while (jr.Read())
 								jumps.Add((jr.GetString(0), jr.GetString(1)));
 						}
-						Log($"[BY-SYSTEM] Found {jumps.Count} FSD jump(s) in window.");
 
 						var visits = new List<(string SystemName, string From, string To)>();
 						if (jumps.Count > 0)
@@ -599,7 +563,6 @@ namespace CmdrsChronicle.Cli
 						else
 						{
 							// No FSDJumps in window: look for prior system and create a visit for the whole window
-							   // ...existing code...
 							using (var priorCmd = conn.CreateCommand())
 							{
 								priorCmd.CommandText =
@@ -607,18 +570,9 @@ namespace CmdrsChronicle.Cli
 									"ORDER BY event_timestamp DESC LIMIT 1";
 								priorCmd.Parameters.AddWithValue("@s", queryStartDate);
 								var priorVal = priorCmd.ExecuteScalar();
-								Console.WriteLine($"[DIAG] Prior system before window: '{priorVal}'");
 								if (priorVal != null && priorVal != DBNull.Value)
-								{
 									visits.Add((priorVal.ToString()!, queryStartDate, queryEndDate));
-									Console.WriteLine($"[DIAG] Added visit: SystemName={{priorVal}}, From={{queryStartDate}}, To={{queryEndDate}}");
-								}
-								else
-								{
-									Console.WriteLine("[DIAG] No prior system found before window.");
-								}
 							}
-							Console.WriteLine($"[DIAG] Visits list after construction: {string.Join(", ", visits.Select(v => $"SystemName={v.SystemName}, From={v.From}, To={v.To}"))}");
 						}
 
 						if (visits.Count > 0)
@@ -643,10 +597,7 @@ namespace CmdrsChronicle.Cli
 									if (sortCatsList != null)
 									{
 										visitResults = visitRaw
-											.OrderBy(r => {
-												var idx = sortCatsList.FindIndex(c => string.Equals(c, r.Definition.Category, StringComparison.OrdinalIgnoreCase));
-												return idx >= 0 ? idx : int.MaxValue;
-											})
+										.OrderBy(r => CategorySortKey(r.Definition.Category))
 											.ThenByDescending(r => r.MainValue)
 											.ToList();
 									}
@@ -681,24 +632,20 @@ namespace CmdrsChronicle.Cli
 								var systemCount = visitSectionsList.Count;
 								var days = (endDate.Value.Date - startDate.Value.Date).Days + 1;
 								tagline = $"{systemCount} System{(systemCount == 1 ? "" : "s")} in {days} Day{(days == 1 ? "" : "s")}";
-								Log($"[Tagline] {tagline}");
+
 							}
 						}
 						else
 						{
-							Log("[BY-SYSTEM] No FSD jumps found; falling back to single-section report.");
 							sections = new[] { new SystemVisit(null, null, null, results) };
 						}
 					}
 					else
 					{
-						if (string.Equals(type, "by-system", StringComparison.OrdinalIgnoreCase))
-							Log("[BY-SYSTEM] --start date required for by-system reports; falling back to single-section.");
 						sections = new[] { new SystemVisit(null, null, null, results) };
 					}
 
 					Step("Rendering HTML report...");
-					var swRender = Stopwatch.StartNew();
 					var reportHtml = isGalnet
 						? GalnetReportRenderer.Render(
 							reportTemplatePath, reportCssPath,
@@ -716,22 +663,15 @@ namespace CmdrsChronicle.Cli
 							tagline ?? "Every jump tells a story.",
 							reportCmdrName, reportFromStr, reportToStr,
 							sections);
-					swRender.Stop();
-					Console.WriteLine($"[PERF] HTML rendering: {swRender.Elapsed.TotalSeconds:F2}s");
-					Log($"[TIMING] Render time: {swRender.Elapsed.TotalSeconds:F2}s");
-
 					var reportOutputPath = string.IsNullOrWhiteSpace(output)
 						? Path.Combine(Directory.GetCurrentDirectory(), BuildDefaultName())
 						: output;
 
-					var swWrite = Stopwatch.StartNew();
 					Step("Writing output file...");
 					File.WriteAllText(reportOutputPath, reportHtml, System.Text.Encoding.UTF8);
 					var errorComment = ReportDiagnostics.FormatParseErrorComment(errors);
 					if (errorComment.Length > 0)
 						File.AppendAllText(reportOutputPath, errorComment, System.Text.Encoding.UTF8);
-					swWrite.Stop();
-					swPhase.Stop();
 					if (interactive)
 						InteractiveSetup.ShowComplete(reportOutputPath);
 					else
@@ -741,7 +681,6 @@ namespace CmdrsChronicle.Cli
 						try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(reportOutputPath) { UseShellExecute = true }); }
 						catch { /* Default browser may not be configured; report is still written to disk */ }
 					}
-					   // ...existing code...
 				});
 
 			return rootCommand;

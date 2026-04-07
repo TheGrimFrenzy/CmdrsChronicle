@@ -7,21 +7,25 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="install-zip.targets" />
+    <None Include="CmdrsChronicle.cmd" />
   </ItemGroup>
   <PropertyGroup>
     <CliProject>..\src\CmdrsChronicle.Cli\CmdrsChronicle.Cli.csproj</CliProject>
     <CliPublishDir>$(MSBuildThisFileDirectory)..\src\CmdrsChronicle.Cli\bin\Release\net8.0\publish\</CliPublishDir>
     <InstallerOutputDir>$(OutputPath)AppFiles\</InstallerOutputDir>
+    <CliBinDir>$(InstallerOutputDir)bin\</CliBinDir>
     <ZipFile>$(OutputPath)CmdrsChronicle.zip</ZipFile>
   </PropertyGroup>
   <Target Name="PublishCli" BeforeTargets="Publish">
     <RemoveDir Directories="$(InstallerOutputDir)" />
-    <Exec Command="dotnet publish &quot;$(CliProject)&quot; -c Release --no-self-contained -o &quot;$(InstallerOutputDir)&quot;" />
+    <Exec Command="dotnet publish &quot;$(CliProject)&quot; -c Release --no-self-contained -o &quot;$(CliBinDir)&quot;" />
   </Target>
   <Target Name="CleanRuntimesAndPdb" AfterTargets="PublishCli">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$d = '$(InstallerOutputDir)runtimes'; if (Test-Path $d) { Get-ChildItem $d | Where-Object { $_.Name -ne 'win-x64' } | Remove-Item -Recurse -Force }; Get-ChildItem '$(InstallerOutputDir)' -Recurse -Include *.pdb | Remove-Item -Force&quot;" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$d = '$(CliBinDir)runtimes'; if (Test-Path $d) { Get-ChildItem $d | Where-Object { $_.Name -ne 'win-x64' } | Remove-Item -Recurse -Force }; Get-ChildItem '$(CliBinDir)' -Recurse -Include *.pdb | Remove-Item -Force&quot;" />
   </Target>
   <Target Name="CreateZipInstaller" AfterTargets="CleanRuntimesAndPdb">
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\README.txt" DestinationFolder="$(InstallerOutputDir)" />
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)CmdrsChronicle.cmd" DestinationFolder="$(InstallerOutputDir)" />
     <Exec Command="powershell -Command &quot;Compress-Archive -Path '$(InstallerOutputDir)*' -DestinationPath '$(ZipFile)' -Force&quot;" />
     <Message Importance="high" Text="Created $(ZipFile)" />
   </Target>

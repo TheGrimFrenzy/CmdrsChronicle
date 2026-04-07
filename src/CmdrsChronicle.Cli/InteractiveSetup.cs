@@ -23,6 +23,7 @@ internal static class InteractiveSetup
         var opts = defaults with
         {
             Input = defaults.Input ?? DefaultJournalDir(),
+            Start = defaults.Start ?? DateTime.Today.AddDays(-7).ToString("yyyy-MM-dd"),
             Style = NormaliseStyle(defaults.Style),
             Type  = NormaliseType(defaults.Type),
         };
@@ -51,7 +52,7 @@ internal static class InteractiveSetup
 
                 case '1': opts = opts with { Input          = EditPath("Journal directory",                                          opts.Input)          ?? opts.Input }; break;
                 case '2': opts = opts with { Output         = EditText("Output file path (blank = auto-named)",                      opts.Output,         allowEmpty: true) };  break;
-                case '3': opts = opts with { Start          = EditDate("Start date (blank = no filter)",                             opts.Start) };         break;
+                case '3': opts = opts with { Start          = EditDate("Start date (blank = 7 days ago)",                              opts.Start) };         break;
                 case '4': opts = opts with { End            = EditDate("End date   (blank = no filter)",                             opts.End) };           break;
                 case '5': opts = opts with { Type           = Pick("Report type",   ["summary", "by-system"],          opts.Type  ?? "summary") };         break;
                 case '6': opts = opts with { Style          = Pick("Report style",  ["elegant", "colorful", "galnet"], opts.Style ?? "elegant") };         break;
@@ -77,7 +78,7 @@ internal static class InteractiveSetup
                 $"  [grey][[1]][/] Journal Dir  {Val(opts.Input,   "(default ED directory)")}\n" +
                 $"  [grey][[2]][/] Output File  {Val(opts.Output,  "(auto-named in current folder)")}"),
             Pane(" DATE RANGE ",
-                $"  [grey][[3]][/] Start Date   {Val(opts.Start,   "(none — all history)")}\n" +
+                $"  [grey][[3]][/] Start Date   {Val(opts.Start,   "(7 days ago)")}\n" +
                 $"  [grey][[4]][/] End Date     {Val(opts.End,     "(none — up to today)")}")
         ));
         AnsiConsole.WriteLine();
@@ -109,10 +110,10 @@ internal static class InteractiveSetup
     /// <summary>Gold filled circle for selected option, grey hollow for others.</summary>
     private static string Radio(string[] choices, string selected)
     {
-        var parts = System.Array.ConvertAll(choices, c =>
+        var parts = choices.Select(c =>
             string.Equals(c, selected, StringComparison.OrdinalIgnoreCase)
                 ? $"[gold1]◉ {c}[/]"
-                : $"[grey]○ {c}[/]");
+                : $"[grey]○ {c}[/]").ToArray();
         return string.Join("  ", parts);
     }
 
@@ -198,12 +199,13 @@ internal static class InteractiveSetup
             return EditText("Sort order (comma-separated categories, blank = default)", current, allowEmpty: true);
 
         // Limit to the active category filter when one is set
-        var available = string.IsNullOrWhiteSpace(categoryFilter)
+        var filterParts = string.IsNullOrWhiteSpace(categoryFilter)
+            ? null
+            : categoryFilter.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var available = filterParts is null
             ? allCategories
             : allCategories
-                .Where(c => categoryFilter
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                    .Any(f => string.Equals(f, c, StringComparison.OrdinalIgnoreCase)))
+                .Where(c => filterParts.Any(f => string.Equals(f, c, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
         if (available.Count == 0)
@@ -276,7 +278,6 @@ internal static class InteractiveSetup
         }
         try
         {
-            var files = Directory.GetFiles(infographicsBasePath, "*.json", SearchOption.AllDirectories);
             return InfographicLoader.LoadAll(infographicsBasePath)
                 .Select(d => d.Category)
                 .Where(c => !string.IsNullOrWhiteSpace(c))
@@ -284,7 +285,7 @@ internal static class InteractiveSetup
                 .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return [];
         }
@@ -339,24 +340,20 @@ internal static class InteractiveSetup
     internal static void ShowStepDone(string detail) =>
         AnsiConsole.MarkupLine($"  [green]✓[/]  [grey]{Markup.Escape(detail)}[/]");
 
-    internal static void ShowDbInsertProgress(int done, int total)
-    {
-        const int width = 28;
-        var filled = total > 0 ? (int)Math.Round(done * (double)width / total) : width;
-        filled = Math.Clamp(filled, 0, width);
-        var bar = new string('█', filled) + new string('░', width - filled);
-        var pct = total > 0 ? (int)(done * 100.0 / total) : 100;
-        Console.Write($"\r  ▐{bar}▌ {pct,3}%  ({done:N0} / {total:N0})    ");
-    }
+    internal static void ShowDbInsertProgress(int done, int total) =>
+        ShowProgress(done, total, "");
 
-    internal static void ShowVisitProgress(int done, int total)
+    internal static void ShowVisitProgress(int done, int total) =>
+        ShowProgress(done, total, " systems");
+
+    private static void ShowProgress(int done, int total, string unit)
     {
         const int width = 28;
         var filled = total > 0 ? (int)Math.Round(done * (double)width / total) : width;
         filled = Math.Clamp(filled, 0, width);
         var bar = new string('█', filled) + new string('░', width - filled);
         var pct = total > 0 ? (int)(done * 100.0 / total) : 100;
-        Console.Write($"\r  ▐{bar}▌ {pct,3}%  ({done:N0} / {total:N0} systems)    ");
+        Console.Write($"\r  ▐{bar}▌ {pct,3}%  ({done:N0} / {total:N0}{unit})    ");
     }
 
     internal static void ShowComplete(string outputPath)

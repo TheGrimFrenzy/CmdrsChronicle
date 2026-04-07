@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,12 +9,91 @@ using System.Text.RegularExpressions;
 namespace CmdrsChronicle.Core
 {
     /// <summary>
-    /// Shared tile-rendering helpers used by both <see cref="ElegantReportRenderer"/>
-    /// and <see cref="ColorfulReportRenderer"/>.
+    /// Shared tile-rendering helpers used by all three report renderers
+    /// (Elegant, Colorful, and Galnet). Also owns the HTML template-application
+    /// helpers so their identical <c>Render</c> and <c>RenderNothingToReport</c>
+    /// bodies live in one place.
     /// </summary>
     internal static class TileRenderer
     {
         internal const int MaxDetailRows = 5;
+
+        // Known CSS gradient class tokens. Stored once as a static field so
+        // CategoryClass() never allocates a new array on each call.
+        private static readonly string[] _allowedGradients =
+        {
+            "travel", "combat", "exploration", "exobiology", "trade",
+            "powerplay", "fleetcarriers", "colonisation", "onfoot",
+            "mining", "engineering", "crew"
+        };
+
+        // ── Shared template application ──────────────────────────────────────────
+        // All three renderers share the same HTML template structure — only which
+        // tiles-HTML string they inject differs. These helpers hold that shared logic.
+
+        /// <summary>
+        /// Reads <paramref name="templatePath"/> and <paramref name="cssPath"/>, then
+        /// fills in the standard report placeholders and injects the pre-rendered tiles HTML.
+        /// Called by every renderer's <c>Render()</c> method.
+        /// </summary>
+        internal static string ApplyReportTemplate(
+            string templatePath, string cssPath,
+            string tagline, string cmdrName, string dateFrom, string dateTo,
+            string tilesHtml)
+        {
+            var template = File.ReadAllText(templatePath);
+            var css      = File.ReadAllText(cssPath);
+
+            return template
+                .Replace("{CSS}",            css)
+                .Replace("{TAGLINE}",        tagline)
+                .Replace("{CMDR_NAME}",      cmdrName)
+                .Replace("{DATE_FROM}",      dateFrom)
+                .Replace("{DATE_TO}",        dateTo)
+                .Replace("{DATE_GENERATED}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm") + " UTC")
+                .Replace("{TILES}",          tilesHtml);
+        }
+
+        /// <summary>
+        /// Reads the nothing-to-report template and CSS, then fills in all placeholders
+        /// including the GalNet-flavoured message fields.
+        /// Called by every renderer's <c>RenderNothingToReport()</c> method.
+        /// </summary>
+        internal static string ApplyNothingToReportTemplate(
+            string templatePath, string cssPath,
+            string tagline, string cmdrName, string dateFrom, string dateTo,
+            NoDataMessage message)
+        {
+            var template = File.ReadAllText(templatePath);
+            var css      = File.ReadAllText(cssPath);
+
+            return template
+                .Replace("{CSS}",                 css)
+                .Replace("{TAGLINE}",             tagline)
+                .Replace("{CMDR_NAME}",           cmdrName)
+                .Replace("{DATE_FROM}",           dateFrom)
+                .Replace("{DATE_TO}",             dateTo)
+                .Replace("{GALNET_HEADLINE}",     message.Title)
+                .Replace("{GALNET_SUBHEAD}",      message.Summary)
+                .Replace("{GALNET_BODY}",         message.Body)
+                .Replace("{GALNET_CLOSING_NOTE}", message.ClosingNote);
+        }
+
+        /// <summary>
+        /// Renders the HTML divider shown between star-system sections in a by-system report.
+        /// Each renderer passes its own <paramref name="indent"/> and any extra div attributes
+        /// (e.g. Galnet needs <c>style="grid-column:1/-1;"</c>).
+        /// </summary>
+        internal static string RenderSystemDivider(SystemVisit section, string indent, string extraDivAttributes = "")
+        {
+            var nameHtml = HtmlEncode(section.SystemName!);
+            // If we know when the commander arrived, show a tooltip with the real-world date
+            // and display the lore date (real year + 1286) in the header itself.
+            var dateHtml = section.ArrivalLore != null
+                ? $"<span class=\"sys-div-date\" title=\"{HtmlEncode(section.ArrivalActual ?? string.Empty)}\">{HtmlEncode(section.ArrivalLore)}</span>"
+                : string.Empty;
+            return $"{indent}<div class=\"sys-div\"{extraDivAttributes}><span class=\"sys-div-name\">{nameHtml}</span>{dateHtml}</div>\n";
+        }
 
         // ── Category slug ────────────────────────────────────────────────────────
 
@@ -33,20 +113,18 @@ namespace CmdrsChronicle.Core
         {
             if (string.IsNullOrWhiteSpace(category)) return string.Empty;
 
-            var slug    = NormalizeCategory(category);
-            var allowed = new[] { "travel", "combat", "exploration", "exobiology", "trade",
-                                  "powerplay", "fleetcarriers", "colonisation", "onfoot",
-                                  "mining", "engineering", "crew" };
+            var slug = NormalizeCategory(category);
 
             string? chosen = null;
-            foreach (var a in allowed) if (slug == a)          { chosen = a; break; }
+            foreach (var a in _allowedGradients) if (slug == a)            { chosen = a; break; }
             if (chosen == null)
-                foreach (var a in allowed) if (slug.Contains(a)) { chosen = a; break; }
+                foreach (var a in _allowedGradients) if (slug.Contains(a)) { chosen = a; break; }
             if (chosen == null)
             {
                 var parts = slug.Split('-');
-                foreach (var p in parts) if (allowed.Contains(p)) { chosen = p; break; }
-                if (chosen == null) chosen = slug.Split('-').FirstOrDefault() ?? slug;
+                foreach (var p in parts) if (_allowedGradients.Contains(p)) { chosen = p; break; }
+                // Fall back to the first hyphen-segment so at least something is returned.
+                if (chosen == null) chosen = parts[0];
             }
 
             return " grad-" + chosen;
