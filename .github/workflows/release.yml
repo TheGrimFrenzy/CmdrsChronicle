@@ -5,7 +5,11 @@ on:
     tags:
       - 'v*.*.*'
 
-jobs:
+      permissions:
+  contents: write
+  packages: write
+
+  jobs:
   build-and-release:
     runs-on: windows-latest
     steps:
