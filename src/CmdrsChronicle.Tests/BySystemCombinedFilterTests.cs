@@ -48,6 +48,16 @@ namespace CmdrsChronicle.Tests
             return tempDir;
         }
 
+        private static string GetCliWorkingDir()
+        {
+            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CmdrsChronicle.Cli", "bin"));
+            var releaseDir = Path.Combine(baseDir, "Release", "net8.0");
+            var debugDir = Path.Combine(baseDir, "Debug", "net8.0");
+            if (Directory.Exists(releaseDir)) return releaseDir;
+            if (Directory.Exists(debugDir)) return debugDir;
+            throw new DirectoryNotFoundException($"Neither Release nor Debug CLI output found. Checked: {releaseDir} and {debugDir}");
+        }
+
         [Fact(Timeout = 20000)]
         public async Task BySystemGrouping_WithCategoryFilter_OnlyShowsMatchingCategory()
         {
@@ -57,7 +67,7 @@ namespace CmdrsChronicle.Tests
                 try
                 {
                     // Only include 'Travel' category (should show FSDJump events)
-                    var cliDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CmdrsChronicle.Cli", "bin", "Debug", "net8.0"));
+                    var cliDir = GetCliWorkingDir();
                     var csprojPath = Path.GetFullPath(Path.Combine(cliDir, "..", "..", "..", "CmdrsChronicle.Cli.csproj"));
                     var psi = new ProcessStartInfo
                     {
@@ -108,7 +118,7 @@ namespace CmdrsChronicle.Tests
                 try
                 {
                     // Only include day2 and 'Combat' category (should only see Beta system with Bounty event)
-                    var cliDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CmdrsChronicle.Cli", "bin", "Debug", "net8.0"));
+                    var cliDir = GetCliWorkingDir();
                     var csprojPath = Path.GetFullPath(Path.Combine(cliDir, "..", "..", "..", "CmdrsChronicle.Cli.csproj"));
                     var psi = new ProcessStartInfo
                     {
