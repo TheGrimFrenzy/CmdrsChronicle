@@ -28,6 +28,16 @@ namespace CmdrsChronicle.Tests
             return tempDir;
         }
 
+        private static string GetCliWorkingDir()
+        {
+            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CmdrsChronicle.Cli", "bin"));
+            var releaseDir = Path.Combine(baseDir, "Release", "net8.0");
+            var debugDir = Path.Combine(baseDir, "Debug", "net8.0");
+            if (Directory.Exists(releaseDir)) return releaseDir;
+            if (Directory.Exists(debugDir)) return debugDir;
+            throw new DirectoryNotFoundException($"Neither Release nor Debug CLI output found. Checked: {releaseDir} and {debugDir}");
+        }
+
         [Fact(Timeout = 35000)]
         public async Task ReportGeneration_CompletesUnder30Seconds_ForOneWeek()
         {
@@ -36,7 +46,7 @@ namespace CmdrsChronicle.Tests
                 var output = Path.Combine(Path.GetTempPath(), "cc_perf_report.html");
                 try
                 {
-                    var cliDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CmdrsChronicle.Cli", "bin", "Debug", "net8.0"));
+                    var cliDir = GetCliWorkingDir();
                     var csprojPath = Path.GetFullPath(Path.Combine(cliDir, "..", "..", "..", "CmdrsChronicle.Cli.csproj"));
                     var psi = new ProcessStartInfo
                     {
@@ -81,7 +91,7 @@ namespace CmdrsChronicle.Tests
                 var output = Path.Combine(Path.GetTempPath(), "cc_mem_report.html");
                 try
                 {
-                    var cliDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "CmdrsChronicle.Cli", "bin", "Debug", "net8.0"));
+                    var cliDir = GetCliWorkingDir();
                     var csprojPath = Path.GetFullPath(Path.Combine(cliDir, "..", "..", "..", "CmdrsChronicle.Cli.csproj"));
                     var psi = new ProcessStartInfo
                     {
