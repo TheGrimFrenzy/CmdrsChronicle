@@ -27,7 +27,7 @@ jobs:
         id: find_zip
         shell: pwsh
         run: |
-          $zip = Get-ChildItem -Path Installer/bin/Release/* -Filter "CmdrsChronicle-*.zip" | Select-Object -First 1
+          $zip = Get-ChildItem -Path Installer -Filter "CmdrsChronicle-*.zip" | Select-Object -First 1
           echo "ZIP_PATH=$($zip.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Upload Release Asset
