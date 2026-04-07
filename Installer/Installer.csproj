@@ -14,7 +14,7 @@
     <CliPublishDir>$(MSBuildThisFileDirectory)..\src\CmdrsChronicle.Cli\bin\Release\net8.0\publish\</CliPublishDir>
     <InstallerOutputDir>$(OutputPath)AppFiles\</InstallerOutputDir>
     <CliBinDir>$(InstallerOutputDir)bin\</CliBinDir>
-    <ZipFile>$(OutputPath)CmdrsChronicle.zip</ZipFile>
+    <ZipFile>$(OutputPath)CmdrsChronicle-$(Version).zip</ZipFile>
   </PropertyGroup>
   <Target Name="PublishCli" BeforeTargets="Publish">
     <RemoveDir Directories="$(InstallerOutputDir)" />
